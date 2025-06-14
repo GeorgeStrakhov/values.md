@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { dilemmas } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Get a random dilemma to start with
     const randomDilemma = await db
@@ -20,9 +20,9 @@ export async function GET() {
     }
 
     // Redirect to the explore page with this dilemma's UUID
-    const baseUrl = process.env.NEXTAUTH_URL || 
-                   (process.env.NODE_ENV === 'production' ? 'https://values.md' : 
-                    `http://localhost:${process.env.PORT || 3000}`);
+    // Use the request origin to ensure we stay on the same domain/port
+    const requestUrl = new URL(request.url);
+    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
     return NextResponse.redirect(
       new URL(`/explore/${randomDilemma[0].dilemmaId}`, baseUrl)
     );

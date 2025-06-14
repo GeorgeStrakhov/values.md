@@ -9,7 +9,11 @@
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "seed:admin": "npx tsx scripts/seed-admin.ts",
+    "seed:db": "npx tsx scripts/seed-db.ts",
+    "setup": "npm run db:push && npm run seed:admin && npm run seed:db"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",

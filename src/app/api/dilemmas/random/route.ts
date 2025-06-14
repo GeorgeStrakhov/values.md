@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { dilemmas } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
-import { redirect } from 'next/navigation';
 
 export async function GET() {
   try {
@@ -21,8 +20,11 @@ export async function GET() {
     }
 
     // Redirect to the explore page with this dilemma's UUID
+    const baseUrl = process.env.NEXTAUTH_URL || 
+                   (process.env.NODE_ENV === 'production' ? 'https://values.md' : 
+                    `http://localhost:${process.env.PORT || 3000}`);
     return NextResponse.redirect(
-      new URL(`/explore/${randomDilemma[0].dilemmaId}`, process.env.NEXTAUTH_URL || 'http://localhost:3000')
+      new URL(`/explore/${randomDilemma[0].dilemmaId}`, baseUrl)
     );
   } catch (error) {
     console.error('Error fetching random dilemma:', error);

@@ -254,8 +254,8 @@ async function runExperimentAsync(
       state.currentTask = `Testing ${modelConfig.name}...`;
       
       // Test each scenario type
-      for (const scenarioType of ['direct', 'domain_transfer', 'cross_domain', 'edge_case']) {
-        const typeScenarios = scenarios[scenarioType] || [];
+      for (const scenarioType of ['direct', 'domain_transfer', 'cross_domain', 'edge_case'] as const) {
+        const typeScenarios = scenarios[scenarioType as keyof typeof scenarios] || [];
         
         for (const scenario of typeScenarios.slice(0, 1)) { // Limit to 1 per type for demo
           // Control condition (no values.md)
@@ -298,9 +298,20 @@ async function runExperimentAsync(
   }
 }
 
+interface TestScenario {
+  title: string;
+  scenario: string;
+  choices: Array<{ text: string; motif: string }>;
+}
+
 async function generateTestScenarios(participantData: any) {
   // Use existing dilemma generator to create test scenarios
-  const scenarios = {
+  const scenarios: {
+    direct: TestScenario[];
+    domain_transfer: TestScenario[];
+    cross_domain: TestScenario[];
+    edge_case: TestScenario[];
+  } = {
     direct: [], // Same scenarios participant saw
     domain_transfer: [], // New scenarios in same domains
     cross_domain: [], // New scenarios in different domains  
@@ -321,12 +332,16 @@ async function generateTestScenarios(participantData: any) {
   
   // Generate new scenarios using combinatorial generator
   try {
-    const newScenarios = await dilemmaGenerator.generateCombinatorialDilemmas({
-      domain: 'technology',
-      difficulty: 7,
-      targetMotifs: ['UTIL_CALC', 'DUTY_CARE'],
-      count: 2
-    });
+    // Generate multiple scenarios by calling the method multiple times
+    const newScenarios = [];
+    for (let i = 0; i < 2; i++) {
+      const scenario = await dilemmaGenerator.generateCombinatorialDilemma(
+        'technology',
+        7,
+        ['UTIL_CALC', 'DUTY_CARE']
+      );
+      newScenarios.push(scenario);
+    }
     
     scenarios.domain_transfer = newScenarios.slice(0, 1);
     scenarios.cross_domain = newScenarios.slice(1, 2);

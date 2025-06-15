@@ -22,6 +22,7 @@ const navigation = [
   { name: 'Docs', href: '/docs' },
   { name: 'Blog', href: '/blog' },
   { name: 'Research', href: '/research' },
+  { name: 'Experiments', href: '/experiments' },
 ];
 
 export function Header() {

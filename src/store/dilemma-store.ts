@@ -47,6 +47,7 @@ interface DilemmaState {
   
   // Response handling
   saveCurrentResponse: () => void;
+  saveResponsesToDatabase: () => Promise<void>;
   restoreResponseForIndex: (index: number) => void;
   
   // Getters
@@ -124,8 +125,9 @@ export const useDilemmaStore = create<DilemmaState>()(
           return true; // Not last
         }
         
-        // Save final response
+        // Save final response and send all to database
         state.saveCurrentResponse();
+        state.saveResponsesToDatabase();
         return false; // Was last
       },
       
@@ -169,6 +171,38 @@ export const useDilemmaStore = create<DilemmaState>()(
           }
           
           set({ responses });
+        }
+      },
+      
+      saveResponsesToDatabase: async () => {
+        const state = get();
+        if (state.responses.length === 0) return;
+        
+        try {
+          const response = await fetch('/api/responses', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sessionId: state.sessionId,
+              responses: state.responses.map(r => ({
+                dilemmaId: r.dilemmaId,
+                chosenOption: r.chosenOption,
+                reasoning: r.reasoning,
+                responseTime: r.responseTime,
+                perceivedDifficulty: r.perceivedDifficulty
+              }))
+            })
+          });
+          
+          if (!response.ok) {
+            console.error('Failed to save responses to database:', response.status);
+          } else {
+            console.log('✅ Responses saved to database successfully');
+          }
+        } catch (error) {
+          console.error('Error saving responses to database:', error);
         }
       },
       

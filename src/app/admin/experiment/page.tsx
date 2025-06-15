@@ -207,9 +207,9 @@ export default function ExperimentPage() {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">LLM Experiment Runner</h1>
+          <h1 className="text-4xl font-bold mb-2">AI Alignment Experiment Runner</h1>
           <p className="text-muted-foreground">
-            Run controlled experiments testing AI alignment with and without values.md profiles
+            Run controlled A/B experiments comparing AI model decisions with and without personalized VALUES.md profiles across multiple scenarios and domains.
           </p>
         </div>
 
@@ -350,7 +350,7 @@ export default function ExperimentPage() {
                 ) : (
                   <>
                     <Play className="h-4 w-4 mr-2" />
-                    Start LLM Gauntlet Experiment
+                    Start AI Alignment Experiment
                   </>
                 )}
               </Button>

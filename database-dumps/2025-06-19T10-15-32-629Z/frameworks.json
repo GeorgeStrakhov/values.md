@@ -1,0 +1,222 @@
+[
+  {
+    "frameworkId": "UTIL_ACT",
+    "name": "Act Utilitarianism",
+    "tradition": "consequentialism",
+    "keyPrinciple": "Greatest good for greatest number",
+    "decisionMethod": "Calculate expected utility of each action",
+    "lexicalIndicators": "maximize utility;greatest happiness;aggregate welfare;sum total;net positive;overall benefit",
+    "computationalSignature": "argmax(sum(utility_i * probability_i))",
+    "historicalFigure": "Jeremy Bentham,John Stuart Mill",
+    "modernApplication": "Effective Altruism movement"
+  },
+  {
+    "frameworkId": "UTIL_RULE",
+    "name": "Rule Utilitarianism",
+    "tradition": "consequentialism",
+    "keyPrinciple": "Follow rules that generally maximize utility",
+    "decisionMethod": "Apply rules that typically produce best outcomes",
+    "lexicalIndicators": "generally better;rule-following;typical outcomes;policy approach;systematic approach",
+    "computationalSignature": "if rule_utility(R) > threshold: follow(R)",
+    "historicalFigure": "R.M. Hare",
+    "modernApplication": "Public policy frameworks"
+  },
+  {
+    "frameworkId": "DEONT_KANT",
+    "name": "Kantian Deontology",
+    "tradition": "deontological",
+    "keyPrinciple": "Categorical imperative and universal law",
+    "decisionMethod": "Test if action can be universal law",
+    "lexicalIndicators": "universal law;categorical imperative;duty;obligation;never merely means;inherent dignity",
+    "computationalSignature": "if universalizable(action) and respects_dignity(action): permitted",
+    "historicalFigure": "Immanuel Kant",
+    "modernApplication": "Human rights frameworks"
+  },
+  {
+    "frameworkId": "DEONT_ROSS",
+    "name": "Rossian Deontology",
+    "tradition": "deontological",
+    "keyPrinciple": "Prima facie duties with intuitive balancing",
+    "decisionMethod": "Balance competing prima facie duties",
+    "lexicalIndicators": "prima facie;competing duties;moral intuition;promise-keeping;gratitude;non-maleficence",
+    "computationalSignature": "weight_duties([fidelity,reparation,gratitude,justice,beneficence,self_improvement,non_maleficence])",
+    "historicalFigure": "W.D. Ross",
+    "modernApplication": "Professional ethics codes"
+  },
+  {
+    "frameworkId": "VIRT_ARIST",
+    "name": "Aristotelian Virtue Ethics",
+    "tradition": "virtue_ethics",
+    "keyPrinciple": "Golden mean and character excellence",
+    "decisionMethod": "What would virtuous person do",
+    "lexicalIndicators": "virtue;character;golden mean;flourishing;excellence;role model;moral exemplar",
+    "computationalSignature": "emulate(virtuous_agent) + seek_mean(extremes)",
+    "historicalFigure": "Aristotle",
+    "modernApplication": "Character education"
+  },
+  {
+    "frameworkId": "VIRT_NEO",
+    "name": "Neo-Aristotelian Virtue Ethics",
+    "tradition": "virtue_ethics",
+    "keyPrinciple": "Virtues relative to social practices",
+    "decisionMethod": "Virtues defined by community practices",
+    "lexicalIndicators": "practices;community standards;tradition;narrative;social role;cultural virtue",
+    "computationalSignature": "virtue_in_context(practice,community,tradition)",
+    "historicalFigure": "Alasdair MacIntyre",
+    "modernApplication": "Professional virtue ethics"
+  },
+  {
+    "frameworkId": "CARE_GILL",
+    "name": "Gilligan Care Ethics",
+    "tradition": "care_ethics",
+    "keyPrinciple": "Ethics of care and responsibility",
+    "decisionMethod": "Maintain relationships and respond to needs",
+    "lexicalIndicators": "care;relationships;responsibility;context;particular;interdependence;voice",
+    "computationalSignature": "prioritize(relationships) + context_sensitive(response)",
+    "historicalFigure": "Carol Gilligan",
+    "modernApplication": "Healthcare ethics"
+  },
+  {
+    "frameworkId": "CARE_NEL",
+    "name": "Noddings Care Ethics",
+    "tradition": "care_ethics",
+    "keyPrinciple": "Natural caring and ethical caring",
+    "decisionMethod": "One-caring attends to cared-for",
+    "lexicalIndicators": "caring relation;attentiveness;responsibility;competence;responsiveness;natural caring",
+    "computationalSignature": "attend(cared_for) + respond(needs) + maintain(relation)",
+    "historicalFigure": "Nel Noddings",
+    "modernApplication": "Education ethics"
+  },
+  {
+    "frameworkId": "JUST_RAWLS",
+    "name": "Rawlsian Justice",
+    "tradition": "political_philosophy",
+    "keyPrinciple": "Justice as fairness behind veil of ignorance",
+    "decisionMethod": "Choose principles behind veil of ignorance",
+    "lexicalIndicators": "veil of ignorance;original position;justice as fairness;primary goods;difference principle",
+    "computationalSignature": "optimize(worst_off) subject_to equal_liberty",
+    "historicalFigure": "John Rawls",
+    "modernApplication": "Institutional design"
+  },
+  {
+    "frameworkId": "JUST_LIBERT",
+    "name": "Libertarian Justice",
+    "tradition": "political_philosophy",
+    "keyPrinciple": "Individual liberty and property rights",
+    "decisionMethod": "Maximize individual freedom and property rights",
+    "lexicalIndicators": "liberty;property rights;minimal state;non-aggression;voluntary exchange;self-ownership",
+    "computationalSignature": "maximize(individual_liberty) - minimize(state_intervention)",
+    "historicalFigure": "Robert Nozick",
+    "modernApplication": "Tech platform governance"
+  },
+  {
+    "frameworkId": "CONT_HOOF",
+    "name": "Contractarian Ethics",
+    "tradition": "social_contract",
+    "keyPrinciple": "Mutual advantage through agreement",
+    "decisionMethod": "Choose what rational agents would agree to",
+    "lexicalIndicators": "social contract;mutual advantage;rational agreement;collective benefit;negotiated solution",
+    "computationalSignature": "nash_equilibrium(moral_agreement)",
+    "historicalFigure": "David Gauthier",
+    "modernApplication": "International relations"
+  },
+  {
+    "frameworkId": "CONT_SCAN",
+    "name": "Scanlonian Contractualism",
+    "tradition": "social_contract",
+    "keyPrinciple": "What no one could reasonably reject",
+    "decisionMethod": "Principles no one could reasonably reject",
+    "lexicalIndicators": "reasonable rejection;justification;complaints;individual standpoint;generic reasons",
+    "computationalSignature": "minimize(max(individual_complaints))",
+    "historicalFigure": "T.M. Scanlon",
+    "modernApplication": "Bioethics committees"
+  },
+  {
+    "frameworkId": "PRAGMA_DEWEY",
+    "name": "Deweyan Pragmatism",
+    "tradition": "pragmatism",
+    "keyPrinciple": "Intelligent inquiry and democratic deliberation",
+    "decisionMethod": "Experimental problem-solving with democratic input",
+    "lexicalIndicators": "experimental;democratic;inquiry;consequences;adaptive;problem-solving;fallibilistic",
+    "computationalSignature": "iterative_experimentation + democratic_input + outcome_evaluation",
+    "historicalFigure": "John Dewey",
+    "modernApplication": "Adaptive governance"
+  },
+  {
+    "frameworkId": "PRAGMA_JAMES",
+    "name": "Jamesian Pragmatism",
+    "tradition": "pragmatism",
+    "keyPrinciple": "Cash value of ideas in experience",
+    "decisionMethod": "What works in practice",
+    "lexicalIndicators": "practical consequences;cash value;lived experience;workability;meliorism",
+    "computationalSignature": "if practical_success(idea): adopt(idea)",
+    "historicalFigure": "William James",
+    "modernApplication": "Design thinking"
+  },
+  {
+    "frameworkId": "COMMUN_SAND",
+    "name": "Communitarian Ethics",
+    "tradition": "communitarianism",
+    "keyPrinciple": "Socially embedded selves and common good",
+    "decisionMethod": "Pursue shared vision of good life",
+    "lexicalIndicators": "community;shared values;common good;social roles;tradition;narrative;embedded self",
+    "computationalSignature": "maximize(community_good) + preserve(tradition)",
+    "historicalFigure": "Michael Sandel",
+    "modernApplication": "Cultural preservation"
+  },
+  {
+    "frameworkId": "COMMUN_MAC",
+    "name": "MacIntyrean Communitarianism",
+    "tradition": "communitarianism",
+    "keyPrinciple": "Virtues within social practices and traditions",
+    "decisionMethod": "Virtues as defined by practices and traditions",
+    "lexicalIndicators": "practice;tradition;narrative unity;virtues;community standards;social roles",
+    "computationalSignature": "virtue_relative_to(practice,tradition,community)",
+    "historicalFigure": "Alasdair MacIntyre",
+    "modernApplication": "Professional ethics"
+  },
+  {
+    "frameworkId": "FEMIN_CARE",
+    "name": "Feminist Care Ethics",
+    "tradition": "feminism",
+    "keyPrinciple": "Challenging masculine bias toward abstract principles",
+    "decisionMethod": "Context-sensitive care over abstract principles",
+    "lexicalIndicators": "masculine bias;abstract principles;contextual;caring;relationships;gender;power",
+    "computationalSignature": "challenge(abstract_universalism) + prioritize(contextual_care)",
+    "historicalFigure": "Nel Noddings",
+    "modernApplication": "Gender-inclusive AI"
+  },
+  {
+    "frameworkId": "FEMIN_POWER",
+    "name": "Feminist Power Analysis",
+    "tradition": "feminism",
+    "keyPrinciple": "Analyzing and challenging power structures",
+    "decisionMethod": "Examine how power structures affect moral reasoning",
+    "lexicalIndicators": "power structures;oppression;privilege;intersectionality;voice;standpoint",
+    "computationalSignature": "analyze(power_dynamics) + amplify(marginalized_voices)",
+    "historicalFigure": "Miranda Fricker",
+    "modernApplication": "Algorithmic fairness"
+  },
+  {
+    "frameworkId": "POSTMOD_DERRI",
+    "name": "Derridean Deconstruction",
+    "tradition": "postmodernism",
+    "keyPrinciple": "Deconstruct binary oppositions",
+    "decisionMethod": "Question fundamental categories and assumptions",
+    "lexicalIndicators": "deconstruction;binary oppositions;différance;undecidability;aporia;questioning",
+    "computationalSignature": "deconstruct(binary_assumptions) + embrace(undecidability)",
+    "historicalFigure": "Jacques Derrida",
+    "modernApplication": "AI interpretability"
+  },
+  {
+    "frameworkId": "POSTMOD_FOUC",
+    "name": "Foucauldian Genealogy",
+    "tradition": "postmodernism",
+    "keyPrinciple": "Genealogy of moral concepts",
+    "decisionMethod": "Trace historical construction of moral categories",
+    "lexicalIndicators": "genealogy;power-knowledge;discourse;normalization;subjection;history",
+    "computationalSignature": "trace_genealogy(moral_concept) + reveal(power_relations)",
+    "historicalFigure": "Michel Foucault",
+    "modernApplication": "Algorithmic governance"
+  }
+]

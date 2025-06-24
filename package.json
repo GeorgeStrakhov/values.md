@@ -7,13 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:report": "npx tsx scripts/database-report.ts",
+    "db:dump": "npx tsx scripts/database-dump.ts",
     "seed:admin": "npx tsx scripts/seed-admin.ts",
     "seed:db": "npx tsx scripts/seed-db.ts",
-    "setup": "npm run db:push && npm run seed:admin && npm run seed:db"
+    "setup": "npm run db:push && npm run seed:admin && npm run seed:db",
+    "deploy:wizard": "./deploy-wizard.sh",
+    "deploy:local": "npm run dev",
+    "deploy:prod": "git push origin main",
+    "status": "./deploy-wizard.sh",
+    "validate": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",

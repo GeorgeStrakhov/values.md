@@ -1,32 +1,186 @@
-# Values.md
+# VALUES.MD - Personal Values Discovery Platform
 
-We are building a research project website where users can explore their own values and generate their "values.md" markdown file - the is intended to later instruct LLMs to make choices aligned with the user's values.
+> **🎯 CORE MISSION**: Help users discover their values through ethical dilemmas → generate personalized VALUES.md files
 
-The user journey is as follows:
+## 🚀 QUICK START - ONE COMMAND DEPLOYMENT
 
-1. landing: understand what's going on. 
-2. click a button to explore their values nd create their values.md
-3. random 12 dilemmas (sufficiently different ones across params) are taken from the database
-4. user answers dilemmas (chooses one of 4 options optionally adds reasoning). all choices are kept in local storage. for privacy reasons.
-5. based on the users answers we programmatically generate their values.md file v1 and we show to them instructions on how to use it
-6. we also show to them how their answers stack up against the "default" answers by the most popular leading LLMs of today
-7. we ask the user permissions to add their choices to the database anonymously. if they agree - we ask for some socio-demographic information and add to the database of answers.
-8. user can choose to do another round and keep growing / editing their values.md
-9. researchers at any point can download the list of dilemmas and user answers and LLM answers for analysis
+```bash
+# Deploy locally with wizard
+npm run deploy:wizard
 
+# OR simple local dev
+npm run dev
+```
 
-- /admin (password auth protected)=> admin panel where we can generate more pre-generated dilemmas, see stats, tune params etc.
+**Live Site**: [https://values.md](https://values.md)
 
+---
 
-TODO:
+## 📊 CURRENT STATUS
 
-[ ] connect to the DB (remote postgres on neon)
-[ ] create openrouter service for LLMs
-[ ] create the /admin interface, password protect
-[ ] create a simple "generate a dilemma" button in the admin interface that uses openrouter to generate a dilemma
-[ ] create the ontology of the dilemmas, answers, motifs, metadata
-[ ] design DB schema
-[ ] populate the DB with key ingredients into a dilemma: ethical frameworks, motif, context (more details on this to follow)
-[ ] create a dilemma generator that takes ingredients, generates dilemmas and add them to the DB
-[ ] populate the DB with 100 dilemmas, making sure they are diverse
-[ ] create the user interface steps
+### ✅ WORKING
+- ✅ Database with 101 dilemmas, 20 frameworks, 18 motifs
+- ✅ User interface for completing dilemmas  
+- ✅ Response collection and localStorage
+- ✅ VALUES.md generation from responses
+- ✅ Enhanced results page with chat/experiments
+
+### 🚨 CRITICAL ISSUE - MAIN FLOW BROKEN
+**❌ PROBLEM**: Users complete 12 dilemmas → reach `/results` → see "0 answers saved, go away"
+
+**🔧 ROOT CAUSE**: Response pipeline has async timing issues between localStorage → database → results page
+
+**🎯 FIX STATUS**: Pipeline fixes implemented, debugging added, needs live testing validation
+
+---
+
+## 🏗️ DEPLOYMENT ARCHITECTURE
+
+```
+User completes dilemmas → Zustand store → localStorage + Database → VALUES.md generation → Results page
+                                     ↑ BREAKING HERE ↑
+```
+
+### 🌐 DEPLOYMENT FLOW
+1. **Local Dev**: `npm run dev` → `http://localhost:3000`
+2. **Production**: GitHub push → Vercel auto-deploy → `https://values.md`
+3. **Database**: Neon PostgreSQL (serverless)
+4. **Domain**: Cloudflare DNS → Vercel hosting
+
+---
+
+## 🛠️ COMMANDS REFERENCE
+
+### Development
+```bash
+npm run dev              # Local development server
+npm run deploy:wizard    # Interactive deployment wizard
+npm run status          # System status check
+```
+
+### Database
+```bash
+npm run db:report       # Database statistics
+npm run db:dump         # Export all data
+npm run setup          # Initialize database with seed data
+```
+
+### Validation
+```bash
+npm run validate       # Lint + typecheck + build
+npm run lint          # Code linting
+npm run typecheck     # TypeScript check
+```
+
+### Production
+```bash
+npm run deploy:prod   # Push to GitHub → Auto-deploy to values.md
+```
+
+---
+
+## 🔧 ENVIRONMENT SETUP
+
+### Required Credentials
+```bash
+# Copy template and configure
+cp .env.example .env.local
+
+# Required variables:
+DATABASE_URL=postgresql://...     # Neon PostgreSQL connection
+OPENROUTER_API_KEY=sk-or-v1-...  # LLM API access  
+NEXTAUTH_SECRET=...              # Session security
+ADMIN_PASSWORD=...               # Admin panel access
+```
+
+### Why Credentials Are Needed
+- **DATABASE_URL**: Store user responses, dilemmas, frameworks
+- **OPENROUTER_API_KEY**: Generate VALUES.md files using LLMs
+- **NEXTAUTH_SECRET**: Secure admin authentication
+- **ADMIN_PASSWORD**: Protect admin panel access
+
+---
+
+## 🎯 USER JOURNEY (INTENDED)
+
+1. **Landing** → Understand the concept
+2. **Start** → Click "Generate Your VALUES.md"  
+3. **Dilemmas** → Answer 12 ethical scenarios
+4. **Analysis** → AI analyzes responses → generates VALUES.md
+5. **Results** → Download file + chat + experiments + research sharing
+6. **Usage** → Use VALUES.md to guide AI systems
+
+### 🚨 CURRENT BROKEN STEP
+**Step 4**: Responses saved but not reaching results page properly
+
+---
+
+## 🔬 DEBUGGING THE MAIN ISSUE
+
+### Browser Console Testing
+1. Open dev tools console
+2. Complete dilemma flow  
+3. Look for these debug messages:
+   - `💾 saveResponsesToDatabase called with:`
+   - `📤 Sending to /api/responses:`
+   - `✅ Responses saved to database successfully:`
+   - `🔍 Results page - hydration complete:`
+
+### Common Failure Points
+- Store not saving responses to database
+- API errors during save
+- Results page hydration timing
+- Session ID mismatches
+
+---
+
+## 📁 PROJECT STRUCTURE
+
+```
+src/
+├── app/
+│   ├── explore/[uuid]/     # Dilemma completion flow
+│   ├── results/            # VALUES.md results page
+│   └── api/
+│       ├── responses/      # Save user responses  
+│       ├── generate-values/ # Create VALUES.md
+│       └── dilemmas/       # Dilemma management
+├── store/
+│   └── dilemma-store.ts    # Zustand state management
+└── lib/
+    ├── db.ts              # Database connection
+    ├── schema.ts          # Database schema
+    └── openrouter.ts      # LLM integration
+```
+
+---
+
+## 🚀 DEPLOYMENT TARGETS
+
+### Local Development
+- **URL**: `http://localhost:3000`
+- **Purpose**: Development and testing
+- **Data**: Shared Neon database
+
+### Production
+- **URL**: `https://values.md`
+- **Platform**: Vercel
+- **Auto-deploy**: GitHub main branch
+- **Environment**: Production Vercel env vars
+
+---
+
+## 🔍 NEXT IMMEDIATE ACTIONS
+
+1. **PRIORITY 1**: Fix response pipeline - users MUST get their VALUES.md
+2. **Test live site**: Validate fixes work in production
+3. **Monitor**: Use debug logging to identify exact failure points
+4. **Document**: Update status once main flow works
+
+---
+
+## 📞 SUPPORT
+
+**Main Issue**: Response pipeline broken
+**Debug Tool**: Browser console + database reports  
+**Status**: Fixes implemented, validation needed

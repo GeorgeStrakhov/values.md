@@ -2,6 +2,7 @@
 
 # VALUES.MD DEPLOYMENT WIZARD
 # Professional, ergonomic deployment management
+# Handles local development vs production deployment with clear environment separation
 
 set -e  # Exit on any error
 
@@ -159,8 +160,12 @@ setup_firewall() {
 
 # Function: Deploy locally
 deploy_local() {
-    echo -e "${BLUE}${ROCKET} Local Deployment${NC}"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "${BLUE}${ROCKET} Local Development Environment${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "${CYAN}   Environment: LOCAL DEVELOPMENT${NC}"
+    echo -e "${CYAN}   Base URL: http://localhost:PORT${NC}"
+    echo -e "${CYAN}   Database: Uses .env.local credentials${NC}"
+    echo ""
     
     # Check if we're in the right directory
     if [ ! -f "package.json" ]; then
@@ -246,8 +251,13 @@ deploy_local() {
 
 # Function: Deploy to production
 deploy_production() {
-    echo -e "${BLUE}${ROCKET} Production Deployment${NC}"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "${BLUE}${ROCKET} Production Deployment to values.md${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "${CYAN}   Environment: PRODUCTION${NC}"
+    echo -e "${CYAN}   Target: https://values.md${NC}"
+    echo -e "${CYAN}   Platform: Vercel + Cloudflare DNS${NC}"
+    echo -e "${CYAN}   Database: Neon PostgreSQL (production)${NC}"
+    echo ""
     
     # Check git status
     if ! git diff-index --quiet HEAD --; then
@@ -278,10 +288,10 @@ deploy_production() {
 show_menu() {
     echo -e "${PURPLE}Choose deployment option:${NC}"
     echo ""
-    echo -e "${CYAN}1)${NC} 🖥️  Local Development Server"
-    echo -e "${CYAN}2)${NC} 🌐  Deploy to Production (values.md)"
+    echo -e "${CYAN}1)${NC} 🖥️  Local Development Server (localhost)"
+    echo -e "${CYAN}2)${NC} 🌐  Deploy to Production (values.md via Vercel)"
     echo -e "${CYAN}3)${NC} 📊  System Status Report"
-    echo -e "${CYAN}4)${NC} 🔧  Setup Environment"
+    echo -e "${CYAN}4)${NC} 🔧  Setup Environment (.env configuration)"
     echo -e "${CYAN}5)${NC} 📋  View Logs"
     echo -e "${CYAN}6)${NC} 🚪  Exit"
     echo ""

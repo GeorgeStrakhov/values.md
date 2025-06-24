@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { dilemmas } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
+import { getBaseUrl } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,9 +21,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Redirect to the explore page with this dilemma's UUID
-    // Use the request origin to ensure we stay on the same domain/port
-    const requestUrl = new URL(request.url);
-    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+    // Use environment-aware base URL
+    const baseUrl = getBaseUrl();
     return NextResponse.redirect(
       new URL(`/explore/${randomDilemma[0].dilemmaId}`, baseUrl)
     );

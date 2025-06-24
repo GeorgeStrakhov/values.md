@@ -1,3 +1,5 @@
+import { getBaseUrl } from './config';
+
 interface OpenRouterMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -32,7 +34,7 @@ export class OpenRouterService {
       headers: {
         'Authorization': `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.SITE_URL || 'http://localhost:3000',
+        'HTTP-Referer': getBaseUrl(),
         'X-Title': 'Values.md Research Platform'
       },
       body: JSON.stringify({

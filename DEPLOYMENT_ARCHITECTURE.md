@@ -1,16 +1,37 @@
-# Values.md Deployment Architecture
+# VALUES.MD Deployment Architecture
+
+## Environment Separation & Clear Deployment Paths
+
+### 🖥️ Local Development Environment
+- **Base URL**: `http://localhost:3000` (or available port)
+- **Environment**: `NODE_ENV=development`
+- **Configuration**: `.env.local` file (gitignored)
+- **Database**: Neon PostgreSQL (development credentials)
+- **Purpose**: Development, testing, debugging
+- **Deployment**: `./deploy-wizard.sh` → option 1
+
+### 🌐 Production Environment (values.md)
+- **Base URL**: `https://values.md`
+- **Environment**: `NODE_ENV=production`, `VERCEL_ENV=production`
+- **Configuration**: Vercel environment variables
+- **Database**: Neon PostgreSQL (production credentials)
+- **Deployment**: `./deploy-wizard.sh` → option 2 → push to GitHub → auto-deploy
 
 ## 🔄 Service Integration Flow
 
 ```
+Developer Machine (local development)
+    ↓ (git push main branch)
 GitHub Repository (georgestrakhov/values.md)
-    ↓ (git push triggers)
+    ↓ (webhook triggers auto-deployment)
 Vercel Deployment Platform
-    ↓ (reads environment variables)
+    ↓ (builds & deploys with environment variables)
 Cloudflare DNS (values.md domain)
-    ↓ (connects to)
+    ↓ (routes traffic to Vercel)
+Live Production Site (https://values.md)
+    ↓ (connects securely to)
 Neon PostgreSQL Database
-    ↓ (authenticates via)
+    ↓ (authenticates via connection string)
 OpenRouter API (LLM services)
 ```
 
@@ -53,17 +74,68 @@ OpenRouter API (LLM services)
 - **Usage**: VALUES.md generation, chat functionality
 - **Access**: Via API key authentication
 
-## 🔐 Credential Flow
+## 🔐 Credential Management & Environment Variables
 
-1. **Development**: `.env` file (local only, gitignored)
-2. **Production**: Vercel environment variables
-3. **Database**: Neon connection string with auth
-4. **APIs**: OpenRouter API key for LLM access
-5. **Auth**: NextAuth secret for session management
+### Required Environment Variables
+```bash
+# Database Connection
+DATABASE_URL="postgresql://valuesmd_owner:npg_...@ep-lingering-river-a8yzbmfc-pooler.eastus2.azure.neon.tech/valuesmd?sslmode=require"
 
-## 🚨 Security Model
+# LLM API Access
+OPENROUTER_API_KEY="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"
 
-- **GitHub**: Public repository, NO secrets
-- **Vercel**: Encrypted environment variable storage
-- **Local**: `.env` file (must be gitignored)
-- **Never commit**: Any credentials to version control
+# Authentication (Production Only)
+NEXTAUTH_SECRET="random-secret-for-session-signing"
+NEXTAUTH_URL="https://values.md"
+
+# Optional Overrides
+SITE_URL="http://localhost:3000"  # Local development override
+```
+
+### 🔐 Credential Storage Locations
+
+#### Local Development
+- **File**: `.env.local` (gitignored)
+- **Location**: Project root directory
+- **Security**: Never committed to git
+- **Usage**: Automatic detection by Next.js
+
+#### Production
+- **Storage**: Vercel Environment Variables
+- **Access**: Vercel Dashboard → Project Settings → Environment Variables
+- **Security**: Encrypted at rest, injected at build/runtime
+- **Usage**: Automatic injection by Vercel
+
+### 🚨 Security Model
+
+- ✅ **GitHub**: Public repository, NO secrets ever committed
+- ✅ **Vercel**: Encrypted environment variable storage
+- ✅ **Local**: `.env.local` file (gitignored)
+- ✅ **Environment-Aware**: App automatically detects local vs production
+- ❌ **Never commit**: Any credentials to version control
+
+## 🔄 Environment-Aware URL Handling
+
+All hardcoded URLs have been replaced with environment-aware configuration:
+
+```typescript
+// src/lib/config.ts
+export const getBaseUrl = (): string => {
+  // Production domain
+  if (host === 'values.md') return 'https://values.md';
+  
+  // Local development
+  if (host.includes('localhost')) return `${protocol}//${host}`;
+  
+  // Vercel preview deployments
+  if (host.includes('vercel.app')) return `${protocol}//${host}`;
+  
+  return 'http://localhost:3000'; // fallback
+};
+```
+
+This ensures:
+- ✅ Local builds use `http://localhost:3000`
+- ✅ Production builds use `https://values.md`
+- ✅ Preview deployments use correct Vercel URLs
+- ✅ No wrong FQDN paths in any environment

@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { userResponses, dilemmas, motifs, frameworks } from '@/lib/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { dilemmaGenerator } from '@/lib/dilemma-generator';
+import { getBaseUrl } from '@/lib/config';
 
 interface ExperimentConfig {
   sessionId: string;
@@ -383,7 +384,7 @@ Please choose the best option and explain your reasoning.`;
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.SITE_URL || 'http://localhost:3000',
+        'HTTP-Referer': getBaseUrl(),
         'X-Title': 'Values.md Research Platform'
       },
       body: JSON.stringify({

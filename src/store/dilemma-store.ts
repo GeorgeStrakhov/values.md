@@ -153,10 +153,11 @@ export const useDilemmaStore = create<DilemmaState>()(
         const state = get();
         const currentDilemma = state.getCurrentDilemma();
         
-        console.log('saveCurrentResponse called', {
+        console.log('💾 saveCurrentResponse called', {
           dilemma: currentDilemma?.title,
           selectedOption: state.selectedOption,
-          currentResponses: state.responses.length
+          currentResponses: state.responses.length,
+          sessionId: state.sessionId
         });
         
         if (currentDilemma && state.selectedOption) {
@@ -184,7 +185,14 @@ export const useDilemmaStore = create<DilemmaState>()(
           }
           
           set({ responses });
-          console.log('Responses saved to store:', responses.length);
+          console.log('✅ Responses saved to store:', responses.length);
+          
+          // Debug: Check what gets persisted
+          console.log('🗄️ About to persist to localStorage:', {
+            sessionId: state.sessionId,
+            responsesCount: responses.length,
+            lastResponse: responses[responses.length - 1]
+          });
         } else {
           console.log('Not saving response - missing dilemma or selectedOption');
         }
@@ -214,11 +222,19 @@ export const useDilemmaStore = create<DilemmaState>()(
 
       submitResponsesToDatabase: async () => {
         const state = get();
+        console.log('📤 submitResponsesToDatabase called with:', {
+          sessionId: state.sessionId,
+          responsesCount: state.responses.length,
+          responses: state.responses
+        });
+        
         if (state.responses.length === 0) {
+          console.log('❌ No responses to submit');
           return false;
         }
 
         try {
+          console.log('🌐 Sending POST request to /api/responses...');
           const response = await fetch('/api/responses', {
             method: 'POST',
             headers: {
@@ -230,9 +246,18 @@ export const useDilemmaStore = create<DilemmaState>()(
             }),
           });
 
-          return response.ok;
+          console.log('📨 API Response status:', response.status);
+          if (response.ok) {
+            const result = await response.json();
+            console.log('✅ Database submission successful:', result);
+            return true;
+          } else {
+            const error = await response.text();
+            console.log('❌ Database submission failed:', response.status, error);
+            return false;
+          }
         } catch (error) {
-          console.error('Failed to submit responses to database:', error);
+          console.error('💥 Failed to submit responses to database:', error);
           return false;
         }
       },

@@ -90,6 +90,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
         setAutoNextCountdown((prev) => {
           if (prev === null || prev <= 1) {
             clearInterval(interval);
+            // Check if option is still selected before auto-advancing
             if (selectedOption) {
               handleNext(); // Auto-advance
             }
@@ -104,7 +105,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
       // Clear countdown if user deselects
       setAutoNextCountdown(null);
     }
-  }, [selectedOption, autoNextCountdown]);
+  }, [selectedOption]); // Remove autoNextCountdown from deps to prevent loops
 
   // Reset countdown when moving to new dilemma
   useEffect(() => {

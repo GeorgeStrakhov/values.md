@@ -24,9 +24,10 @@ interface ValuesResult {
 }
 
 // Build info for debugging
-const BUILD_HASH = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 
-                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 
-                  Math.random().toString(36).substr(2, 7);
+const BUILD_HASH = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 8) || 
+                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 8) || 
+                  'bb1f375-' + Date.now().toString(36).slice(-4);
+const BUILD_TIME = new Date().toISOString().slice(0, 16).replace('T', ' ');
 
 export default function ResultsPage() {
   const [results, setResults] = useState<ValuesResult | null>(null);
@@ -39,19 +40,22 @@ export default function ResultsPage() {
 
   const generateValues = async () => {
     try {
+      console.log('🔍 [RESULTS PAGE] generateValues called at', new Date().toISOString());
+      
       // Debug: Check all localStorage keys
-      console.log('All localStorage keys:', Object.keys(localStorage));
-      console.log('localStorage contents:');
+      console.log('🗂️ All localStorage keys:', Object.keys(localStorage));
+      console.log('📦 localStorage contents:');
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key) {
-          console.log(`${key}:`, localStorage.getItem(key));
+          const value = localStorage.getItem(key);
+          console.log(`  ${key}:`, value ? value.substring(0, 200) + (value.length > 200 ? '...' : '') : value);
         }
       }
       
       // Get data from Zustand store's localStorage key
       const stored = localStorage.getItem('dilemma-session');
-      console.log('dilemma-session stored data:', stored);
+      console.log('🎯 dilemma-session stored data:', stored);
       
       if (!stored) {
         setError('No responses found. Please complete the dilemmas first.');
@@ -258,9 +262,9 @@ export default function ResultsPage() {
         </Card>
       </div>
       
-      {/* Build hash for debugging */}
-      <div className="text-center mt-8 text-xs text-muted-foreground/50">
-        Build: {BUILD_HASH}
+      {/* Build info for debugging */}
+      <div className="text-center mt-8 text-xs opacity-30 text-slate-400">
+        Build: {BUILD_HASH} • {BUILD_TIME}
       </div>
     </div>
   );

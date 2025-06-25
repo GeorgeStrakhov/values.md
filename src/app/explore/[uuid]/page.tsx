@@ -16,6 +16,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
   const resolvedParams = use(params);
   const router = useRouter();
   const { setProgress, hideProgress } = useProgress();
+  const [autoNextCountdown, setAutoNextCountdown] = useState<number | null>(null);
   
   // Zustand store
   const {
@@ -80,10 +81,40 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
-  const handleNext = () => {
+  // Auto-progression timer when user selects an option
+  useEffect(() => {
+    if (selectedOption && !autoNextCountdown) {
+      // Start 3-second countdown for auto-progression
+      setAutoNextCountdown(3);
+      const interval = setInterval(() => {
+        setAutoNextCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(interval);
+            if (selectedOption) {
+              handleNext(); // Auto-advance
+            }
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    } else if (!selectedOption) {
+      // Clear countdown if user deselects
+      setAutoNextCountdown(null);
+    }
+  }, [selectedOption, autoNextCountdown]);
+
+  // Reset countdown when moving to new dilemma
+  useEffect(() => {
+    setAutoNextCountdown(null);
+  }, [currentIndex]);
+
+  const handleNext = async () => {
     if (!selectedOption) return;
 
-    const hasNext = goToNext();
+    const hasNext = await goToNext();
     
     if (hasNext) {
       // Update URL to current dilemma without page reload
@@ -92,7 +123,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
         router.push(`/explore/${newDilemmaId}`, { scroll: false });
       }
     } else {
-      // All dilemmas completed, go to results
+      // All dilemmas completed, responses submitted to database, go to results
       router.push('/results');
     }
   };
@@ -217,7 +248,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
             </div>
 
             {/* Navigation */}
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <Button
                 variant="outline"
                 onClick={handlePrevious}
@@ -225,12 +256,26 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
               >
                 Previous
               </Button>
-              <Button
-                onClick={handleNext}
-                disabled={!selectedOption}
-              >
-                {currentIndex === dilemmas.length - 1 ? 'Finish' : 'Next'}
-              </Button>
+              
+              <div className="flex flex-col items-center gap-2">
+                {autoNextCountdown && (
+                  <div className="text-sm text-muted-foreground">
+                    Auto-advancing in {autoNextCountdown}s... 
+                    <button 
+                      onClick={() => setAutoNextCountdown(null)}
+                      className="ml-1 text-primary underline"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+                <Button
+                  onClick={handleNext}
+                  disabled={!selectedOption}
+                >
+                  {currentIndex === dilemmas.length - 1 ? 'Finish' : 'Next'}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

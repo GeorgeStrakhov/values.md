@@ -42,7 +42,7 @@ interface DilemmaState {
   setStartTime: (time: number) => void;
   
   // Navigation
-  goToNext: () => boolean; // returns true if not last
+  goToNext: () => Promise<boolean>; // returns true if not last, false if completed
   goToPrevious: () => void;
   
   // Response handling
@@ -105,12 +105,13 @@ export const useDilemmaStore = create<DilemmaState>()(
       setStartTime: (time) => set({ startTime: time }),
       
       // Navigation
-      goToNext: () => {
+      goToNext: async () => {
         const state = get();
+        
+        // Always save the current response first
+        state.saveCurrentResponse();
+        
         if (state.currentIndex < state.dilemmas.length - 1) {
-          // Save current response before moving
-          state.saveCurrentResponse();
-          
           const nextIndex = state.currentIndex + 1;
           set({
             currentIndex: nextIndex,
@@ -125,8 +126,11 @@ export const useDilemmaStore = create<DilemmaState>()(
           return true; // Not last
         }
         
-        // Save final response
-        state.saveCurrentResponse();
+        // This was the final dilemma - submit all responses to database
+        console.log('🔄 Final dilemma completed, submitting to database...');
+        const success = await state.submitResponsesToDatabase();
+        console.log('📤 Database submission result:', success);
+        
         return false; // Was last
       },
       

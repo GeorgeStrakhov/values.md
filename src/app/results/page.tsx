@@ -23,6 +23,11 @@ interface ValuesResult {
   domainPreferences: Record<string, number>;
 }
 
+// Build info for debugging
+const BUILD_HASH = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 
+                  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 
+                  Math.random().toString(36).substr(2, 7);
+
 export default function ResultsPage() {
   const [results, setResults] = useState<ValuesResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -251,6 +256,11 @@ export default function ResultsPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+      
+      {/* Build hash for debugging */}
+      <div className="text-center mt-8 text-xs text-muted-foreground/50">
+        Build: {BUILD_HASH}
       </div>
     </div>
   );

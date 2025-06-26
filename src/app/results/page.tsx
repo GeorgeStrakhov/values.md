@@ -180,7 +180,7 @@ export default function ResultsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
-          <p className="text-destructive">{error}</p>
+          <p className="text-destructive" data-testid="error-message">{error}</p>
           <Button asChild variant="outline">
             <Link href="/explore">Start Over</Link>
           </Button>
@@ -194,7 +194,7 @@ export default function ResultsPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Your Values Profile</CardTitle>
+            <CardTitle className="text-3xl" data-testid="values-title">Your Values Profile</CardTitle>
           </CardHeader>
           
           <CardContent className="space-y-8">
@@ -273,7 +273,7 @@ export default function ResultsPage() {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button onClick={downloadValuesFile}>
+              <Button onClick={downloadValuesFile} data-testid="download-button">
                 Download values.md
               </Button>
               <Button asChild variant="secondary">

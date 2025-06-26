@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, use } from 'react';
+import { useEffect, use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
   const resolvedParams = use(params);
   const router = useRouter();
   const { setProgress, hideProgress } = useProgress();
+  const [autoNextCountdown, setAutoNextCountdown] = useState<number | null>(null);
   
   // Zustand store
   const {
@@ -24,7 +25,6 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     selectedOption,
     reasoning,
     perceivedDifficulty,
-    autoAdvanceState,
     getCurrentDilemma,
     getCurrentDilemmaId,
     getProgress,
@@ -34,7 +34,6 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     setPerceivedDifficulty,
     goToNext,
     goToPrevious,
-    stopAutoAdvance,
     restoreResponseForIndex
   } = useDilemmaStore();
   
@@ -82,64 +81,49 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
-  // Listen for auto-advance events from store
+  // Auto-progression timer when user selects an option
   useEffect(() => {
-    const handleAutoAdvance = async () => {
-      console.log('🚗 Auto-advance event received');
-      
-      // Get fresh state from store
-      const { selectedOption: currentOption, goToNext, getCurrentDilemmaId } = useDilemmaStore.getState();
-      
-      if (!currentOption) return;
+    if (selectedOption && !autoNextCountdown) {
+      // Start 3-second countdown for auto-progression
+      setAutoNextCountdown(3);
+      const interval = setInterval(() => {
+        setAutoNextCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            clearInterval(interval);
+            if (selectedOption) {
+              handleNext(); // Auto-advance
+            }
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
 
-      const hasNext = await goToNext();
-      
-      if (hasNext) {
-        // Update URL to current dilemma without page reload
-        const newDilemmaId = getCurrentDilemmaId();
-        if (newDilemmaId) {
-          router.push(`/explore/${newDilemmaId}`, { scroll: false });
-        }
-      } else {
-        // All dilemmas completed, go to results
-        router.push('/results');
-      }
-    };
-    
-    window.addEventListener('auto-advance-next', handleAutoAdvance);
-    
-    return () => {
-      window.removeEventListener('auto-advance-next', handleAutoAdvance);
-    };
-  }, [router]); // Only depend on router
-
-  // Simple navigation handlers
-  const handleNext = async () => {
-    console.log('🔄 handleNext called', { selectedOption, currentIndex });
-    
-    if (!selectedOption) {
-      console.log('❌ No option selected, aborting navigation');
-      return;
+      return () => clearInterval(interval);
+    } else if (!selectedOption) {
+      // Clear countdown if user deselects
+      setAutoNextCountdown(null);
     }
+  }, [selectedOption, autoNextCountdown]);
 
-    console.log('📤 Calling goToNext...');
+  // Reset countdown when moving to new dilemma
+  useEffect(() => {
+    setAutoNextCountdown(null);
+  }, [currentIndex]);
+
+  const handleNext = async () => {
+    if (!selectedOption) return;
+
     const hasNext = await goToNext();
-    console.log('📥 goToNext result:', hasNext);
     
     if (hasNext) {
       // Update URL to current dilemma without page reload
       const newDilemmaId = getCurrentDilemmaId();
-      console.log('🆔 New dilemma ID:', newDilemmaId);
-      
       if (newDilemmaId) {
-        console.log('🌐 Navigating to:', `/explore/${newDilemmaId}`);
         router.push(`/explore/${newDilemmaId}`, { scroll: false });
-      } else {
-        console.log('❌ No new dilemma ID available');
       }
     } else {
       // All dilemmas completed, responses submitted to database, go to results
-      console.log('✅ All dilemmas completed, going to results');
       router.push('/results');
     }
   };
@@ -277,11 +261,11 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
               </Button>
               
               <div className="flex flex-col items-center gap-2">
-                {autoAdvanceState.active && (
+                {autoNextCountdown && (
                   <div className="text-sm text-muted-foreground">
-                    Auto-advancing in {autoAdvanceState.remaining}s... 
+                    Auto-advancing in {autoNextCountdown}s... 
                     <button 
-                      onClick={stopAutoAdvance}
+                      onClick={() => setAutoNextCountdown(null)}
                       className="ml-1 text-primary underline"
                     >
                       Cancel

@@ -83,7 +83,9 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
 
   // Define handleNext before using it in useEffect
   const handleNext = useCallback(async () => {
-    if (!selectedOption) return;
+    // Get current selectedOption from state instead of closure
+    const { selectedOption: currentOption } = useDilemmaStore.getState();
+    if (!currentOption) return;
 
     const hasNext = await goToNext();
     
@@ -97,7 +99,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
       // All dilemmas completed, responses submitted to database, go to results
       router.push('/results');
     }
-  }, [selectedOption, goToNext, getCurrentDilemmaId, router]);
+  }, [goToNext, getCurrentDilemmaId, router]);
 
   // Auto-progression timer when user selects an option
   useEffect(() => {
@@ -123,7 +125,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
       // Clear countdown if user deselects
       setAutoNextCountdown(null);
     }
-  }, [selectedOption, autoNextCountdown, handleNext]);
+  }, [selectedOption, autoNextCountdown]);
 
   // Reset countdown when moving to new dilemma
   useEffect(() => {

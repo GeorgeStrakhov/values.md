@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, use } from 'react';
+import { useEffect, use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -87,12 +87,12 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
       // Start 3-second countdown for auto-progression
       setAutoNextCountdown(3);
       const interval = setInterval(() => {
-        setAutoNextCountdown((prev) => {
+        setAutoNextCountdown((prev: number | null) => {
           if (prev === null || prev <= 1) {
             clearInterval(interval);
             // Check if option is still selected before auto-advancing
             if (selectedOption) {
-              handleNext(); // Auto-advance
+              handleNext().catch(console.error); // Auto-advance with error handling
             }
             return null;
           }

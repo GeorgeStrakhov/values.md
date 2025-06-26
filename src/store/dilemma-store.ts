@@ -121,6 +121,10 @@ export const useDilemmaStore = create<DilemmaState>()(
             startTime: Date.now()
           });
           
+          // Restore response if one exists for this dilemma
+          const updatedState = get();
+          updatedState.restoreResponseForIndex(nextIndex);
+          
           // Scroll to top on navigation
           window.scrollTo({ top: 0, behavior: 'smooth' });
           return true; // Not last
@@ -138,8 +142,9 @@ export const useDilemmaStore = create<DilemmaState>()(
           const prevIndex = state.currentIndex - 1;
           set({ currentIndex: prevIndex });
           
-          // Restore previous response
-          state.restoreResponseForIndex(prevIndex);
+          // Need to get fresh state after currentIndex update
+          const updatedState = get();
+          updatedState.restoreResponseForIndex(prevIndex);
           
           // Scroll to top on navigation
           window.scrollTo({ top: 0, behavior: 'smooth' });

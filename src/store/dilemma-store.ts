@@ -20,6 +20,12 @@ interface Response {
   perceivedDifficulty: number;
 }
 
+interface AutoAdvanceState {
+  active: boolean;
+  remaining: number;
+  timerId?: NodeJS.Timeout;
+}
+
 interface DilemmaState {
   // Core data
   dilemmas: Dilemma[];
@@ -33,6 +39,9 @@ interface DilemmaState {
   perceivedDifficulty: number;
   startTime: number;
   
+  // Auto-advance state
+  autoAdvanceState: AutoAdvanceState;
+  
   // Actions
   setDilemmas: (dilemmas: Dilemma[], startingDilemmaId?: string) => void;
   setCurrentIndex: (index: number) => void;
@@ -40,6 +49,10 @@ interface DilemmaState {
   setReasoning: (reasoning: string) => void;
   setPerceivedDifficulty: (difficulty: number) => void;
   setStartTime: (time: number) => void;
+  
+  // Auto-advance actions
+  startAutoAdvance: () => void;
+  stopAutoAdvance: () => void;
   
   // Navigation
   goToNext: () => Promise<boolean>; // returns true if not last, false if completed
@@ -75,6 +88,7 @@ export const useDilemmaStore = create<DilemmaState>()(
       reasoning: '',
       perceivedDifficulty: 5,
       startTime: Date.now(),
+      autoAdvanceState: { active: false, remaining: 0 },
       
       // Actions
       setDilemmas: (dilemmas, startingDilemmaId) => {
@@ -100,21 +114,72 @@ export const useDilemmaStore = create<DilemmaState>()(
       
       setCurrentIndex: (index) => set({ currentIndex: index }),
       setSelectedOption: (option) => {
+        const state = get();
         set({ selectedOption: option });
-        // SAFETY NET: Save response immediately when option is selected
+        
         if (option) {
-          const state = get();
-          // Use setTimeout to ensure state is updated
+          // SAFETY NET: Save response immediately when option is selected
           setTimeout(() => state.saveCurrentResponse(), 0);
+          // Start auto-advance timer
+          state.startAutoAdvance();
+        } else {
+          state.stopAutoAdvance();
         }
       },
       setReasoning: (reasoning) => set({ reasoning }),
       setPerceivedDifficulty: (difficulty) => set({ perceivedDifficulty: difficulty }),
       setStartTime: (time) => set({ startTime: time }),
       
+      // Auto-advance actions
+      startAutoAdvance: () => {
+        const state = get();
+        
+        // Clear any existing timer
+        if (state.autoAdvanceState.timerId) {
+          clearInterval(state.autoAdvanceState.timerId);
+        }
+        
+        set({ autoAdvanceState: { active: true, remaining: 3 } });
+        
+        const timerId = setInterval(() => {
+          const currentState = get();
+          if (!currentState.autoAdvanceState.active) {
+            clearInterval(timerId);
+            return;
+          }
+
+          const newRemaining = currentState.autoAdvanceState.remaining - 1;
+          
+          if (newRemaining <= 0) {
+            clearInterval(timerId);
+            set({ autoAdvanceState: { active: false, remaining: 0 } });
+            
+            // Auto-advance if still selected
+            if (currentState.selectedOption) {
+              currentState.goToNext();
+            }
+          } else {
+            set({ autoAdvanceState: { active: true, remaining: newRemaining, timerId } });
+          }
+        }, 1000);
+        
+        set({ autoAdvanceState: { active: true, remaining: 3, timerId } });
+      },
+
+      stopAutoAdvance: () => {
+        const state = get();
+        if (state.autoAdvanceState.timerId) {
+          clearInterval(state.autoAdvanceState.timerId);
+        }
+        set({ autoAdvanceState: { active: false, remaining: 0 } });
+      },
+      
       // Navigation
       goToNext: async () => {
         const state = get();
+        
+        // Stop any auto-advance first
+        state.stopAutoAdvance();
         
         // Always save the current response first
         state.saveCurrentResponse();
@@ -303,10 +368,12 @@ export const useDilemmaStore = create<DilemmaState>()(
     }),
     {
       name: 'dilemma-session',
-      // Only persist responses and session data
+      // Only persist responses and session data, exclude timer state
       partialize: (state) => ({
         responses: state.responses,
-        sessionId: state.sessionId
+        sessionId: state.sessionId,
+        // Reset auto-advance state on hydration
+        autoAdvanceState: { active: false, remaining: 0 }
       })
     }
   )

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, use, useState, useCallback } from 'react';
+import { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +16,6 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
   const resolvedParams = use(params);
   const router = useRouter();
   const { setProgress, hideProgress } = useProgress();
-  const [autoNextCountdown, setAutoNextCountdown] = useState<number | null>(null);
   
   // Zustand store
   const {
@@ -25,6 +24,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     selectedOption,
     reasoning,
     perceivedDifficulty,
+    autoAdvanceState,
     getCurrentDilemma,
     getCurrentDilemmaId,
     getProgress,
@@ -34,6 +34,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     setPerceivedDifficulty,
     goToNext,
     goToPrevious,
+    stopAutoAdvance,
     restoreResponseForIndex
   } = useDilemmaStore();
   
@@ -81,11 +82,9 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
-  // Define handleNext before using it in useEffect
-  const handleNext = useCallback(async () => {
-    // Get current selectedOption from state instead of closure
-    const { selectedOption: currentOption } = useDilemmaStore.getState();
-    if (!currentOption) return;
+  // Simple navigation handlers
+  const handleNext = async () => {
+    if (!selectedOption) return;
 
     const hasNext = await goToNext();
     
@@ -99,38 +98,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
       // All dilemmas completed, responses submitted to database, go to results
       router.push('/results');
     }
-  }, [goToNext, getCurrentDilemmaId, router]);
-
-  // Auto-progression timer when user selects an option
-  useEffect(() => {
-    if (selectedOption && !autoNextCountdown) {
-      // Start 3-second countdown for auto-progression
-      setAutoNextCountdown(3);
-      const interval = setInterval(() => {
-        setAutoNextCountdown((prev: number | null) => {
-          if (prev === null || prev <= 1) {
-            clearInterval(interval);
-            // Check if option is still selected before auto-advancing
-            if (selectedOption) {
-              handleNext().catch(console.error); // Auto-advance with error handling
-            }
-            return null;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    } else if (!selectedOption) {
-      // Clear countdown if user deselects
-      setAutoNextCountdown(null);
-    }
-  }, [selectedOption, autoNextCountdown]);
-
-  // Reset countdown when moving to new dilemma
-  useEffect(() => {
-    setAutoNextCountdown(null);
-  }, [currentIndex]);
+  };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
@@ -262,11 +230,11 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
               </Button>
               
               <div className="flex flex-col items-center gap-2">
-                {autoNextCountdown && (
+                {autoAdvanceState.active && (
                   <div className="text-sm text-muted-foreground">
-                    Auto-advancing in {autoNextCountdown}s... 
+                    Auto-advancing in {autoAdvanceState.remaining}s... 
                     <button 
-                      onClick={() => setAutoNextCountdown(null)}
+                      onClick={stopAutoAdvance}
                       className="ml-1 text-primary underline"
                     >
                       Cancel

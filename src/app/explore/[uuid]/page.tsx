@@ -56,9 +56,13 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     if (dilemmas.length === 0 || !dilemmas.some(d => d.dilemmaId === resolvedParams.uuid)) {
       fetchDilemmas();
     } else {
-      // We have dilemmas, just update the current index to match the URL
+      // We have dilemmas, check if we need to sync URL with store state
       const targetIndex = dilemmas.findIndex(d => d.dilemmaId === resolvedParams.uuid);
-      if (targetIndex !== -1 && targetIndex !== currentIndex) {
+      const currentDilemmaId = getCurrentDilemmaId();
+      
+      // Only reset if the URL is genuinely different from current state
+      if (targetIndex !== -1 && currentDilemmaId !== resolvedParams.uuid) {
+        console.log('🔄 Syncing URL to store state:', { targetIndex, currentIndex, resolvedParams: resolvedParams.uuid, currentDilemmaId });
         setDilemmas(dilemmas, resolvedParams.uuid);
         restoreResponseForIndex(targetIndex);
       }
@@ -112,31 +116,33 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
   }, [currentIndex]);
 
   const handleNext = async () => {
-    if (!selectedOption) return;
+    console.log('🔄 handleNext called', { selectedOption, currentIndex });
+    
+    if (!selectedOption) {
+      console.log('❌ No option selected');
+      return;
+    }
 
+    console.log('📤 Calling goToNext...');
     const hasNext = await goToNext();
+    console.log('📥 goToNext result:', hasNext);
     
     if (hasNext) {
-      // Update URL to current dilemma without page reload
-      const newDilemmaId = getCurrentDilemmaId();
-      if (newDilemmaId) {
-        router.push(`/explore/${newDilemmaId}`, { scroll: false });
-      }
+      // Don't navigate URL - just let the store state change
+      // The progress component will update automatically
+      console.log('✅ Moved to next dilemma, currentIndex now:', currentIndex + 1);
     } else {
       // All dilemmas completed, responses submitted to database, go to results
+      console.log('🏁 All dilemmas completed, going to results');
       router.push('/results');
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
+      console.log('⬅️ Going to previous dilemma');
       goToPrevious();
-      
-      // Update URL to current dilemma without page reload
-      const newDilemmaId = getCurrentDilemmaId();
-      if (newDilemmaId) {
-        router.push(`/explore/${newDilemmaId}`, { scroll: false });
-      }
+      // Don't change URL - just update store state
     }
   };
 

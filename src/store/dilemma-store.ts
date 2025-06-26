@@ -179,15 +179,23 @@ export const useDilemmaStore = create<DilemmaState>()(
       // Navigation
       goToNext: async () => {
         const state = get();
+        console.log('🏪 goToNext called in store', { 
+          currentIndex: state.currentIndex, 
+          totalDilemmas: state.dilemmas.length,
+          selectedOption: state.selectedOption 
+        });
         
         // Stop any auto-advance first
         state.stopAutoAdvance();
         
         // Always save the current response first
+        console.log('💾 Saving current response...');
         state.saveCurrentResponse();
         
         if (state.currentIndex < state.dilemmas.length - 1) {
           const nextIndex = state.currentIndex + 1;
+          console.log(`📈 Advancing from index ${state.currentIndex} to ${nextIndex}`);
+          
           set({
             currentIndex: nextIndex,
             selectedOption: '',
@@ -198,6 +206,7 @@ export const useDilemmaStore = create<DilemmaState>()(
           
           // Scroll to top on navigation
           window.scrollTo({ top: 0, behavior: 'smooth' });
+          console.log('✅ Navigation successful, returning true');
           return true; // Not last
         }
         
@@ -344,7 +353,12 @@ export const useDilemmaStore = create<DilemmaState>()(
       },
       
       getCurrentDilemmaId: () => {
-        const dilemma = get().getCurrentDilemma();
+        const state = get();
+        const dilemma = state.getCurrentDilemma();
+        console.log('🆔 getCurrentDilemmaId called', { 
+          currentIndex: state.currentIndex, 
+          dilemma: dilemma ? { id: dilemma.dilemmaId, title: dilemma.title } : null 
+        });
         return dilemma?.dilemmaId || null;
       },
       

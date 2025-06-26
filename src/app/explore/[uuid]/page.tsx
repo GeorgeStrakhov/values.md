@@ -115,18 +115,31 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
 
   // Simple navigation handlers
   const handleNext = async () => {
-    if (!selectedOption) return;
+    console.log('🔄 handleNext called', { selectedOption, currentIndex });
+    
+    if (!selectedOption) {
+      console.log('❌ No option selected, aborting navigation');
+      return;
+    }
 
+    console.log('📤 Calling goToNext...');
     const hasNext = await goToNext();
+    console.log('📥 goToNext result:', hasNext);
     
     if (hasNext) {
       // Update URL to current dilemma without page reload
       const newDilemmaId = getCurrentDilemmaId();
+      console.log('🆔 New dilemma ID:', newDilemmaId);
+      
       if (newDilemmaId) {
+        console.log('🌐 Navigating to:', `/explore/${newDilemmaId}`);
         router.push(`/explore/${newDilemmaId}`, { scroll: false });
+      } else {
+        console.log('❌ No new dilemma ID available');
       }
     } else {
       // All dilemmas completed, responses submitted to database, go to results
+      console.log('✅ All dilemmas completed, going to results');
       router.push('/results');
     }
   };
@@ -175,7 +188,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="secondary">{currentDilemma.domain}</Badge>
             </div>
-            <CardTitle className="text-3xl mb-4">
+            <CardTitle className="text-3xl mb-4" data-testid="dilemma-title">
               {currentDilemma.title}
             </CardTitle>
             <p className="text-lg text-muted-foreground leading-relaxed">
@@ -207,6 +220,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
                     checked={selectedOption === option}
                     onChange={(e) => setSelectedOption(e.target.value)}
                     className="sr-only"
+                    data-testid={`choice-${option}`}
                   />
                   <div className="flex items-start space-x-3">
                     <span className="bg-muted text-muted-foreground rounded-full w-8 h-8 flex items-center justify-center font-semibold text-sm">
@@ -229,6 +243,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
                   min={1}
                   step={1}
                   className="w-full"
+                  data-testid="difficulty-slider"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>1 - Very Easy</span>
@@ -256,6 +271,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
+                data-testid="previous-button"
               >
                 Previous
               </Button>
@@ -275,6 +291,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
                 <Button
                   onClick={handleNext}
                   disabled={!selectedOption}
+                  data-testid="next-button"
                 >
                   {currentIndex === dilemmas.length - 1 ? 'Finish' : 'Next'}
                 </Button>

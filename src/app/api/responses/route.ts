@@ -14,19 +14,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert all responses
+    console.log(`📥 Received ${responses.length} responses for session ${sessionId}`);
+    
+    // Validate response structure
     for (const response of responses) {
-      await db.insert(userResponses).values({
-        sessionId,
-        dilemmaId: response.dilemmaId,
-        chosenOption: response.chosenOption,
-        reasoning: response.reasoning,
-        responseTime: response.responseTime,
-        perceivedDifficulty: response.perceivedDifficulty,
-      });
+      if (!response.dilemmaId || !response.chosenOption) {
+        console.error('❌ Invalid response structure:', response);
+        return NextResponse.json(
+          { error: 'Invalid response structure' },
+          { status: 400 }
+        );
+      }
     }
+    
+    // Insert all responses in a batch for better performance
+    const responseValues = responses.map(response => ({
+      sessionId,
+      dilemmaId: response.dilemmaId,
+      chosenOption: response.chosenOption,
+      reasoning: response.reasoning || '',
+      responseTime: response.responseTime || 0,
+      perceivedDifficulty: response.perceivedDifficulty || 5,
+    }));
 
-    return NextResponse.json({ success: true });
+    console.log('💾 Inserting responses into database...');
+    const result = await db.insert(userResponses).values(responseValues);
+    console.log(`✅ Successfully inserted ${responses.length} responses`);
+
+    return NextResponse.json({ 
+      success: true, 
+      inserted: responses.length,
+      sessionId 
+    });
   } catch (error) {
     console.error('Error storing responses:', error);
     return NextResponse.json(

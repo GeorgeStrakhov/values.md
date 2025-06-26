@@ -156,7 +156,9 @@ export const useDilemmaStore = create<DilemmaState>()(
             
             // Auto-advance if still selected
             if (currentState.selectedOption) {
-              currentState.goToNext();
+              // Trigger auto-advance by dispatching a custom event
+              // The page component will handle the actual navigation
+              window.dispatchEvent(new CustomEvent('auto-advance-next'));
             }
           } else {
             set({ autoAdvanceState: { active: true, remaining: newRemaining, timerId } });

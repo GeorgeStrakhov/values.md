@@ -15,6 +15,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log(`🔍 Looking for responses for session: ${sessionId}`);
+    
     // Get user responses with dilemma data
     const responses = await db
       .select({
@@ -36,9 +38,25 @@ export async function POST(request: NextRequest) {
       .innerJoin(dilemmas, eq(userResponses.dilemmaId, dilemmas.dilemmaId))
       .where(eq(userResponses.sessionId, sessionId));
 
+    console.log(`📊 Found ${responses.length} responses for session ${sessionId}`);
+
     if (responses.length === 0) {
+      // Debug: Check if session exists at all
+      const allSessions = await db
+        .select({ sessionId: userResponses.sessionId })
+        .from(userResponses)
+        .limit(10);
+      
+      console.log('🔍 Recent sessions in database:', allSessions.map(s => s.sessionId));
+      
       return NextResponse.json(
-        { error: 'No responses found for session' },
+        { 
+          error: 'No responses found for session',
+          sessionId,
+          debug: {
+            recentSessions: allSessions.map(s => s.sessionId)
+          }
+        },
         { status: 404 }
       );
     }

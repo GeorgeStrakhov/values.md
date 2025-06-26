@@ -99,18 +99,36 @@ export default function ResultsPage() {
 
       // First, submit responses to database if not already done
       try {
-        await fetch('/api/responses', {
+        console.log('📤 Submitting responses to database...');
+        const submitResponse = await fetch('/api/responses', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ sessionId, responses }),
         });
+        
+        if (!submitResponse.ok) {
+          const errorText = await submitResponse.text();
+          console.error('❌ Response submission failed:', errorText);
+          throw new Error(`Response submission failed: ${submitResponse.status}`);
+        }
+        
+        const submitResult = await submitResponse.json();
+        console.log('✅ Responses submitted successfully:', submitResult);
+        
+        // Wait a moment for database consistency
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
       } catch (submissionError) {
-        console.warn('Response submission failed, proceeding with local data:', submissionError);
+        console.error('💥 Critical: Response submission failed:', submissionError);
+        setError(`Failed to submit responses: ${submissionError instanceof Error ? submissionError.message : String(submissionError)}. Please try again.`);
+        setLoading(false);
+        return;
       }
       
       // Then generate values from database
+      console.log('🧮 Generating values from database...');
       const response = await fetch('/api/generate-values', {
         method: 'POST',
         headers: {

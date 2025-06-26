@@ -82,6 +82,37 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
+  // Listen for auto-advance events from store
+  useEffect(() => {
+    const handleAutoAdvance = async () => {
+      console.log('🚗 Auto-advance event received');
+      
+      // Get fresh state from store
+      const { selectedOption: currentOption, goToNext, getCurrentDilemmaId } = useDilemmaStore.getState();
+      
+      if (!currentOption) return;
+
+      const hasNext = await goToNext();
+      
+      if (hasNext) {
+        // Update URL to current dilemma without page reload
+        const newDilemmaId = getCurrentDilemmaId();
+        if (newDilemmaId) {
+          router.push(`/explore/${newDilemmaId}`, { scroll: false });
+        }
+      } else {
+        // All dilemmas completed, go to results
+        router.push('/results');
+      }
+    };
+    
+    window.addEventListener('auto-advance-next', handleAutoAdvance);
+    
+    return () => {
+      window.removeEventListener('auto-advance-next', handleAutoAdvance);
+    };
+  }, [router]); // Only depend on router
+
   // Simple navigation handlers
   const handleNext = async () => {
     if (!selectedOption) return;

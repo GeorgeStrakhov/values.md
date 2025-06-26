@@ -39,7 +39,7 @@ function parseCSV(csvContent: string): Record<string, string>[] {
 
 async function seedFrameworks() {
   console.log('Seeding frameworks...');
-  const csvPath = join(process.cwd(), '_old_data/values.md-main/striated/frameworks.csv');
+  const csvPath = join(process.cwd(), 'striated/frameworks.csv');
   const csvContent = readFileSync(csvPath, 'utf-8');
   const frameworkData = parseCSV(csvContent);
   
@@ -61,7 +61,7 @@ async function seedFrameworks() {
 
 async function seedMotifs() {
   console.log('Seeding motifs...');
-  const csvPath = join(process.cwd(), '_old_data/values.md-main/striated/motifs.csv');
+  const csvPath = join(process.cwd(), 'striated/motifs.csv');
   const csvContent = readFileSync(csvPath, 'utf-8');
   const motifData = parseCSV(csvContent);
   
@@ -87,7 +87,7 @@ async function seedMotifs() {
 
 async function seedDilemmas() {
   console.log('Seeding dilemmas...');
-  const csvPath = join(process.cwd(), '_old_data/dilemmas.csv');
+  const csvPath = join(process.cwd(), 'striated/dilemmas.csv');
   const csvContent = readFileSync(csvPath, 'utf-8');
   const dilemmaData = parseCSV(csvContent);
   

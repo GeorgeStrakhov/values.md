@@ -1,0 +1,221 @@
+name: CI/CD Pipeline - Values.md
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # Stage 1: Code Quality & Testing
+  test:
+    name: 🧪 Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Type checking
+        run: npx tsc --noEmit
+      
+      - name: Lint code
+        run: npm run lint
+      
+      - name: Unit tests
+        run: npm run test:unit
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test_db
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: .next/
+
+  # Stage 2: Database & Integration Tests
+  integration:
+    name: 🗄️ Database Integration
+    runs-on: ubuntu-latest
+    needs: test
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run database migrations
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test_db
+      
+      - name: Seed test database
+        run: npm run db:seed
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test_db
+      
+      - name: Integration tests
+        run: npm run test:integration
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test_db
+          NEXTAUTH_SECRET: test-secret
+          OPENROUTER_API_KEY: test-key
+
+  # Stage 3: End-to-End Tests
+  e2e:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    needs: [test, integration]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: .next/
+      
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+
+  # Stage 4: Data Pipeline Validation
+  data-sync:
+    name: 📊 Data Pipeline Validation
+    runs-on: ubuntu-latest
+    needs: integration
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Validate CSV data integrity
+        run: npm run validate:csv
+      
+      - name: Test motif mapping consistency
+        run: npm run validate:motifs
+      
+      - name: Verify values.md templates
+        run: npm run validate:templates
+
+  # Stage 5: Deployment (Production)
+  deploy:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [test, integration, e2e, data-sync]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+      
+      - name: Run post-deployment health check
+        run: |
+          sleep 30
+          npm run health-check:production
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+      
+      - name: Sync production database schema
+        run: npm run db:migrate:production
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+      
+      - name: Update production seed data if needed
+        run: npm run db:sync-production
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+  # Stage 6: Post-Deploy Validation
+  post-deploy:
+    name: ✅ Post-Deploy Validation
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Critical flow validation
+        run: npm run validate:critical-flows
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+      
+      - name: Performance benchmarks
+        run: npm run benchmark:lighthouse
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+      
+      - name: Notify deployment success
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: '🎉 Values.md deployed successfully with all validations passing!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        if: success()

@@ -57,17 +57,39 @@ export default function ResultsPage() {
       const stored = localStorage.getItem('dilemma-session');
       console.log('🎯 dilemma-session stored data:', stored);
       
-      if (!stored) {
-        setError('No responses found. Please complete the dilemmas first.');
-        setLoading(false);
-        return;
+      let responses: any[] = [];
+      let sessionId: string = '';
+      
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          console.log('Parsed data:', parsed);
+          responses = parsed.responses || [];
+          sessionId = parsed.sessionId || '';
+          console.log('Extracted responses:', responses);
+          console.log('Extracted sessionId:', sessionId);
+        } catch (e) {
+          console.error('Failed to parse stored data:', e);
+        }
       }
-
-      const parsed = JSON.parse(stored);
-      console.log('Parsed data:', parsed);
-      const { responses, sessionId } = parsed;
-      console.log('Extracted responses:', responses);
-      console.log('Extracted sessionId:', sessionId);
+      
+      // SAFETY NET: If no responses found in localStorage, try getting from current store state
+      if (!responses || responses.length === 0) {
+        console.log('🔄 No responses in localStorage, checking current store state...');
+        try {
+          // Try to access the Zustand store directly
+          const storeState = (window as any).__ZUSTAND_STORE__?.getState?.() || 
+                            JSON.parse(localStorage.getItem('dilemma-store') || '{}');
+          
+          if (storeState.responses && storeState.responses.length > 0) {
+            responses = storeState.responses;
+            sessionId = storeState.sessionId || sessionId;
+            console.log('✅ Found responses in store state:', responses.length);
+          }
+        } catch (e) {
+          console.warn('Could not access store state:', e);
+        }
+      }
       
       if (!responses || responses.length === 0) {
         setError(`No responses found. Found ${responses?.length || 0} responses. Please complete the dilemmas first.`);

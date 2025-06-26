@@ -99,7 +99,15 @@ export const useDilemmaStore = create<DilemmaState>()(
       },
       
       setCurrentIndex: (index) => set({ currentIndex: index }),
-      setSelectedOption: (option) => set({ selectedOption: option }),
+      setSelectedOption: (option) => {
+        set({ selectedOption: option });
+        // SAFETY NET: Save response immediately when option is selected
+        if (option) {
+          const state = get();
+          // Use setTimeout to ensure state is updated
+          setTimeout(() => state.saveCurrentResponse(), 0);
+        }
+      },
       setReasoning: (reasoning) => set({ reasoning }),
       setPerceivedDifficulty: (difficulty) => set({ perceivedDifficulty: difficulty }),
       setStartTime: (time) => set({ startTime: time }),

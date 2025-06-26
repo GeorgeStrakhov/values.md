@@ -5,7 +5,7 @@ export default function AboutPage() {
         <h1 className="text-4xl font-bold mb-8 text-foreground">About values.md</h1>
         <div className="prose prose-lg prose-neutral dark:prose-invert max-w-none">
           <p className="text-lg text-muted-foreground mb-8">
-            Research platform for exploring personal values through ethical dilemmas to generate personalized "values.md" files for LLM alignment.
+            Research platform for exploring personal values through ethical dilemmas to generate personalized &quot;values.md&quot; files for LLM alignment.
           </p>
           
           <h2 className="text-2xl font-semibold mb-4 text-foreground">How it works</h2>

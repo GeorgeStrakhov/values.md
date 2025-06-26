@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -382,7 +383,7 @@ export default function ExperimentsPage() {
             </p>
             <div className="space-x-4">
               <Button asChild>
-                <a href="/api/dilemmas/random">Participate in Study</a>
+                <Link href="/api/dilemmas/random">Participate in Study</Link>
               </Button>
               <Button variant="outline" asChild>
                 <a href="https://github.com/GeorgeStrakhov/values.md" target="_blank">

@@ -316,7 +316,7 @@ export default function RealHealthDashboard() {
         {/* Instructions */}
         <Card className="mt-8 bg-blue-50 border-blue-200">
           <CardHeader>
-            <CardTitle className="text-blue-800">🔍 Debugging the "No responses found" Issue</CardTitle>
+            <CardTitle className="text-blue-800">🔍 Debugging the &quot;No responses found&quot; Issue</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-blue-700 space-y-2">

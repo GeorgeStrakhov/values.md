@@ -61,7 +61,7 @@ export default function Home() {
                 Should we take moral responsibility for their actions, or should we assume that the responsibility lies with those who trained the LLMs running these agents?
               </p>
               <p className="text-lg lg:text-xl leading-relaxed text-foreground/80">
-                This choice is not just about our agents, but also about our own freedom. Because without responsibility, there can't be real freedom.
+                This choice is not just about our agents, but also about our own freedom. Because without responsibility, there can&apos;t be real freedom.
               </p>
               <p className="text-lg lg:text-xl leading-relaxed text-foreground">
                 To help individuals, corporations and governments to take active, explicit and transparent stance on the ethical frameworks that their agents should follow, we propose a new file format called <code className="bg-muted/80 px-2 lg:px-3 py-1 rounded-md text-base lg:text-lg font-mono font-bold text-foreground">VALUES.md</code>.

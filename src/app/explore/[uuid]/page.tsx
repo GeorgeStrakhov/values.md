@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, use, useState } from 'react';
+import { useEffect, use, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -81,6 +81,24 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
+  // Define handleNext before using it in useEffect
+  const handleNext = useCallback(async () => {
+    if (!selectedOption) return;
+
+    const hasNext = await goToNext();
+    
+    if (hasNext) {
+      // Update URL to current dilemma without page reload
+      const newDilemmaId = getCurrentDilemmaId();
+      if (newDilemmaId) {
+        router.push(`/explore/${newDilemmaId}`, { scroll: false });
+      }
+    } else {
+      // All dilemmas completed, responses submitted to database, go to results
+      router.push('/results');
+    }
+  }, [selectedOption, goToNext, getCurrentDilemmaId, router]);
+
   // Auto-progression timer when user selects an option
   useEffect(() => {
     if (selectedOption && !autoNextCountdown) {
@@ -105,29 +123,12 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
       // Clear countdown if user deselects
       setAutoNextCountdown(null);
     }
-  }, [selectedOption]); // Remove autoNextCountdown from deps to prevent loops
+  }, [selectedOption, autoNextCountdown, handleNext]);
 
   // Reset countdown when moving to new dilemma
   useEffect(() => {
     setAutoNextCountdown(null);
   }, [currentIndex]);
-
-  const handleNext = async () => {
-    if (!selectedOption) return;
-
-    const hasNext = await goToNext();
-    
-    if (hasNext) {
-      // Update URL to current dilemma without page reload
-      const newDilemmaId = getCurrentDilemmaId();
-      if (newDilemmaId) {
-        router.push(`/explore/${newDilemmaId}`, { scroll: false });
-      }
-    } else {
-      // All dilemmas completed, responses submitted to database, go to results
-      router.push('/results');
-    }
-  };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {

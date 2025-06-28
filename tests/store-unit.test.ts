@@ -140,6 +140,18 @@ function createMockStore() {
         state.reasoning = '';
         state.perceivedDifficulty = 5;
         state.startTime = Date.now();
+        
+        // Restore response if one exists for this dilemma
+        const nextDilemma = state.dilemmas[state.currentIndex];
+        if (nextDilemma) {
+          const response = state.responses.find(r => r.dilemmaId === nextDilemma.dilemmaId);
+          if (response) {
+            state.selectedOption = response.chosenOption;
+            state.reasoning = response.reasoning;
+            state.perceivedDifficulty = response.perceivedDifficulty;
+          }
+        }
+        
         return true;
       }
       return false;
@@ -424,21 +436,31 @@ describe('Store Logic Unit Tests', () => {
       const dilemmas = createTestDilemmas(3);
       store.setDilemmas(dilemmas);
 
-      // Complete first two dilemmas
+      // Complete first dilemma
       store.setSelectedOption('a');
       store.goToNext();
+      expect(store.responses).toHaveLength(1);
+      expect(store.currentIndex).toBe(1);
+      
+      // Complete second dilemma  
       store.setSelectedOption('b');
       store.goToNext();
+      expect(store.responses).toHaveLength(2);
+      expect(store.currentIndex).toBe(2);
 
-      // Go back twice
-      store.goToPrevious(); // Back to dilemma 2
+      // Go back to dilemma 2 (index 1)
+      store.goToPrevious(); 
+      expect(store.currentIndex).toBe(1);
       expect(store.selectedOption).toBe('b');
       
-      store.goToPrevious(); // Back to dilemma 1
+      // Go back to dilemma 1 (index 0)
+      store.goToPrevious(); 
+      expect(store.currentIndex).toBe(0);
       expect(store.selectedOption).toBe('a');
 
-      // Forward again
-      store.goToNext(); // To dilemma 2
+      // Forward again to dilemma 2 (index 1)
+      store.goToNext(); 
+      expect(store.currentIndex).toBe(1);
       expect(store.selectedOption).toBe('b');
     });
   });

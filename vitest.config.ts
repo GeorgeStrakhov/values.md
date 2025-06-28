@@ -6,6 +6,12 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/*.spec.ts', // Exclude Playwright tests from Vitest
+      '**/e2e-*.spec.ts',
+    ],
   },
   resolve: {
     alias: {

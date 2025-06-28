@@ -29,6 +29,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     getCurrentDilemmaId,
     getProgress,
     setDilemmas,
+    setCurrentIndex,
     setSelectedOption,
     setReasoning,
     setPerceivedDifficulty,

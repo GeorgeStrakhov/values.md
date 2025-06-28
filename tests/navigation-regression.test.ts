@@ -353,23 +353,35 @@ describe('Navigation Regression Prevention', () => {
       const dilemmas = createTestDilemmas(3);
       store.setDilemmas(dilemmas);
       
-      // Each navigation should leave clean state
-      for (let i = 0; i < 2; i++) {
-        store.setSelectedOption('a');
-        
-        const stateBefore = store._getState();
-        await store.goToNext();
-        const stateAfter = store._getState();
-        
-        // Form should be cleared after navigation
-        expect(stateAfter.selectedOption).toBe('');
-        expect(stateAfter.reasoning).toBe('');
-        expect(stateAfter.perceivedDifficulty).toBe(5);
-        
-        // Only expected properties should change
-        expect(stateAfter.currentIndex).toBe(stateBefore.currentIndex + 1);
-        expect(stateAfter.responses.length).toBe(stateBefore.responses.length + 1);
-      }
+      // First navigation
+      store.setSelectedOption('a');
+      const stateBefore1 = store._getState();
+      await store.goToNext();
+      const stateAfter1 = store._getState();
+      
+      // Form should be cleared after navigation
+      expect(stateAfter1.selectedOption).toBe('');
+      expect(stateAfter1.reasoning).toBe('');
+      expect(stateAfter1.perceivedDifficulty).toBe(5);
+      
+      // Should advance to index 1
+      expect(stateAfter1.currentIndex).toBe(1);
+      expect(stateAfter1.responses.length).toBe(1);
+      
+      // Second navigation
+      store.setSelectedOption('b');
+      const stateBefore2 = store._getState();
+      await store.goToNext();
+      const stateAfter2 = store._getState();
+      
+      // Form should be cleared after navigation
+      expect(stateAfter2.selectedOption).toBe('');
+      expect(stateAfter2.reasoning).toBe('');
+      expect(stateAfter2.perceivedDifficulty).toBe(5);
+      
+      // Should advance to index 2
+      expect(stateAfter2.currentIndex).toBe(2);
+      expect(stateAfter2.responses.length).toBe(2);
     });
   });
 

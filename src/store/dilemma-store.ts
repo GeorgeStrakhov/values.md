@@ -126,7 +126,9 @@ export const useDilemmaStore = create<DilemmaState>()(
           updatedState.restoreResponseForIndex(nextIndex);
           
           // Scroll to top on navigation
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
           return true; // Not last
         }
         
@@ -147,7 +149,9 @@ export const useDilemmaStore = create<DilemmaState>()(
           updatedState.restoreResponseForIndex(prevIndex);
           
           // Scroll to top on navigation
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }
       },
       

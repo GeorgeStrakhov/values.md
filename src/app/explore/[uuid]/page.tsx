@@ -56,18 +56,15 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     if (dilemmas.length === 0 || !dilemmas.some(d => d.dilemmaId === resolvedParams.uuid)) {
       fetchDilemmas();
     } else {
-      // We have dilemmas, check if we need to sync URL with store state
-      const targetIndex = dilemmas.findIndex(d => d.dilemmaId === resolvedParams.uuid);
-      const currentDilemmaId = getCurrentDilemmaId();
-      
-      // Only reset if the URL is genuinely different from current state
-      if (targetIndex !== -1 && currentDilemmaId !== resolvedParams.uuid) {
-        console.log('🔄 Syncing URL to store state:', { targetIndex, currentIndex, resolvedParams: resolvedParams.uuid, currentDilemmaId });
-        setDilemmas(dilemmas, resolvedParams.uuid);
-        restoreResponseForIndex(targetIndex);
+      // Sync store to URL (URL is source of truth)
+      const urlIndex = dilemmas.findIndex(d => d.dilemmaId === resolvedParams.uuid);
+      if (urlIndex !== -1 && urlIndex !== currentIndex) {
+        console.log('🔄 Syncing store to URL:', { urlIndex, currentIndex, uuid: resolvedParams.uuid });
+        setCurrentIndex(urlIndex);
+        restoreResponseForIndex(urlIndex);
       }
     }
-  }, [resolvedParams.uuid, dilemmas, currentIndex, setDilemmas, restoreResponseForIndex]);
+  }, [resolvedParams.uuid, dilemmas, currentIndex, setDilemmas, setCurrentIndex, restoreResponseForIndex]);
 
   // Update progress when dilemmas or index changes
   useEffect(() => {
@@ -85,30 +82,42 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
-  // Auto-progression timer when user selects an option
+  // Auto-save on selection + auto-advance timer
   useEffect(() => {
-    if (selectedOption && !autoNextCountdown) {
-      // Start 3-second countdown for auto-progression
-      setAutoNextCountdown(3);
-      const interval = setInterval(() => {
-        setAutoNextCountdown((prev) => {
-          if (prev === null || prev <= 1) {
-            clearInterval(interval);
-            if (selectedOption) {
-              handleNext(); // Auto-advance
+    if (selectedOption) {
+      // Immediate save
+      const { saveCurrentResponse } = useDilemmaStore.getState();
+      saveCurrentResponse();
+      
+      // Start auto-advance if not already running
+      if (!autoNextCountdown) {
+        setAutoNextCountdown(3);
+        const interval = setInterval(() => {
+          setAutoNextCountdown((prev) => {
+            if (prev === null || prev <= 1) {
+              clearInterval(interval);
+              // Direct navigation - no stale closure issues
+              const store = useDilemmaStore.getState();
+              const nextIndex = store.currentIndex + 1;
+              const nextDilemma = store.dilemmas[nextIndex];
+              
+              if (nextDilemma) {
+                router.push(`/explore/${nextDilemma.dilemmaId}`);
+              } else {
+                // Final dilemma
+                store.submitResponsesToDatabase();
+                router.push('/results');
+              }
+              return null;
             }
-            return null;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    } else if (!selectedOption) {
-      // Clear countdown if user deselects
+            return prev - 1;
+          });
+        }, 1000);
+      }
+    } else {
       setAutoNextCountdown(null);
     }
-  }, [selectedOption, autoNextCountdown]);
+  }, [selectedOption, autoNextCountdown, router]);
 
   // Reset countdown when moving to new dilemma
   useEffect(() => {
@@ -116,43 +125,29 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
   }, [currentIndex]);
 
   const handleNext = async () => {
-    console.log('🔄 handleNext called', { selectedOption, currentIndex });
+    if (!selectedOption) return;
     
-    if (!selectedOption) {
-      console.log('❌ No option selected');
-      return;
-    }
-
-    console.log('📤 Calling goToNext...');
-    const hasNext = await goToNext();
-    console.log('📥 goToNext result:', hasNext);
+    // Save current response
+    const { saveCurrentResponse, submitResponsesToDatabase } = useDilemmaStore.getState();
+    saveCurrentResponse();
     
-    if (hasNext) {
-      // Navigate to the next dilemma URL
-      const updatedState = useDilemmaStore.getState();
-      const nextDilemma = updatedState.dilemmas[updatedState.currentIndex];
-      if (nextDilemma) {
-        console.log('✅ Navigating to next dilemma:', nextDilemma.dilemmaId);
-        router.push(`/explore/${nextDilemma.dilemmaId}`);
-      }
+    // Navigate to next or results
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < dilemmas.length) {
+      const nextDilemma = dilemmas[nextIndex];
+      router.push(`/explore/${nextDilemma.dilemmaId}`);
     } else {
-      // All dilemmas completed, responses submitted to database, go to results
-      console.log('🏁 All dilemmas completed, going to results');
+      // Final dilemma - submit and go to results
+      await submitResponsesToDatabase();
       router.push('/results');
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      console.log('⬅️ Going to previous dilemma');
-      goToPrevious();
-      // Navigate to the previous dilemma URL
-      const updatedState = useDilemmaStore.getState();
-      const prevDilemma = updatedState.dilemmas[updatedState.currentIndex];
-      if (prevDilemma) {
-        console.log('⬅️ Navigating to previous dilemma:', prevDilemma.dilemmaId);
-        router.push(`/explore/${prevDilemma.dilemmaId}`);
-      }
+      const prevIndex = currentIndex - 1;
+      const prevDilemma = dilemmas[prevIndex];
+      router.push(`/explore/${prevDilemma.dilemmaId}`);
     }
   };
 

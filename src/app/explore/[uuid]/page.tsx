@@ -128,9 +128,13 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     console.log('📥 goToNext result:', hasNext);
     
     if (hasNext) {
-      // Don't navigate URL - just let the store state change
-      // The progress component will update automatically
-      console.log('✅ Moved to next dilemma, currentIndex now:', currentIndex + 1);
+      // Navigate to the next dilemma URL
+      const updatedState = useDilemmaStore.getState();
+      const nextDilemma = updatedState.dilemmas[updatedState.currentIndex];
+      if (nextDilemma) {
+        console.log('✅ Navigating to next dilemma:', nextDilemma.dilemmaId);
+        router.push(`/explore/${nextDilemma.dilemmaId}`);
+      }
     } else {
       // All dilemmas completed, responses submitted to database, go to results
       console.log('🏁 All dilemmas completed, going to results');
@@ -142,7 +146,13 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     if (currentIndex > 0) {
       console.log('⬅️ Going to previous dilemma');
       goToPrevious();
-      // Don't change URL - just update store state
+      // Navigate to the previous dilemma URL
+      const updatedState = useDilemmaStore.getState();
+      const prevDilemma = updatedState.dilemmas[updatedState.currentIndex];
+      if (prevDilemma) {
+        console.log('⬅️ Navigating to previous dilemma:', prevDilemma.dilemmaId);
+        router.push(`/explore/${prevDilemma.dilemmaId}`);
+      }
     }
   };
 

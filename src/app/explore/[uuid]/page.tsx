@@ -16,7 +16,6 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
   const resolvedParams = use(params);
   const router = useRouter();
   const { setProgress, hideProgress } = useProgress();
-  const [autoNextCountdown, setAutoNextCountdown] = useState<number | null>(null);
   
   // Zustand store
   const {
@@ -83,72 +82,40 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
-  // Auto-save on selection + auto-advance timer
+  // Auto-save on selection (auto-advance disabled for stability)
   useEffect(() => {
     if (selectedOption) {
       // Immediate save
       const { saveCurrentResponse } = useDilemmaStore.getState();
       saveCurrentResponse();
-      
-      // Start auto-advance if not already running
-      if (!autoNextCountdown) {
-        setAutoNextCountdown(3);
-        const interval = setInterval(() => {
-          setAutoNextCountdown((prev) => {
-            if (prev === null || prev <= 1) {
-              clearInterval(interval);
-              // Direct navigation - no stale closure issues
-              const store = useDilemmaStore.getState();
-              const nextIndex = store.currentIndex + 1;
-              const nextDilemma = store.dilemmas[nextIndex];
-              
-              if (nextDilemma) {
-                router.push(`/explore/${nextDilemma.dilemmaId}`);
-              } else {
-                // Final dilemma
-                store.submitResponsesToDatabase();
-                router.push('/results');
-              }
-              return null;
-            }
-            return prev - 1;
-          });
-        }, 1000);
-      }
-    } else {
-      setAutoNextCountdown(null);
     }
-  }, [selectedOption, autoNextCountdown, router]);
+  }, [selectedOption]);
 
-  // Reset countdown when moving to new dilemma
-  useEffect(() => {
-    setAutoNextCountdown(null);
-  }, [currentIndex]);
 
   const handleNext = async () => {
     if (!selectedOption) return;
     
-    // Save current response
-    const { saveCurrentResponse, submitResponsesToDatabase } = useDilemmaStore.getState();
-    saveCurrentResponse();
-    
-    // Navigate to next or results
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < dilemmas.length) {
-      const nextDilemma = dilemmas[nextIndex];
-      router.push(`/explore/${nextDilemma.dilemmaId}`);
-    } else {
-      // Final dilemma - submit and go to results
-      await submitResponsesToDatabase();
+    // Use store navigation instead of manual router navigation
+    const hasNext = await goToNext();
+    if (!hasNext) {
+      // Last dilemma - go to results
       router.push('/results');
+    } else {
+      // Navigate to next dilemma
+      const nextDilemma = getCurrentDilemma();
+      if (nextDilemma) {
+        router.push(`/explore/${nextDilemma.dilemmaId}`);
+      }
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      const prevIndex = currentIndex - 1;
-      const prevDilemma = dilemmas[prevIndex];
-      router.push(`/explore/${prevDilemma.dilemmaId}`);
+      goToPrevious();
+      const prevDilemma = getCurrentDilemma();
+      if (prevDilemma) {
+        router.push(`/explore/${prevDilemma.dilemmaId}`);
+      }
     }
   };
 
@@ -273,17 +240,6 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
               </Button>
               
               <div className="flex flex-col items-center gap-2">
-                {autoNextCountdown && (
-                  <div className="text-sm text-muted-foreground">
-                    Auto-advancing in {autoNextCountdown}s... 
-                    <button 
-                      onClick={() => setAutoNextCountdown(null)}
-                      className="ml-1 text-primary underline"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
                 <Button
                   onClick={handleNext}
                   disabled={!selectedOption}

@@ -266,7 +266,7 @@ class DataSyncManager {
       // Check motif-framework relationships
       const motifsWithFrameworks = await this.db.select().from(motifs);
       const availableFrameworks = await this.db.select().from(frameworks);
-      const frameworkNames = availableFrameworks.map(f => f.name);
+      const frameworkNames = availableFrameworks.map((f: any) => f.name);
 
       let invalidRelationships = 0;
       for (const motif of motifsWithFrameworks) {
@@ -359,7 +359,7 @@ async function main() {
   switch (command) {
     case 'validate':
       console.log('🔍 Validating data integrity...');
-      const validation = await syncManager.validateCsvFiles();
+      const validation = await (syncManager as any).validateCsvFiles();
       console.log(validation.message);
       process.exit(validation.success ? 0 : 1);
       

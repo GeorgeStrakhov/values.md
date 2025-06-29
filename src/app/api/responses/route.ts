@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { userResponses } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +16,22 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`📥 Received ${responses.length} responses for session ${sessionId}`);
+    
+    // Check if responses already exist for this session (idempotency)
+    const existingResponses = await db.select()
+      .from(userResponses)
+      .where(eq(userResponses.sessionId, sessionId));
+    
+    if (existingResponses.length > 0) {
+      console.log(`♻️ Responses already exist for session ${sessionId}, returning existing data`);
+      return NextResponse.json({ 
+        success: true, 
+        inserted: 0,
+        existing: existingResponses.length,
+        sessionId,
+        message: 'Responses already exist for this session'
+      });
+    }
     
     // Validate response structure
     for (const response of responses) {

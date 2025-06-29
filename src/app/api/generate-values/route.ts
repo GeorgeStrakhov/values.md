@@ -4,6 +4,10 @@ import { userResponses, dilemmas, motifs, frameworks } from '@/lib/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { dilemmaGenerator } from '@/lib/dilemma-generator';
 
+// Simple in-memory cache for generated values
+const valuesCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
 export async function POST(request: NextRequest) {
   try {
     const { sessionId } = await request.json();
@@ -13,6 +17,13 @@ export async function POST(request: NextRequest) {
         { error: 'Session ID required' },
         { status: 400 }
       );
+    }
+
+    // Check cache first (idempotency)
+    const cached = valuesCache.get(sessionId);
+    if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+      console.log(`♻️ Returning cached values for session ${sessionId}`);
+      return NextResponse.json(cached.data);
     }
 
     console.log(`🔍 Looking for responses for session: ${sessionId}`);
@@ -128,14 +139,20 @@ export async function POST(request: NextRequest) {
       statisticalAnalysis
     );
 
-    return NextResponse.json({ 
+    const result = { 
       valuesMarkdown,
       motifAnalysis: motifCounts,
       topMotifs,
       frameworkAlignment,
       statisticalAnalysis,
       responsePatterns: responsePatterns.slice(0, 5) // Return top 5 for display
-    });
+    };
+
+    // Cache the result
+    valuesCache.set(sessionId, { data: result, timestamp: Date.now() });
+    console.log(`💾 Cached values for session ${sessionId}`);
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Error generating values:', error);
     return NextResponse.json(

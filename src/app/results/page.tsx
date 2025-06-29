@@ -92,8 +92,24 @@ export default function ResultsPage() {
       }
       
       if (!responses || responses.length === 0) {
-        setError(`No responses found. Found ${responses?.length || 0} responses. Please complete the dilemmas first.`);
+        console.warn('❌ No responses found, redirecting to start');
+        setError(`No responses found. Found ${responses?.length || 0} responses. Redirecting to start...`);
         setLoading(false);
+        // Redirect to start after 3 seconds
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 3000);
+        return;
+      }
+      
+      if (responses.length < 12) {
+        console.warn(`⚠️ Incomplete responses: ${responses.length}/12`);
+        setError(`Incomplete responses (${responses.length}/12). Please complete all dilemmas first.`);
+        setLoading(false);
+        // Redirect to continue where left off
+        setTimeout(() => {
+          window.location.href = '/api/dilemmas/random';
+        }, 3000);
         return;
       }
 

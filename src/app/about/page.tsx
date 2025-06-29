@@ -19,8 +19,49 @@ export default function AboutPage() {
           </p>
           
           <h2 className="text-2xl font-semibold mb-4 text-foreground">Research</h2>
-          <p className="text-foreground">
+          <p className="mb-6 text-foreground">
             This platform is part of ongoing research into personal values identification and AI alignment. Learn more on our research page.
+          </p>
+
+          <h2 className="text-2xl font-semibold mb-4 text-foreground">Team</h2>
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-muted/50 p-6 rounded-lg">
+              <h3 className="text-xl font-semibold mb-2">George Strakhov</h3>
+              <p className="text-muted-foreground mb-3">Project Lead & Research Director</p>
+              <p className="text-sm mb-3">
+                Researcher focused on AI alignment, digital governance, and the intersection of technology and ethics.
+              </p>
+              <a 
+                href="https://georgestrakhov.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 text-sm font-medium"
+              >
+                georgestrakhov.com →
+              </a>
+            </div>
+            <div className="bg-muted/50 p-6 rounded-lg">
+              <h3 className="text-xl font-semibold mb-2">Claude (Anthropic)</h3>
+              <p className="text-muted-foreground mb-3">Technical Development & Architecture</p>
+              <p className="text-sm mb-3">
+                AI assistant focused on ethical AI development, contributing to the technical implementation and research methodology.
+              </p>
+              <a 
+                href="https://claude.ai" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 text-sm font-medium"
+              >
+                claude.ai →
+              </a>
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-semibold mb-4 text-foreground">Contributing</h2>
+          <p className="text-foreground">
+            This is an open research project. We welcome contributions to the methodology, dataset curation, 
+            and technical development. Contact us through our individual websites or contribute to the research 
+            by completing the values assessment and optionally sharing your anonymized responses.
           </p>
         </div>
       </div>

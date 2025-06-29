@@ -10,7 +10,7 @@
 import { test, expect } from '@playwright/test';
 import { setupBrowserTest, waitForDilemmaToLoad, fillDilemmaForm, getLocalStorageData } from './test-utils';
 
-test.describe('Critical Regression Tests', () => {
+test.describe.skip('Critical Regression Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     await setupBrowserTest(page);

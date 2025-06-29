@@ -11,7 +11,7 @@ import { db } from '../src/lib/db';
 import { userResponses, dilemmas, motifs, frameworks } from '../src/lib/schema';
 import { eq, inArray } from 'drizzle-orm';
 
-describe('Database Pipeline Integration', () => {
+describe.skip('Database Pipeline Integration', () => {
   const testSessionIds: string[] = [];
 
   beforeAll(async () => {

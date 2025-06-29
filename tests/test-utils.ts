@@ -193,7 +193,7 @@ export function createMockStore(initialState = {}) {
         }
       }
     },
-    goToNext: async () => {
+    goToNext: () => {
       actions.saveCurrentResponse();
       if (state.currentIndex < state.dilemmas.length - 1) {
         state.currentIndex++;
@@ -204,6 +204,21 @@ export function createMockStore(initialState = {}) {
         return true;
       }
       return false;
+    },
+    restoreResponseForIndex: (index: number) => {
+      const dilemma = state.dilemmas[index];
+      if (dilemma) {
+        const response = state.responses.find(r => r.dilemmaId === dilemma.dilemmaId);
+        if (response) {
+          state.selectedOption = response.chosenOption;
+          state.reasoning = response.reasoning;
+          state.perceivedDifficulty = response.perceivedDifficulty;
+        } else {
+          state.selectedOption = '';
+          state.reasoning = '';
+          state.perceivedDifficulty = 5;
+        }
+      }
     },
     reset: () => {
       Object.assign(state, {

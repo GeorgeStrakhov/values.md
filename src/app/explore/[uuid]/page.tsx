@@ -95,14 +95,19 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
   const handleNext = async () => {
     if (!selectedOption) return;
     
-    // Use store navigation instead of manual router navigation
-    const hasNext = await goToNext();
-    if (!hasNext) {
-      // Last dilemma - go to results
+    // Save current response first
+    const { saveCurrentResponse, submitResponsesToDatabase } = useDilemmaStore.getState();
+    saveCurrentResponse();
+    
+    // Check if this is the last dilemma
+    const nextIndex = currentIndex + 1;
+    if (nextIndex >= dilemmas.length) {
+      // Last dilemma - submit and go to results
+      await submitResponsesToDatabase();
       router.push('/results');
     } else {
-      // Navigate to next dilemma
-      const nextDilemma = getCurrentDilemma();
+      // Navigate to next dilemma using direct access
+      const nextDilemma = dilemmas[nextIndex];
       if (nextDilemma) {
         router.push(`/explore/${nextDilemma.dilemmaId}`);
       }
@@ -111,8 +116,8 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      goToPrevious();
-      const prevDilemma = getCurrentDilemma();
+      const prevIndex = currentIndex - 1;
+      const prevDilemma = dilemmas[prevIndex];
       if (prevDilemma) {
         router.push(`/explore/${prevDilemma.dilemmaId}`);
       }

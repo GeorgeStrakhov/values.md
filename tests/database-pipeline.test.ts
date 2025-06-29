@@ -85,12 +85,12 @@ describe('Database Pipeline Integration', () => {
   test('CRITICAL: motif data exists and is accessible', async () => {
     // This would have caught broken seed script paths
     
-    const motifs = await db.select().from(motifs).limit(5);
+    const motifData = await db.select().from(motifs).limit(5);
     
-    expect(motifs.length).toBeGreaterThan(0);
+    expect(motifData.length).toBeGreaterThan(0);
     
     // Should have real motif data from CSV
-    motifs.forEach(motif => {
+    motifData.forEach((motif: any) => {
       expect(motif.motifId).toBeTruthy();
       expect(motif.name).toBeTruthy();
       expect(motif.description).toBeTruthy();
@@ -99,7 +99,7 @@ describe('Database Pipeline Integration', () => {
     });
     
     // Should contain expected motifs from our test data
-    const motifIds = motifs.map(m => m.motifId);
+    const motifIds = motifData.map((m: any) => m.motifId);
     expect(motifIds).toContain('UTIL_CALC');
     expect(motifIds).toContain('DEONT_ABSOLUTE');
   });
@@ -107,11 +107,11 @@ describe('Database Pipeline Integration', () => {
   test('CRITICAL: framework data exists with computational signatures', async () => {
     // This would have caught missing framework metadata
     
-    const frameworks = await db.select().from(frameworks).limit(5);
+    const frameworkData = await db.select().from(frameworks).limit(5);
     
-    expect(frameworks.length).toBeGreaterThan(0);
+    expect(frameworkData.length).toBeGreaterThan(0);
     
-    frameworks.forEach(framework => {
+    frameworkData.forEach((framework: any) => {
       expect(framework.frameworkId).toBeTruthy();
       expect(framework.name).toBeTruthy();
       expect(framework.tradition).toBeTruthy();
@@ -120,7 +120,7 @@ describe('Database Pipeline Integration', () => {
     });
     
     // Should contain expected frameworks
-    const frameworkIds = frameworks.map(f => f.frameworkId);
+    const frameworkIds = frameworkData.map((f: any) => f.frameworkId);
     expect(frameworkIds).toContain('UTIL_ACT');
     expect(frameworkIds).toContain('DEONT_KANT');
   });
@@ -177,11 +177,11 @@ describe('Database Pipeline Integration', () => {
   test('dilemmas have valid motif mappings', async () => {
     // This would catch broken choice-to-motif relationships
     
-    const dilemmas = await db.select().from(dilemmas).limit(3);
+    const dilemmaData = await db.select().from(dilemmas).limit(3);
     
-    expect(dilemmas.length).toBeGreaterThan(0);
+    expect(dilemmaData.length).toBeGreaterThan(0);
     
-    for (const dilemma of dilemmas) {
+    for (const dilemma of dilemmaData) {
       expect(dilemma.dilemmaId).toBeTruthy();
       expect(dilemma.title).toBeTruthy();
       expect(dilemma.scenario).toBeTruthy();
@@ -202,7 +202,7 @@ describe('Database Pipeline Integration', () => {
         dilemma.choiceBMotif,
         dilemma.choiceCMotif,
         dilemma.choiceDMotif
-      ].filter(Boolean);
+      ].filter(Boolean) as string[];
       
       const existingMotifs = await db
         .select({ motifId: motifs.motifId })

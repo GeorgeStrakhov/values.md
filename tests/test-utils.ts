@@ -155,9 +155,15 @@ export function createMockStore(initialState = {}) {
   const actions = {
     setDilemmas: (dilemmas: any[], startingDilemmaId?: string) => {
       state.dilemmas = dilemmas;
-      state.currentIndex = startingDilemmaId 
-        ? dilemmas.findIndex(d => d.dilemmaId === startingDilemmaId) || 0
-        : 0;
+      if (startingDilemmaId) {
+        const index = dilemmas.findIndex(d => d.dilemmaId === startingDilemmaId);
+        state.currentIndex = index !== -1 ? index : 0;
+      } else {
+        state.currentIndex = 0;
+      }
+    },
+    setCurrentIndex: (index: number) => {
+      state.currentIndex = index;
     },
     setSelectedOption: (option: string) => {
       state.selectedOption = option;
@@ -235,7 +241,23 @@ export function createMockStore(initialState = {}) {
     }
   };
   
-  return { ...state, ...actions };
+  // Create a proxy object that exposes both state and actions
+  const mockStore = { ...state, ...actions };
+  
+  // Make state properties writable
+  Object.defineProperty(mockStore, 'currentIndex', {
+    get: () => state.currentIndex,
+    set: (value) => { state.currentIndex = value; },
+    enumerable: true
+  });
+  
+  Object.defineProperty(mockStore, 'responses', {
+    get: () => state.responses,
+    set: (value) => { state.responses = value; },
+    enumerable: true
+  });
+  
+  return mockStore;
 }
 
 // Timer test helpers

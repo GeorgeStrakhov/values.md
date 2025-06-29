@@ -257,6 +257,15 @@ export function createMockStore(initialState = {}) {
     enumerable: true
   });
   
+  // Make all other state properties reactive too
+  ['selectedOption', 'reasoning', 'perceivedDifficulty', 'dilemmas'].forEach(prop => {
+    Object.defineProperty(mockStore, prop, {
+      get: () => state[prop as keyof typeof state],
+      set: (value) => { (state as any)[prop] = value; },
+      enumerable: true
+    });
+  });
+  
   return mockStore;
 }
 

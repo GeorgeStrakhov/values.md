@@ -8,4 +8,8 @@
  */
 
 // Skip this test file entirely to avoid Playwright conflicts in vitest
-export {};
+import { describe, test } from 'vitest';
+
+describe.skip('Critical Regression Tests', () => {
+  test('placeholder to satisfy vitest', () => {});
+});

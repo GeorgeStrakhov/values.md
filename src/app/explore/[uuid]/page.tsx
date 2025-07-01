@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, use, useState } from 'react';
+import { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,46 +9,62 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { useProgress } from '@/components/progress-context';
-import { useDilemmaStore } from '@/store/dilemma-store';
+import { useSessionManagement, withSessionProtection } from '@/hooks/use-session-management';
+import { useEnhancedDilemmaStore } from '@/store/enhanced-dilemma-store';
 
-
-export default function ExplorePage({ params }: { params: Promise<{ uuid: string }> }) {
+function ExplorePage({ params }: { params: Promise<{ uuid: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
   const { setProgress, hideProgress } = useProgress();
+  const session = useSessionManagement({ debug: true });
   
-  // Zustand store
+  // Enhanced Zustand store
   const {
     dilemmas,
     currentIndex,
     selectedOption,
     reasoning,
     perceivedDifficulty,
+    appState,
+    isLoading,
     getCurrentDilemma,
-    getCurrentDilemmaId,
     getProgress,
     setDilemmas,
     setCurrentIndex,
     setSelectedOption,
     setReasoning,
     setPerceivedDifficulty,
-    goToNext,
-    goToPrevious,
-    restoreResponseForIndex
-  } = useDilemmaStore();
+    saveCurrentResponse,
+    restoreResponseForIndex,
+    startNewSession,
+    sendEvent
+  } = useEnhancedDilemmaStore();
   
-  const loading = dilemmas.length === 0;
+  const loading = isLoading || dilemmas.length === 0;
   const currentDilemma = getCurrentDilemma();
 
   // Load dilemmas on mount or when UUID changes
   useEffect(() => {
+    if (!session.isInitialized) return;
+
     const fetchDilemmas = async () => {
       try {
+        sendEvent({ type: 'START_SESSION' });
+        
         const response = await fetch(`/api/dilemmas/${resolvedParams.uuid}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch dilemmas: ${response.status}`);
+        }
+        
         const data = await response.json();
         setDilemmas(data.dilemmas, resolvedParams.uuid);
+        
       } catch (error) {
         console.error('Error fetching dilemmas:', error);
+        sendEvent({
+          type: 'DILEMMAS_LOAD_FAILED',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
       }
     };
     
@@ -64,7 +80,16 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
         restoreResponseForIndex(urlIndex);
       }
     }
-  }, [resolvedParams.uuid, dilemmas, currentIndex, setDilemmas, setCurrentIndex, restoreResponseForIndex]);
+  }, [
+    session.isInitialized,
+    resolvedParams.uuid,
+    dilemmas,
+    currentIndex,
+    setDilemmas,
+    setCurrentIndex,
+    restoreResponseForIndex,
+    sendEvent
+  ]);
 
   // Update progress when dilemmas or index changes
   useEffect(() => {
@@ -82,29 +107,24 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [resolvedParams.uuid]);
 
-  // Auto-save on selection (auto-advance disabled for stability)
+  // Auto-save on selection
   useEffect(() => {
     if (selectedOption) {
-      // Immediate save
-      const { saveCurrentResponse } = useDilemmaStore.getState();
       saveCurrentResponse();
     }
-  }, [selectedOption]);
-
+  }, [selectedOption, saveCurrentResponse]);
 
   const handleNext = async () => {
     if (!selectedOption) return;
     
     // Save current response first
-    const { saveCurrentResponse, submitResponsesToDatabase } = useDilemmaStore.getState();
     saveCurrentResponse();
     
     // Check if this is the last dilemma
     const nextIndex = currentIndex + 1;
     if (nextIndex >= dilemmas.length) {
-      // Last dilemma - submit and go to results
-      await submitResponsesToDatabase();
-      router.push('/results');
+      // Last dilemma - navigate to results (let the enhanced store handle submission)
+      session.navigateToRoute('/results');
     } else {
       // Navigate to next dilemma using direct access
       const nextDilemma = dilemmas[nextIndex];
@@ -124,21 +144,42 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     }
   };
 
+  // Show loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading ethical dilemmas...</p>
+          <p className="text-muted-foreground">
+            {appState === 'loading' ? 'Loading ethical dilemmas...' : session.statusMessage}
+          </p>
         </div>
       </div>
     );
   }
 
-  if (!loading && !currentDilemma) {
+  // Show error state
+  if (appState === 'error' || (!loading && !currentDilemma)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-destructive">Error loading dilemmas. Please try again.</p>
+        <div className="text-center max-w-md">
+          <Card className="p-6">
+            <CardContent>
+              <h2 className="text-xl font-bold mb-4 text-destructive">
+                Unable to Load Dilemma
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                There was an error loading the dilemmas. Please try starting a new session.
+              </p>
+              <Button 
+                onClick={() => session.navigateToRoute('/')}
+                className="w-full"
+              >
+                Return Home
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -155,6 +196,11 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
           <CardHeader>
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="secondary">{currentDilemma.domain}</Badge>
+              {session.debug && (
+                <Badge variant="outline" className="text-xs">
+                  {appState}
+                </Badge>
+              )}
             </div>
             <CardTitle className="text-3xl mb-4" data-testid="dilemma-title">
               {currentDilemma.title}
@@ -256,7 +302,36 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
             </div>
           </CardContent>
         </Card>
+
+        {/* Debug Info */}
+        {session.debug && (
+          <Card className="border-dashed">
+            <CardHeader>
+              <CardTitle className="text-sm">Debug Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <pre className="text-xs bg-muted p-4 rounded overflow-auto">
+                {JSON.stringify({
+                  appState,
+                  sessionStatus: session.sessionStatus,
+                  currentIndex,
+                  dilemmasCount: dilemmas.length,
+                  hasValidSession: session.hasValidSession,
+                  selectedOption,
+                  uuid: resolvedParams.uuid
+                }, null, 2)}
+              </pre>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
 }
+
+// Export with session protection
+export default withSessionProtection(ExplorePage, {
+  enableAutoRedirect: true,
+  restoreOnMount: true,
+  debug: true
+});

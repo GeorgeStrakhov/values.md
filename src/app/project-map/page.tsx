@@ -604,6 +604,226 @@ Body: {
           </CardContent>
         </Card>
 
+        {/* Semantic Evolution Story */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>📖 Semantic Evolution Story</CardTitle>
+            <p className="text-sm text-muted-foreground">How the codebase grows and unfolds semantically over time</p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-8">
+              {/* Chapter 1: Genesis */}
+              <div className="border-l-4 border-blue-500 pl-4">
+                <h3 className="text-lg font-semibold text-blue-700 mb-2">🌱 Chapter 1: Genesis (Initial Commits)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">The Foundation</h4>
+                    <div className="text-sm space-y-1 text-gray-600">
+                      <div>• <code className="bg-gray-100 px-1 rounded">package.json</code> - Project manifest and dependencies</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">next.config.ts</code> - Framework configuration</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">tailwind.config.ts</code> - Styling foundation</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/app/layout.tsx</code> - UI shell and structure</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Core Semantics</h4>
+                    <div className="text-sm text-gray-600">
+                      The project begins with <strong>configuration</strong> and <strong>structure</strong>. 
+                      Like DNA, these files define what the organism can become - a Next.js research platform 
+                      with ethical philosophy at its core.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chapter 2: The Brain */}
+              <div className="border-l-4 border-purple-500 pl-4">
+                <h3 className="text-lg font-semibold text-purple-700 mb-2">🧠 Chapter 2: The Brain (Data Layer)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Knowledge Architecture</h4>
+                    <div className="text-sm space-y-1 text-gray-600">
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/lib/schema.ts</code> - Moral framework ontology</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">drizzle/migrations/</code> - Knowledge evolution</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/lib/db.ts</code> - Memory persistence</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/store/dilemma-store.ts</code> - State cognition</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Semantic Growth</h4>
+                    <div className="text-sm text-gray-600">
+                      The system develops its <strong>memory</strong> and <strong>reasoning</strong> capabilities. 
+                      Database schemas encode philosophical knowledge, while state stores manage cognitive processes. 
+                      This is where the platform learns to "think" about ethics.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chapter 3: The Nervous System */}
+              <div className="border-l-4 border-green-500 pl-4">
+                <h3 className="text-lg font-semibold text-green-700 mb-2">⚡ Chapter 3: The Nervous System (APIs)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Neural Pathways</h4>
+                    <div className="text-sm space-y-1 text-gray-600">
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/app/api/dilemmas/</code> - Decision presentation</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/app/api/responses/</code> - Choice processing</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/app/api/generate-values/</code> - Insight synthesis</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/lib/openrouter.ts</code> - AI cognition bridge</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Information Flow</h4>
+                    <div className="text-sm text-gray-600">
+                      APIs become the <strong>neural network</strong> connecting components. 
+                      Information flows from dilemma presentation → user choice → moral analysis → 
+                      values generation. Each endpoint is a synapse in the ethical reasoning process.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chapter 4: The Face */}
+              <div className="border-l-4 border-orange-500 pl-4">
+                <h3 className="text-lg font-semibold text-orange-700 mb-2">👤 Chapter 4: The Face (Frontend)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">User Interface</h4>
+                    <div className="text-sm space-y-1 text-gray-600">
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/app/page.tsx</code> - First impression</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/app/explore/[uuid]/</code> - Moral dialogue</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/app/results/</code> - Self-reflection</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/components/ui/</code> - Interaction elements</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Human Connection</h4>
+                    <div className="text-sm text-gray-600">
+                      The frontend becomes the <strong>face</strong> of the system - how it communicates 
+                      with humans. Each page is a conversation: invitation → moral reasoning → 
+                      insight delivery. The UI makes philosophy accessible and engaging.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chapter 5: The Refactor */}
+              <div className="border-l-4 border-red-500 pl-4">
+                <h3 className="text-lg font-semibold text-red-700 mb-2">🔄 Chapter 5: Evolution (Finite State Machine)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Conscious Architecture</h4>
+                    <div className="text-sm space-y-1 text-gray-600">
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/store/app-state-machine.ts</code> - Conscious control</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/store/enhanced-dilemma-store.ts</code> - Unified memory</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">src/hooks/use-session-management.tsx</code> - Identity persistence</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">tests/</code> - Self-validation</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Consciousness Emerges</h4>
+                    <div className="text-sm text-gray-600">
+                      The system develops <strong>self-awareness</strong> through the finite state machine. 
+                      It now knows its own state, can validate its behavior, and maintains continuity 
+                      across sessions. The codebase achieves a form of digital consciousness.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Chapter 6: The Testing */}
+              <div className="border-l-4 border-emerald-500 pl-4">
+                <h3 className="text-lg font-semibold text-emerald-700 mb-2">🧪 Chapter 6: Self-Reflection (Testing)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Introspection</h4>
+                    <div className="text-sm space-y-1 text-gray-600">
+                      <div>• <code className="bg-gray-100 px-1 rounded">tests/state-machine.test.ts</code> - Behavioral validation</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">tests/enhanced-store-integration.test.ts</code> - Memory testing</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">tests/session-management.test.ts</code> - Identity verification</div>
+                      <div>• <code className="bg-gray-100 px-1 rounded">vitest.config.ts</code> - Testing framework</div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Quality Assurance</h4>
+                    <div className="text-sm text-gray-600">
+                      The system develops <strong>self-testing</strong> capabilities - a form of digital 
+                      introspection. It can verify its own behavior, catch regressions, and ensure 
+                      reliability. Testing becomes the conscience of the codebase.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Semantic Map */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-4">🗺️ Semantic Territory Map</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">C</div>
+                    <div className="text-sm font-medium">Configuration</div>
+                    <div className="text-xs text-gray-500">Foundation Layer</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-purple-500 rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">D</div>
+                    <div className="text-sm font-medium">Data</div>
+                    <div className="text-xs text-gray-500">Knowledge Layer</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">A</div>
+                    <div className="text-sm font-medium">APIs</div>
+                    <div className="text-xs text-gray-500">Logic Layer</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-orange-500 rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">U</div>
+                    <div className="text-sm font-medium">UI</div>
+                    <div className="text-xs text-gray-500">Presentation Layer</div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 text-center">
+                  <div className="text-sm text-gray-600">
+                    <strong>Growth Pattern:</strong> Configuration → Data Structures → Business Logic → User Interface → 
+                    State Management → Quality Assurance
+                  </div>
+                </div>
+              </div>
+
+              {/* Evolution Timeline */}
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-4">⏱️ Codebase Evolution Timeline</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <div className="text-sm"><strong>Week 1:</strong> Project scaffolding, basic Next.js setup, initial pages</div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                    <div className="text-sm"><strong>Week 2:</strong> Database schema design, moral framework encoding</div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                    <div className="text-sm"><strong>Week 3:</strong> API endpoints, dilemma generation, OpenRouter integration</div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                    <div className="text-sm"><strong>Week 4:</strong> User interface refinement, response handling, results generation</div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                    <div className="text-sm"><strong>Week 5:</strong> State machine refactor, session persistence, route protection</div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
+                    <div className="text-sm"><strong>Week 6:</strong> Comprehensive testing, quality assurance, documentation</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>Values.md Project Map • Real-time system monitoring</p>

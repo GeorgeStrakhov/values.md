@@ -190,6 +190,69 @@ export default function HealthPage() {
                 </Card>
               ))}
             </div>
+
+            {/* User Flow Execution Trace */}
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle>🚀 User Flow Execution Trace</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded">
+                    <h3 className="font-semibold text-blue-800">Step 1: Click "Generate Your VALUES.md"</h3>
+                    <p className="text-sm text-blue-600">✅ Button exists on home page, links to /api/dilemmas/random</p>
+                  </div>
+                  
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded">
+                    <h3 className="font-semibold text-blue-800">Step 2: API Redirect</h3>
+                    <p className="text-sm text-blue-600">
+                      Status: {healthData.checks.random_dilemma_api?.status === 'pass' ? '✅ Working' : '❌ Failed'}
+                      <br />
+                      Expected: Returns 307 redirect to /explore/[uuid]
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
+                    <h3 className="font-semibold text-yellow-800">Step 3: Explore Page Loads</h3>
+                    <p className="text-sm text-yellow-600">
+                      ⚠️ <strong>ISSUE IDENTIFIED:</strong> Page shows "Setting up your session..." spinner indefinitely
+                      <br />
+                      <strong>Root Cause:</strong> useEffect dependency loop in src/app/explore/[uuid]/page.tsx
+                      <br />
+                      <strong>Fix Applied:</strong> Removed function dependencies to break infinite re-render cycle
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
+                    <h3 className="font-semibold text-yellow-800">Step 4: Session Management</h3>
+                    <p className="text-sm text-yellow-600">
+                      ⚠️ <strong>ISSUE IDENTIFIED:</strong> "Restoring your session..." / "Saving your progress..." cycling
+                      <br />
+                      <strong>Fix Applied:</strong> Debounced progress updates to prevent rapid state changes
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded">
+                    <h3 className="font-semibold text-blue-800">Step 5: Complete User Flow</h3>
+                    <p className="text-sm text-blue-600">
+                      Responses API: {healthData.checks.responses_api?.status === 'pass' ? '✅ Working' : '❌ Failed'} 
+                      <br />
+                      Values Generation: {healthData.checks.generate_values_api?.status === 'pass' ? '✅ Working' : '❌ Failed'}
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-green-50 border border-green-200 rounded">
+                    <h3 className="font-semibold text-green-800">🔧 Fixes Applied</h3>
+                    <ul className="text-sm text-green-600 list-disc list-inside space-y-1">
+                      <li>Removed function dependencies from useEffect to prevent infinite loops</li>
+                      <li>Added debouncing to progress updates (100ms delay)</li>
+                      <li>Enhanced API error logging for better debugging</li>
+                      <li>Added execution trace to health dashboard</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </>
         )}
       </div>

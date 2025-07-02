@@ -9,8 +9,9 @@ export async function POST(request: NextRequest) {
     const { sessionId, responses } = body;
 
     if (!sessionId || !Array.isArray(responses)) {
+      console.error('❌ Invalid request body:', { sessionId: !!sessionId, responsesIsArray: Array.isArray(responses) });
       return NextResponse.json(
-        { error: 'Invalid request body' },
+        { error: 'Invalid request body. Expected: {sessionId: string, responses: array}' },
         { status: 400 }
       );
     }

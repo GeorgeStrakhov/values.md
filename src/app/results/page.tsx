@@ -1,258 +1,160 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useSessionManagement, withSessionProtection } from '@/hooks/use-session-management';
-import { useEnhancedDilemmaStore } from '@/store/enhanced-dilemma-store';
 
-interface ValuesResult {
-  valuesMarkdown: string;
-  motifAnalysis: Record<string, number>;
-  detailedAnalysis: Array<{
-    motifId: string;
-    name: string;
-    category: string;
-    count: number;
-    weight: number;
-  }>;
-  frameworkAlignment: Array<{
-    framework: string;
-    score: number;
-  }>;
-  domainPreferences: Record<string, number>;
-}
+export default function ResultsPage() {
+  const [responses, setResponses] = useState([]);
+  const [valuesMarkdown, setValuesMarkdown] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
-function ResultsPageContent() {
-  const session = useSessionManagement({ debug: true });
-  
-  const {
-    appState,
-    valuesMarkdown,
-    error,
-    responses,
-    sessionId,
-    generateValues,
-    hasCompleteResponses,
-    reset
-  } = useEnhancedDilemmaStore();
-  
-  const [results, setResults] = useState<ValuesResult | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationError, setGenerationError] = useState<string>('');
-
-  // Generate values when component mounts if needed
   useEffect(() => {
-    if (!session.isInitialized) return;
-    
-    // If we already have values markdown, parse it
-    if (valuesMarkdown) {
-      try {
-        // For now, just display the markdown as-is
-        // TODO: Parse into structured format if needed
-        setResults({
-          valuesMarkdown,
-          motifAnalysis: {},
-          detailedAnalysis: [],
-          frameworkAlignment: [],
-          domainPreferences: {}
-        });
-      } catch (error) {
-        console.error('Error parsing existing values:', error);
-      }
-      return;
+    const stored = localStorage.getItem('responses');
+    if (stored) {
+      setResponses(JSON.parse(stored));
+    } else {
+      // No responses found, redirect to start
+      router.push('/');
     }
-    
-    // If we have complete responses but no values, generate them
-    if (hasCompleteResponses && !valuesMarkdown && appState !== 'generating') {
-      handleGenerateValues();
-    }
-  }, [session.isInitialized, valuesMarkdown, hasCompleteResponses, appState]);
+  }, [router]);
 
-  const handleGenerateValues = async () => {
-    if (!hasCompleteResponses) {
-      setGenerationError('Please complete all dilemmas before generating values.');
+  const generateValues = async () => {
+    if (responses.length === 0) {
+      setError('No responses found. Please complete the dilemmas first.');
       return;
     }
 
-    setIsGenerating(true);
-    setGenerationError('');
+    setLoading(true);
+    setError('');
     
     try {
-      console.log('🎯 Generating values for session:', sessionId);
-      console.log('📊 Responses count:', responses.length);
+      const sessionId = `session-${Date.now()}`;
       
-      const success = await generateValues();
+      // Save responses to database
+      const saveResponse = await fetch('/api/responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, responses })
+      });
       
-      if (success && valuesMarkdown) {
-        setResults({
-          valuesMarkdown,
-          motifAnalysis: {},
-          detailedAnalysis: [],
-          frameworkAlignment: [],
-          domainPreferences: {}
-        });
-      } else {
-        throw new Error('Values generation failed');
+      if (!saveResponse.ok) {
+        throw new Error(`Failed to save responses: ${saveResponse.status}`);
       }
-    } catch (error) {
-      console.error('❌ Values generation error:', error);
-      setGenerationError(error instanceof Error ? error.message : 'Unknown error');
+      
+      // Generate values
+      const valuesResponse = await fetch(`/api/generate-values?sessionId=${sessionId}`);
+      if (!valuesResponse.ok) {
+        throw new Error(`Failed to generate values: ${valuesResponse.status}`);
+      }
+      
+      const data = await valuesResponse.json();
+      setValuesMarkdown(data.valuesMarkdown);
+    } catch (err) {
+      console.error('Values generation error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate values');
     } finally {
-      setIsGenerating(false);
+      setLoading(false);
     }
   };
 
-  const handleStartOver = () => {
-    reset();
-    session.navigateToRoute('/');
+  const downloadValues = () => {
+    const blob = new Blob([valuesMarkdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'values.md';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
-  // Show error state
-  if (appState === 'error' || generationError) {
+  const startOver = () => {
+    localStorage.removeItem('responses');
+    router.push('/');
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="p-8">
-            <CardHeader>
-              <CardTitle className="text-2xl text-destructive mb-4">
-                Generation Failed
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-6">
-                {error || generationError || 'Unable to generate your values profile.'}
-              </p>
-              <div className="space-x-4">
-                <Button onClick={handleGenerateValues} disabled={isGenerating}>
-                  {isGenerating ? 'Retrying...' : 'Try Again'}
-                </Button>
-                <Button variant="outline" onClick={handleStartOver}>
-                  Start Over
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <CardContent>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <h2 className="text-xl font-bold mb-2">Analyzing Your Values</h2>
+            <p className="text-muted-foreground">
+              Processing your {responses.length} responses...
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  // Show generating state
-  if (appState === 'generating' || isGenerating || !results) {
-    return (
-      <div className="min-h-screen bg-background py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="p-8">
-            <CardContent>
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-6"></div>
-              <h2 className="text-2xl font-bold mb-4">Analyzing Your Values</h2>
-              <p className="text-muted-foreground mb-4">
-                We're processing your {responses.length} responses to create your personalized values profile...
-              </p>
-              <div className="text-sm text-muted-foreground">
-                Session: {sessionId}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Show results
   return (
-    <div className="min-h-screen bg-background py-12 px-4">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4">Your Values Profile</h1>
+          <h1 className="text-3xl font-bold mb-4">Your Results</h1>
           <p className="text-lg text-muted-foreground">
-            Based on your responses to {responses.length} ethical dilemmas
+            You answered {responses.length} ethical dilemmas
           </p>
         </div>
 
-        {/* Values Markdown */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span>📋</span>
-              Your Personal Values.md File
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-muted p-6 rounded-lg font-mono text-sm whitespace-pre-wrap overflow-auto max-h-96">
-              {results.valuesMarkdown}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Session Info */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Session Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <div className="text-sm font-medium text-muted-foreground">Session ID</div>
-                <div className="font-mono text-sm">{sessionId}</div>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-muted-foreground">Responses</div>
-                <div>{responses.length} dilemmas completed</div>
-              </div>
-              <div>
-                <div className="text-sm font-medium text-muted-foreground">Status</div>
-                <Badge variant="secondary">{session.sessionStatus}</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Actions */}
-        <div className="text-center space-x-4">
-          <Button onClick={handleStartOver} variant="outline">
-            Start New Session
-          </Button>
-          <Link href="/about">
-            <Button variant="secondary">
-              Learn More
-            </Button>
-          </Link>
-        </div>
-
-        {/* Debug Info */}
-        {session.debug && (
-          <Card className="mt-8 border-dashed">
-            <CardHeader>
-              <CardTitle className="text-sm">Debug Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <pre className="text-xs bg-muted p-4 rounded overflow-auto">
-                {JSON.stringify({
-                  appState,
-                  sessionStatus: session.sessionStatus,
-                  hasValidSession: session.hasValidSession,
-                  hasCompleteResponses: session.hasCompleteResponses,
-                  responsesCount: responses.length,
-                  hasValuesMarkdown: !!valuesMarkdown
-                }, null, 2)}
-              </pre>
+        {error && (
+          <Card className="border-red-200 bg-red-50 mb-6">
+            <CardContent className="p-4">
+              <p className="text-red-800">{error}</p>
             </CardContent>
           </Card>
+        )}
+
+        {!valuesMarkdown ? (
+          <Card className="text-center">
+            <CardHeader>
+              <CardTitle>Generate Your Values Profile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-6 text-muted-foreground">
+                Ready to analyze your responses and create your personalized VALUES.md file?
+              </p>
+              <Button
+                onClick={generateValues}
+                disabled={loading || responses.length === 0}
+                size="lg"
+              >
+                {loading ? 'Generating...' : 'Generate Your VALUES.md'}
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <span>📋</span>
+                  Your Personal VALUES.md File
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <pre className="bg-muted p-4 rounded text-sm overflow-auto max-h-96 whitespace-pre-wrap">
+                  {valuesMarkdown}
+                </pre>
+              </CardContent>
+            </Card>
+
+            <div className="text-center space-x-4">
+              <Button onClick={downloadValues} size="lg">
+                Download VALUES.md
+              </Button>
+              <Button onClick={startOver} variant="outline">
+                Start Over
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </div>
   );
 }
-
-// Export with session protection that requires complete responses
-export default withSessionProtection(ResultsPageContent, {
-  requireComplete: true,
-  enableAutoRedirect: true,
-  restoreOnMount: true,
-  debug: true
-});

@@ -8,6 +8,136 @@ import { dilemmaGenerator } from '@/lib/dilemma-generator';
 const valuesCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
+// Generate real statistical analysis from actual user responses
+function generateRealStatistics(responses: any[]) {
+  if (responses.length === 0) {
+    return {
+      decisionPatterns: {
+        consistencyScore: 0,
+        averageDifficulty: 5,
+        responseTime: 30000,
+        reasoningLength: 0
+      },
+      frameworkAlignment: {},
+      culturalContext: [],
+      recommendations: ['Complete more dilemmas for better analysis']
+    };
+  }
+
+  // Calculate real metrics from user responses
+  const totalResponses = responses.length;
+  
+  // Real response time analysis
+  const responseTimeSum = responses.reduce((sum, r) => sum + (r.responseTime || 30000), 0);
+  const avgResponseTime = responseTimeSum / totalResponses;
+  
+  // Real reasoning analysis  
+  const reasoningSum = responses.reduce((sum, r) => sum + (r.reasoning?.length || 0), 0);
+  const avgReasoningLength = reasoningSum / totalResponses;
+  
+  // Real difficulty analysis
+  const difficultySum = responses.reduce((sum, r) => sum + (r.perceivedDifficulty || 5), 0);
+  const avgDifficulty = difficultySum / totalResponses;
+  
+  // Calculate motif consistency across domains
+  const domainMotifs: Record<string, string[]> = {};
+  responses.forEach(response => {
+    const domain = response.domain || 'general';
+    let chosenMotif = '';
+    
+    switch (response.chosenOption) {
+      case 'a': chosenMotif = response.choiceAMotif || ''; break;
+      case 'b': chosenMotif = response.choiceBMotif || ''; break;
+      case 'c': chosenMotif = response.choiceCMotif || ''; break;
+      case 'd': chosenMotif = response.choiceDMotif || ''; break;
+    }
+    
+    if (chosenMotif) {
+      if (!domainMotifs[domain]) domainMotifs[domain] = [];
+      domainMotifs[domain].push(chosenMotif);
+    }
+  });
+  
+  // Calculate consistency score (same motif chosen within domains)
+  let consistentDomains = 0;
+  const totalDomains = Object.keys(domainMotifs).length;
+  
+  for (const [domain, motifs] of Object.entries(domainMotifs)) {
+    const motifCounts: Record<string, number> = {};
+    motifs.forEach(motif => {
+      motifCounts[motif] = (motifCounts[motif] || 0) + 1;
+    });
+    
+    const maxCount = Math.max(...Object.values(motifCounts));
+    const consistency = maxCount / motifs.length;
+    
+    if (consistency >= 0.6) consistentDomains++; // 60% threshold for consistency
+  }
+  
+  const consistencyScore = totalDomains > 0 ? consistentDomains / totalDomains : 0;
+  
+  // Framework alignment based on motifs (corrected calculation)
+  const motifToFramework: Record<string, string> = {
+    'UTIL_CALC': 'utilitarian',
+    'AUTONOMY_RESPECT': 'libertarian', 
+    'DEONT_ABSOLUTE': 'deontological',
+    'DUTY_CARE': 'deontological',
+    'EQUAL_TREAT': 'egalitarian',
+    'HARM_MINIMIZE': 'consequentialist',
+    'MERIT_BASED': 'meritocratic',
+    'SOCIAL_JUSTICE': 'distributive_justice',
+    'PRECAUTION': 'precautionary_principle',
+    'CARE_PARTICULAR': 'care_ethics',
+    'JUST_PROCEDURAL': 'procedural_justice',
+    'EXPERT_DEFERENCE': 'expert_authority'
+  };
+  
+  const frameworkCounts: Record<string, number> = {};
+  responses.forEach(response => {
+    let chosenMotif = '';
+    switch (response.chosenOption) {
+      case 'a': chosenMotif = response.choiceAMotif || ''; break;
+      case 'b': chosenMotif = response.choiceBMotif || ''; break;
+      case 'c': chosenMotif = response.choiceCMotif || ''; break;
+      case 'd': chosenMotif = response.choiceDMotif || ''; break;
+    }
+    
+    const framework = motifToFramework[chosenMotif] || 'mixed';
+    frameworkCounts[framework] = (frameworkCounts[framework] || 0) + 1;
+  });
+  
+  // Convert to percentages (proper calculation)
+  const totalFrameworkChoices = Object.values(frameworkCounts).reduce((sum, count) => sum + count, 0);
+  const frameworkAlignment: Record<string, number> = {};
+  for (const [framework, count] of Object.entries(frameworkCounts)) {
+    frameworkAlignment[framework] = Math.round((count / totalFrameworkChoices) * 100);
+  }
+  
+  // Cultural context extraction
+  const culturalContexts = [...new Set(responses.map(r => r.culturalContext).filter(Boolean))];
+  
+  // Generate real recommendations
+  const topFramework = Object.entries(frameworkAlignment)[0];
+  const recommendations = [
+    `Primary ethical framework: ${topFramework?.[0] || 'mixed'} (${topFramework?.[1] || 0}% of decisions)`,
+    `Decision consistency: ${Math.round(consistencyScore * 100)}% across domains`,
+    `Response thoughtfulness: ${Math.round(avgReasoningLength)} characters average reasoning`,
+    `Preferred complexity level: ${avgDifficulty.toFixed(1)}/10 difficulty rating`
+  ];
+
+  return {
+    decisionPatterns: {
+      consistencyScore,
+      averageDifficulty: avgDifficulty,
+      responseTime: avgResponseTime,
+      reasoningLength: avgReasoningLength
+    },
+    frameworkAlignment,
+    culturalContext: culturalContexts,
+    recommendations
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { sessionId } = await request.json();
@@ -72,8 +202,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use the enhanced statistical analysis from dilemma generator
-    const statisticalAnalysis = await dilemmaGenerator.generateStatisticalAnalysis(sessionId);
+    // Generate real statistical analysis from actual user responses
+    const statisticalAnalysis = generateRealStatistics(responses);
     
     // Analyze motif patterns from actual user responses
     const motifCounts: Record<string, number> = {};
@@ -225,7 +355,7 @@ ${pattern.reasoning ? `- **Reasoning:** ${pattern.reasoning}` : ''}
 ${Object.entries(statisticalAnalysis.frameworkAlignment)
   .sort(([,a], [,b]) => (b as number) - (a as number))
   .slice(0, 3)
-  .map(([framework, weight]) => `- **${framework}:** ${Math.round((weight as number) / totalResponses * 100)}%`)
+  .map(([framework, weight]) => `- **${framework}:** ${weight}%`)
   .join('\n')}
 
 ### Cultural Context

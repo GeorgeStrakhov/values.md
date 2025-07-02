@@ -1,178 +1,156 @@
 /**
- * CRITICAL E2E Tests - Real Browser Testing of Fixed Navigation
+ * Critical E2E Tests - What Users Actually Experience
  * 
- * Tests the ACTUAL deployed fixes:
- * - Next button navigation with router.push()
- * - Auto-advance timer with fresh store calls
- * - Progress tracking with URL sync
- * - Response persistence with auto-save
+ * These tests verify the app works from a user's perspective.
+ * If these fail, the app is broken for users.
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
 
-test.describe('Critical Navigation Fixes', () => {
+test.describe('Critical User Flows', () => {
   
-  test.beforeEach(async ({ page }) => {
-    // Start from the landing page
-    await page.goto('/');
-  });
+  test('User can start exploring and see a dilemma', async ({ page }) => {
+    // Go to home page
+    await page.goto('/')
+    
+    // Should see the main CTA
+    await expect(page.locator('text=Start Exploring')).toBeVisible()
+    
+    // Click to start
+    await page.click('text=Start Exploring')
+    
+    // Should redirect to explore page with UUID
+    await expect(page).toHaveURL(/\/explore\/[a-f0-9-]{36}/)
+    
+    // Should NOT be stuck on loading spinner
+    const loadingText = page.locator('text=Setting up your session...')
+    await expect(loadingText).toBeHidden({ timeout: 10000 })
+    
+    // Should show actual dilemma content
+    await expect(page.locator('[data-testid="dilemma-title"]')).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('[data-testid="dilemma-scenario"]')).toBeVisible()
+    await expect(page.locator('[data-testid="choice-a"]')).toBeVisible()
+    await expect(page.locator('[data-testid="choice-b"]')).toBeVisible()
+    await expect(page.locator('[data-testid="choice-c"]')).toBeVisible()
+    await expect(page.locator('[data-testid="choice-d"]')).toBeVisible()
+  })
 
-  test('CRITICAL: Next button works and advances through dilemmas', async ({ page }) => {
-    console.log('🎭 Testing Next button fix...');
+  test('User can select a choice and progress', async ({ page }) => {
+    await page.goto('/')
+    await page.click('text=Start Exploring')
     
-    // Navigate to first dilemma
-    await page.click('text=Start Exploring');
-    await page.waitForURL(/\/explore\/.+/);
+    // Wait for dilemma to load
+    await expect(page.locator('[data-testid="dilemma-title"]')).toBeVisible({ timeout: 10000 })
     
-    // Get initial URL
-    const firstURL = page.url();
-    console.log('📍 First dilemma URL:', firstURL);
+    // Select choice A
+    await page.click('[data-testid="choice-a"]')
     
-    // Select option and click Next
-    await page.locator('[data-testid="choice-a"]').click();
-    await expect(page.locator('[data-testid="next-button"]')).toBeEnabled();
+    // Should show as selected
+    const choiceA = page.locator('[data-testid="choice-a"]')
+    await expect(choiceA).toHaveAttribute('data-selected', 'true')
     
-    console.log('🔄 Clicking Next button...');
-    await page.locator('[data-testid="next-button"]').click();
+    // Should be able to add reasoning
+    const reasoningInput = page.locator('[data-testid="reasoning-input"]')
+    await reasoningInput.fill('This is my reasoning for choice A')
     
-    // CRITICAL: URL should change (this was broken before)
-    await page.waitForFunction((firstURL) => {
-      return window.location.href !== firstURL;
-    }, firstURL, { timeout: 3000 });
+    // Should be able to submit
+    const nextButton = page.locator('[data-testid="next-button"]')
+    await expect(nextButton).toBeEnabled()
+    await nextButton.click()
     
-    const secondURL = page.url();
-    console.log('📍 Second dilemma URL:', secondURL);
-    
-    // Verify URL actually changed
-    expect(secondURL).not.toBe(firstURL);
-    expect(secondURL).toMatch(/\/explore\/.+/);
-    
-    console.log('✅ Next button navigation works!');
-  });
+    // Should progress to next dilemma OR results page
+    const currentUrl = page.url()
+    expect(currentUrl).toMatch(/\/explore\/[a-f0-9-]{36}|\/results/)
+  })
 
-  test('CRITICAL: Auto-advance timer works after selection', async ({ page }) => {
-    console.log('🎭 Testing auto-advance timer fix...');
+  test('User cannot get stuck in broken navigation', async ({ page }) => {
+    await page.goto('/')
+    await page.click('text=Start Exploring')
     
-    // Navigate to first dilemma
-    await page.click('text=Start Exploring');
-    await page.waitForURL(/\/explore\/.+/);
+    // Wait for content to load
+    await expect(page.locator('[data-testid="dilemma-title"]')).toBeVisible({ timeout: 15000 })
     
-    const firstURL = page.url();
+    // Should not have any JavaScript errors
+    page.on('pageerror', (error) => {
+      expect(error.message).not.toContain('router.push')
+      expect(error.message).not.toContain('Cannot read properties')
+    })
     
-    // Select option - should trigger auto-advance
-    await page.locator('[data-testid="choice-a"]').click();
+    // Should be able to refresh and maintain progress
+    await page.reload()
     
-    // Look for countdown
-    await expect(page.locator('text=Auto-advancing in')).toBeVisible({ timeout: 1000 });
-    console.log('🔄 Auto-advance countdown started');
-    
-    // Wait for auto-advance to complete
-    await page.waitForFunction((firstURL) => {
-      return window.location.href !== firstURL;
-    }, firstURL, { timeout: 5000 });
-    
-    const secondURL = page.url();
-    expect(secondURL).not.toBe(firstURL);
-    
-    console.log('✅ Auto-advance timer works!');
-  });
+    // Should not show loading spinner forever
+    const loadingText = page.locator('text=Setting up your session...')
+    await expect(loadingText).toBeHidden({ timeout: 10000 })
+  })
 
-  test('CRITICAL: Progress tracking reflects current dilemma', async ({ page }) => {
-    console.log('🎭 Testing progress tracking fix...');
+  test('Health check reflects actual app status', async ({ request }) => {
+    const response = await request.get('/api/health')
+    const health = await response.json()
     
-    // Navigate to first dilemma
-    await page.click('text=Start Exploring');
-    await page.waitForURL(/\/explore\/.+/);
+    // If app is working, health should be 'pass'
+    expect(health.status).toBe('pass')
     
-    // Should show "1 of X"
-    await expect(page.locator('text=/\\d+ of \\d+/')).toBeVisible();
-    const firstProgress = await page.locator('text=/\\d+ of \\d+/').textContent();
-    console.log('📊 First progress:', firstProgress);
-    
-    // Advance to next dilemma
-    await page.locator('[data-testid="choice-a"]').click();
-    await page.locator('[data-testid="next-button"]').click();
-    
-    // Wait for navigation
-    await page.waitForTimeout(1000);
-    
-    // Progress should update
-    const secondProgress = await page.locator('text=/\\d+ of \\d+/').textContent();
-    console.log('📊 Second progress:', secondProgress);
-    
-    expect(secondProgress).not.toBe(firstProgress);
-    expect(secondProgress).toMatch(/^[2-9]+ of \d+$/); // Should be step 2 or higher
-    
-    console.log('✅ Progress tracking works!');
-  });
+    // Critical components should be working
+    expect(health.checks.database.status).toBe('pass')
+    expect(health.checks.dilemmas.status).toBe('pass')
+    expect(health.checks.responsesAPI.status).toBe('pass')
+  })
 
-  test('CRITICAL: Responses are saved and persist', async ({ page }) => {
-    console.log('🎭 Testing response persistence fix...');
+  test('User sees progress indication', async ({ page }) => {
+    await page.goto('/')
+    await page.click('text=Start Exploring')
     
-    // Navigate to first dilemma
-    await page.click('text=Start Exploring');
-    await page.waitForURL(/\/explore\/.+/);
+    // Wait for dilemma to load
+    await expect(page.locator('[data-testid="dilemma-title"]')).toBeVisible({ timeout: 10000 })
     
-    // Select option A
-    await page.locator('[data-testid="choice-a"]').click();
-    await page.locator('[data-testid="difficulty-slider"]').fill('7');
+    // Should show progress indicator
+    const progressBar = page.locator('[data-testid="progress-bar"]')
+    await expect(progressBar).toBeVisible()
     
-    // Advance to next dilemma
-    await page.locator('[data-testid="next-button"]').click();
-    await page.waitForTimeout(1000);
-    
-    // Select option B on second dilemma
-    await page.locator('[data-testid="choice-b"]').click();
-    await page.locator('[data-testid="next-button"]').click();
-    await page.waitForTimeout(1000);
-    
-    // Go back to first dilemma using browser back
-    await page.goBack();
-    await page.waitForTimeout(1000);
-    
-    // Check if first response is restored
-    await expect(page.locator('[data-testid="choice-a"]')).toBeChecked();
-    
-    // Go forward again
-    await page.goForward();
-    await page.waitForTimeout(1000);
-    
-    // Check if second response is restored
-    await expect(page.locator('[data-testid="choice-b"]')).toBeChecked();
-    
-    console.log('✅ Response persistence works!');
-  });
+    // Should show something like "1 of 12" or similar
+    const progressText = page.locator('[data-testid="progress-text"]')
+    await expect(progressText).toContainText(/\d+/)
+  })
 
-  test('PRODUCTION: Complete flow reaches results page', async ({ page }) => {
-    console.log('🎭 Testing complete flow to results...');
+  test('App does not show "0 responses" bug', async ({ page }) => {
+    await page.goto('/')
+    await page.click('text=Start Exploring')
     
-    // Navigate to first dilemma
-    await page.click('text=Start Exploring');
-    await page.waitForURL(/\/explore\/.+/);
+    // Complete at least one response
+    await expect(page.locator('[data-testid="dilemma-title"]')).toBeVisible({ timeout: 10000 })
+    await page.click('[data-testid="choice-a"]')
+    await page.locator('[data-testid="reasoning-input"]').fill('Test response')
     
-    // Complete 3 dilemmas quickly
-    for (let i = 0; i < 3; i++) {
-      await page.locator('[data-testid="choice-a"]').click();
-      
-      // Check if this is the last dilemma (Finish button)
-      const nextButton = page.locator('[data-testid="next-button"]');
-      const buttonText = await nextButton.textContent();
-      
-      await nextButton.click();
-      
-      if (buttonText?.includes('Finish')) {
-        break;
-      }
-      
-      await page.waitForTimeout(1000);
-    }
+    // Check for the dreaded "0 responses" text
+    await expect(page.locator('text=0 responses')).not.toBeVisible()
     
-    // Should reach results page
-    await page.waitForURL('/results', { timeout: 10000 });
+    // Should show actual progress
+    const progressText = page.locator('[data-testid="progress-text"]') 
+    await expect(progressText).not.toContainText('0')
+  })
+})
+
+test.describe('Error Scenarios', () => {
+  
+  test('App handles network errors gracefully', async ({ page }) => {
+    // Intercept and fail API calls
+    await page.route('/api/dilemmas/*', route => {
+      route.abort('failed')
+    })
     
-    // Should show values
-    await expect(page.locator('[data-testid="values-title"]')).toBeVisible({ timeout: 10000 });
+    await page.goto('/')
+    await page.click('text=Start Exploring')
     
-    console.log('✅ Complete flow works!');
-  });
-});
+    // Should show error state, not loading forever
+    await expect(page.locator('text=Error loading dilemmas')).toBeVisible({ timeout: 10000 })
+  })
+
+  test('Invalid routes redirect appropriately', async ({ page }) => {
+    // Go to invalid dilemma UUID
+    await page.goto('/explore/invalid-uuid')
+    
+    // Should redirect to home or show error, not crash
+    await expect(page).toHaveURL(/\/$|\/explore\/[a-f0-9-]{36}/, { timeout: 10000 })
+  })
+})

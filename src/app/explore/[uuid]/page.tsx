@@ -41,7 +41,7 @@ export default function ExplorePage({ params }) {
     };
     
     fetchDilemmas();
-  }, []);
+  }, [params]);
 
   // Handle user's answer
   const handleNext = () => {

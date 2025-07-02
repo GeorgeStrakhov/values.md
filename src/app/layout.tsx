@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { Header } from "@/components/header";
-import { ProgressProvider } from "@/components/progress-context";
+// Progress provider removed - now using simple page-level state
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,10 +38,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <ProgressProvider>
-              <Header />
-              {children}
-            </ProgressProvider>
+            <Header />
+            {children}
           </ThemeProvider>
         </AuthProvider>
       </body>

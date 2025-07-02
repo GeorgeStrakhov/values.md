@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { ModeToggle } from '@/components/mode-toggle';
-import { useProgress } from '@/components/progress-context';
-import { ProgressBar } from '@/components/progress-bar';
+// Progress functionality removed - now handled by simple page-level state
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -26,7 +25,6 @@ const navigation = [
 ];
 
 export function Header() {
-  const { current, total, showProgress } = useProgress();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -93,13 +91,6 @@ export function Header() {
           </Sheet>
         </div>
         </div>
-        
-        {/* Progress Slot */}
-        {showProgress && (
-          <div className="pb-4">
-            <ProgressBar current={current} total={total} />
-          </div>
-        )}
       </div>
     </header>
   );

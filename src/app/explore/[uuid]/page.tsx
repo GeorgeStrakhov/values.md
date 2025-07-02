@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
 
 export default function ExplorePage({ params }) {
   const [dilemmas, setDilemmas] = useState([]);
@@ -12,7 +13,9 @@ export default function ExplorePage({ params }) {
   const [responses, setResponses] = useState([]);
   const [choice, setChoice] = useState('');
   const [reasoning, setReasoning] = useState('');
+  const [difficulty, setDifficulty] = useState(5);
   const [loading, setLoading] = useState(true);
+  const [startTime, setStartTime] = useState(Date.now());
   const router = useRouter();
 
   // Load dilemmas once on mount
@@ -33,6 +36,9 @@ export default function ExplorePage({ params }) {
           setResponses(savedResponses);
           setCurrentIndex(savedResponses.length);
         }
+        
+        // Reset timer for current dilemma
+        setStartTime(Date.now());
       } catch (error) {
         console.error('Error loading dilemmas:', error);
       } finally {
@@ -47,12 +53,13 @@ export default function ExplorePage({ params }) {
   const handleNext = () => {
     if (!choice) return;
     
+    const responseTime = Date.now() - startTime;
     const newResponse = {
       dilemmaId: dilemmas[currentIndex].dilemmaId,
       chosenOption: choice,
       reasoning: reasoning || '',
-      responseTime: 5000,
-      perceivedDifficulty: 5
+      responseTime: responseTime,
+      perceivedDifficulty: difficulty
     };
     
     const newResponses = [...responses, newResponse];
@@ -66,6 +73,8 @@ export default function ExplorePage({ params }) {
       setCurrentIndex(currentIndex + 1);
       setChoice('');
       setReasoning('');
+      setDifficulty(5); // Reset to default
+      setStartTime(Date.now()); // Reset timer for next dilemma
     }
   };
 
@@ -155,6 +164,25 @@ export default function ExplorePage({ params }) {
                 placeholder="Share your reasoning..."
                 className="min-h-[100px]"
               />
+            </div>
+            
+            {/* Difficulty Rating */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                How difficult was this dilemma? ({difficulty}/10)
+              </label>
+              <Slider
+                value={[difficulty]}
+                onValueChange={([value]) => setDifficulty(value)}
+                max={10}
+                min={1}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>Very Easy</span>
+                <span>Very Difficult</span>
+              </div>
             </div>
             
             {/* Next button */}

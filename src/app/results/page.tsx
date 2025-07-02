@@ -46,7 +46,11 @@ export default function ResultsPage() {
       }
       
       // Generate values
-      const valuesResponse = await fetch(`/api/generate-values?sessionId=${sessionId}`);
+      const valuesResponse = await fetch('/api/generate-values', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      });
       if (!valuesResponse.ok) {
         throw new Error(`Failed to generate values: ${valuesResponse.status}`);
       }

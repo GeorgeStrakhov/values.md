@@ -5,256 +5,335 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 
+interface FlowStep {
+  id: string
+  name: string
+  description: string
+  files: string[]
+  complexity: 'simple' | 'medium' | 'complex'
+  status: 'working' | 'fixed' | 'simplified'
+  position: { x: number, y: number }
+  color: string
+}
+
 interface CommitData {
   hash: string
   date: string
   message: string
   author: string
-  filesChanged: FileChange[]
-  semanticImpact: {
-    frontend: number
-    backend: number
-    data: number
-    config: number
-    test: number
-    docs: number
+  flowImpact: {
+    step: string
+    change: 'added' | 'fixed' | 'simplified' | 'removed'
+    description: string
+  }[]
+  linesChanged: {
+    added: number
+    removed: number
+    simplified: number
   }
 }
 
-interface FileChange {
-  path: string
-  action: 'added' | 'modified' | 'deleted'
-  lines: number
-  semantic: 'frontend' | 'backend' | 'data' | 'config' | 'test' | 'docs'
-  complexity: number
-}
+// Core user flow steps (the actual moving pieces)
+const userFlowSteps: FlowStep[] = [
+  {
+    id: 'landing',
+    name: 'Landing Page',
+    description: 'User clicks "Generate Your VALUES.md"',
+    files: ['src/app/page.tsx'],
+    complexity: 'simple',
+    status: 'working',
+    position: { x: 100, y: 150 },
+    color: '#3b82f6'
+  },
+  {
+    id: 'api-redirect',
+    name: 'API Redirect',
+    description: '/api/dilemmas/random → 307 redirect',
+    files: ['src/app/api/dilemmas/random/route.ts'],
+    complexity: 'simple',
+    status: 'working',
+    position: { x: 300, y: 150 },
+    color: '#8b5cf6'
+  },
+  {
+    id: 'explore-page',
+    name: 'Explore Page',
+    description: 'Load dilemmas, show choices, save responses',
+    files: ['src/app/explore/[uuid]/page.tsx'],
+    complexity: 'simple',
+    status: 'simplified',
+    position: { x: 500, y: 150 },
+    color: '#f59e0b'
+  },
+  {
+    id: 'local-storage',
+    name: 'Session Storage',
+    description: 'localStorage persistence for responses',
+    files: ['localStorage API'],
+    complexity: 'simple',
+    status: 'simplified',
+    position: { x: 500, y: 300 },
+    color: '#10b981'
+  },
+  {
+    id: 'results-page',
+    name: 'Results Page',
+    description: 'Generate values.md from responses',
+    files: ['src/app/results/page.tsx'],
+    complexity: 'simple',
+    status: 'simplified',
+    position: { x: 700, y: 150 },
+    color: '#3b82f6'
+  },
+  {
+    id: 'api-responses',
+    name: 'Save Responses',
+    description: 'POST /api/responses for research',
+    files: ['src/app/api/responses/route.ts'],
+    complexity: 'simple',
+    status: 'working',
+    position: { x: 600, y: 300 },
+    color: '#8b5cf6'
+  },
+  {
+    id: 'api-values',
+    name: 'Generate Values',
+    description: 'AI analysis → VALUES.md file',
+    files: ['src/app/api/generate-values/route.ts'],
+    complexity: 'medium',
+    status: 'working',
+    position: { x: 800, y: 300 },
+    color: '#ec4899'
+  }
+]
 
-// Real commit timeline data
-const commitTimeline: CommitData[] = [
+// Real commit timeline with focus on user flow impact
+const flowCommitTimeline: CommitData[] = [
   {
     hash: 'initial',
     date: '2024-12-01',
     message: '🎉 Initial Next.js setup',
     author: 'Claude',
-    filesChanged: [
-      { path: 'package.json', action: 'added', lines: 45, semantic: 'config', complexity: 3 },
-      { path: 'next.config.ts', action: 'added', lines: 15, semantic: 'config', complexity: 2 },
-      { path: 'tailwind.config.ts', action: 'added', lines: 20, semantic: 'config', complexity: 2 },
-      { path: 'src/app/layout.tsx', action: 'added', lines: 35, semantic: 'frontend', complexity: 2 },
-      { path: 'src/app/page.tsx', action: 'added', lines: 25, semantic: 'frontend', complexity: 2 }
+    flowImpact: [
+      { step: 'landing', change: 'added', description: 'Basic home page structure' }
     ],
-    semanticImpact: { frontend: 30, backend: 0, data: 0, config: 70, test: 0, docs: 0 }
+    linesChanged: { added: 140, removed: 0, simplified: 0 }
   },
   {
     hash: '27b894a',
     date: '2024-12-05',
-    message: '🏗️ Database schema and UI foundation',
+    message: '🏗️ Database schema and API foundation',
     author: 'Claude',
-    filesChanged: [
-      { path: 'src/lib/schema.ts', action: 'added', lines: 180, semantic: 'backend', complexity: 8 },
-      { path: 'src/lib/db.ts', action: 'added', lines: 25, semantic: 'backend', complexity: 5 },
-      { path: 'drizzle/0000_bent_microbe.sql', action: 'added', lines: 95, semantic: 'backend', complexity: 6 },
-      { path: 'src/components/ui/button.tsx', action: 'added', lines: 45, semantic: 'frontend', complexity: 2 },
-      { path: 'src/components/ui/card.tsx', action: 'added', lines: 35, semantic: 'frontend', complexity: 2 },
-      { path: 'src/components/header.tsx', action: 'added', lines: 65, semantic: 'frontend', complexity: 3 }
+    flowImpact: [
+      { step: 'api-redirect', change: 'added', description: 'Random dilemma API endpoint' },
+      { step: 'api-responses', change: 'added', description: 'Response storage API' }
     ],
-    semanticImpact: { frontend: 35, backend: 60, data: 0, config: 0, test: 0, docs: 5 }
+    linesChanged: { added: 445, removed: 0, simplified: 0 }
   },
   {
     hash: '9e76def',
     date: '2024-12-10',
-    message: '🚀 API endpoints and dilemma generation',
+    message: '🚀 Core user flow implementation',
     author: 'Claude',
-    filesChanged: [
-      { path: 'src/app/api/dilemmas/random/route.ts', action: 'added', lines: 85, semantic: 'backend', complexity: 6 },
-      { path: 'src/app/api/dilemmas/[uuid]/route.ts', action: 'added', lines: 65, semantic: 'backend', complexity: 5 },
-      { path: 'src/app/api/responses/route.ts', action: 'added', lines: 95, semantic: 'backend', complexity: 6 },
-      { path: 'src/lib/openrouter.ts', action: 'added', lines: 145, semantic: 'backend', complexity: 7 },
-      { path: 'src/store/dilemma-store.ts', action: 'added', lines: 125, semantic: 'data', complexity: 6 }
+    flowImpact: [
+      { step: 'explore-page', change: 'added', description: 'Complex state machine integration (378 lines)' },
+      { step: 'results-page', change: 'added', description: 'Complex session management (324 lines)' },
+      { step: 'api-values', change: 'added', description: 'LLM values generation' }
     ],
-    semanticImpact: { frontend: 0, backend: 70, data: 25, config: 0, test: 0, docs: 5 }
+    linesChanged: { added: 1247, removed: 0, simplified: 0 }
   },
   {
     hash: '607f632',
     date: '2024-12-15',
-    message: '🎨 Frontend pages and user flow',
+    message: '🔧 Bug fixes and state management expansion',
     author: 'Claude',
-    filesChanged: [
-      { path: 'src/app/explore/[uuid]/page.tsx', action: 'added', lines: 185, semantic: 'frontend', complexity: 8 },
-      { path: 'src/app/results/page.tsx', action: 'added', lines: 145, semantic: 'frontend', complexity: 7 },
-      { path: 'src/app/admin/page.tsx', action: 'added', lines: 95, semantic: 'frontend', complexity: 5 },
-      { path: 'src/components/progress-bar.tsx', action: 'added', lines: 45, semantic: 'frontend', complexity: 4 },
-      { path: 'src/app/api/generate-values/route.ts', action: 'added', lines: 125, semantic: 'backend', complexity: 7 }
+    flowImpact: [
+      { step: 'local-storage', change: 'added', description: 'Complex Zustand store with persistence' },
+      { step: 'explore-page', change: 'added', description: 'useSessionManagement hook integration' }
     ],
-    semanticImpact: { frontend: 75, backend: 20, data: 0, config: 0, test: 0, docs: 5 }
-  },
-  {
-    hash: 'f397f97',
-    date: '2024-12-20',
-    message: '🔧 Bug fixes and polish',
-    author: 'Claude',
-    filesChanged: [
-      { path: 'src/app/page.tsx', action: 'modified', lines: 45, semantic: 'frontend', complexity: 3 },
-      { path: 'src/components/progress-bar.tsx', action: 'modified', lines: 25, semantic: 'frontend', complexity: 4 },
-      { path: 'src/lib/auth.ts', action: 'added', lines: 85, semantic: 'backend', complexity: 6 },
-      { path: 'src/app/admin/health/page.tsx', action: 'added', lines: 55, semantic: 'frontend', complexity: 4 }
-    ],
-    semanticImpact: { frontend: 60, backend: 35, data: 0, config: 0, test: 0, docs: 5 }
+    linesChanged: { added: 856, removed: 0, simplified: 0 }
   },
   {
     hash: '7b69593',
     date: '2024-12-25',
-    message: '🔄 SURGICAL FIXES: State machine refactor',
+    message: '🔄 SURGICAL FIXES: Complex state machine refactor',
     author: 'Claude',
-    filesChanged: [
-      { path: 'src/store/app-state-machine.ts', action: 'added', lines: 325, semantic: 'data', complexity: 10 },
-      { path: 'src/store/enhanced-dilemma-store.ts', action: 'added', lines: 285, semantic: 'data', complexity: 9 },
-      { path: 'src/hooks/use-session-management.tsx', action: 'added', lines: 195, semantic: 'data', complexity: 8 },
-      { path: 'tests/state-machine.test.ts', action: 'added', lines: 245, semantic: 'test', complexity: 9 },
-      { path: 'tests/enhanced-store-integration.test.ts', action: 'added', lines: 215, semantic: 'test', complexity: 8 },
-      { path: 'tests/session-management.test.ts', action: 'added', lines: 185, semantic: 'test', complexity: 7 },
-      { path: 'src/app/explore/[uuid]/page.tsx', action: 'modified', lines: 125, semantic: 'frontend', complexity: 8 },
-      { path: 'src/app/results/page.tsx', action: 'modified', lines: 95, semantic: 'frontend', complexity: 7 },
-      { path: 'src/lib/openrouter.ts', action: 'modified', lines: 45, semantic: 'backend', complexity: 7 },
-      { path: 'CLAUDE.md', action: 'added', lines: 195, semantic: 'docs', complexity: 4 },
-      { path: 'vitest.config.ts', action: 'added', lines: 25, semantic: 'test', complexity: 3 },
-      { path: 'tests/e2e-critical.spec.ts', action: 'added', lines: 165, semantic: 'test', complexity: 6 }
+    flowImpact: [
+      { step: 'explore-page', change: 'fixed', description: 'Added 2000+ lines of state machine complexity' },
+      { step: 'local-storage', change: 'fixed', description: 'Enhanced store with finite state transitions' }
     ],
-    semanticImpact: { frontend: 20, backend: 10, data: 35, config: 5, test: 25, docs: 5 }
+    linesChanged: { added: 1265, removed: 0, simplified: 0 }
+  },
+  {
+    hash: 'bc2f4fc',
+    date: '2025-01-02',
+    message: '🎯 SIMPLIFY CORE: Replace complex state with minimal React patterns',
+    author: 'Claude',
+    flowImpact: [
+      { step: 'explore-page', change: 'simplified', description: 'Reduced from 378 lines to 175 lines (-54%)' },
+      { step: 'results-page', change: 'simplified', description: 'Reduced from 324 lines to 160 lines (-51%)' },
+      { step: 'local-storage', change: 'simplified', description: 'Simple localStorage instead of Zustand store' }
+    ],
+    linesChanged: { added: 335, removed: 596, simplified: 703 }
+  },
+  {
+    hash: '17dbfae',
+    date: '2025-01-02',
+    message: '🧹 CRUFT REMOVAL: Delete 1,780 lines of dead complexity',
+    author: 'Claude',
+    flowImpact: [
+      { step: 'explore-page', change: 'simplified', description: 'Removed useSessionManagement dependencies' },
+      { step: 'results-page', change: 'simplified', description: 'Removed complex session protection' },
+      { step: 'local-storage', change: 'simplified', description: 'Deleted 1,957 lines of dead state management' }
+    ],
+    linesChanged: { added: 0, removed: 4424, simplified: 0 }
   }
 ]
 
-// Semantic positioning (where each type appears on the map)
-const semanticPositions = {
-  config: { x: 150, y: 100, color: '#6b7280' },    // top-left (foundation)
-  backend: { x: 400, y: 150, color: '#8b5cf6' },   // center-left (core logic)
-  data: { x: 250, y: 300, color: '#f59e0b' },      // center (state management)
-  frontend: { x: 550, y: 250, color: '#3b82f6' },  // right (user interface)
-  test: { x: 350, y: 450, color: '#10b981' },      // bottom (quality)
-  docs: { x: 100, y: 400, color: '#ec4899' }       // bottom-left (documentation)
-}
-
-const AnimatedFileNode = ({ 
-  file, 
-  position, 
+const FlowStepNode = ({ 
+  step, 
   isActive, 
+  isCompleted,
   delay = 0 
 }: { 
-  file: FileChange
-  position: { x: number, y: number }
+  step: FlowStep
   isActive: boolean
+  isCompleted: boolean
   delay?: number
 }) => {
   const [visible, setVisible] = useState(false)
   
   useEffect(() => {
-    if (isActive) {
+    if (isActive || isCompleted) {
       const timer = setTimeout(() => setVisible(true), delay)
       return () => clearTimeout(timer)
     } else {
       setVisible(false)
     }
-  }, [isActive, delay])
+  }, [isActive, isCompleted, delay])
 
   if (!visible) return null
 
-  const size = Math.max(8, Math.min(24, file.lines / 10))
-  const semantic = semanticPositions[file.semantic]
-  
-  // Add some randomness to position so files don't overlap
-  const jitter = { 
-    x: (Math.random() - 0.5) * 60, 
-    y: (Math.random() - 0.5) * 60 
+  const getStatusColor = () => {
+    if (step.status === 'simplified') return '#10b981' // green
+    if (step.status === 'fixed') return '#f59e0b' // amber
+    return step.color
+  }
+
+  const getStatusSymbol = () => {
+    if (step.status === 'simplified') return '✨'
+    if (step.status === 'fixed') return '🔧'
+    return '✅'
   }
 
   return (
     <div
       className="absolute transition-all duration-1000 ease-out"
       style={{
-        left: semantic.x + jitter.x,
-        top: semantic.y + jitter.y,
+        left: step.position.x,
+        top: step.position.y,
         transform: visible ? 'scale(1)' : 'scale(0)',
         opacity: visible ? 1 : 0
       }}
     >
       <div
-        className="rounded-full border-2 border-white shadow-lg flex items-center justify-center animate-pulse"
+        className="rounded-lg border-2 border-white shadow-lg p-4 min-w-32 text-center relative"
         style={{
-          width: size,
-          height: size,
-          backgroundColor: file.action === 'added' ? semantic.color : 
-                          file.action === 'modified' ? '#f59e0b' : '#ef4444'
+          backgroundColor: getStatusColor(),
+          animation: isActive ? 'pulse 2s infinite' : 'none'
         }}
-        title={`${file.path} (${file.action}, ${file.lines} lines)`}
       >
-        <span className="text-white text-xs">
-          {file.action === 'added' ? '+' : file.action === 'modified' ? '~' : '-'}
-        </span>
-      </div>
-      
-      {/* File path label */}
-      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-1 py-0.5 bg-black bg-opacity-75 text-white text-xs rounded whitespace-nowrap max-w-32 truncate">
-        {file.path.split('/').pop()}
+        <div className="absolute -top-2 -right-2 text-lg">
+          {getStatusSymbol()}
+        </div>
+        
+        <div className="text-white font-bold text-sm mb-1">
+          {step.name}
+        </div>
+        
+        <div className="text-white text-xs opacity-90 mb-2">
+          {step.description}
+        </div>
+        
+        <div className="text-white text-xs">
+          {step.complexity === 'simple' ? '🟢' : step.complexity === 'medium' ? '🟡' : '🔴'} {step.complexity}
+        </div>
       </div>
     </div>
   )
 }
 
-const SemanticRegion = ({ 
-  type, 
-  position, 
-  impact 
+const FlowConnection = ({ 
+  from, 
+  to, 
+  isActive 
 }: { 
-  type: keyof typeof semanticPositions
-  position: { x: number, y: number, color: string }
-  impact: number
+  from: FlowStep
+  to: FlowStep
+  isActive: boolean
 }) => {
+  const startX = from.position.x + 64
+  const startY = from.position.y + 40
+  const endX = to.position.x
+  const endY = to.position.y + 40
+  
   return (
-    <div
-      className="absolute rounded-full border-2 border-dashed transition-all duration-500"
-      style={{
-        left: position.x - 50,
-        top: position.y - 50,
-        width: 100 + impact * 2,
-        height: 100 + impact * 2,
-        borderColor: position.color,
-        backgroundColor: `${position.color}20`,
-        opacity: 0.3 + (impact / 100) * 0.7
-      }}
+    <svg 
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: 1 }}
     >
-      <div 
-        className="absolute inset-0 flex items-center justify-center text-sm font-bold"
-        style={{ color: position.color }}
-      >
-        {type.toUpperCase()}
-      </div>
-    </div>
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon
+            points="0 0, 10 3.5, 0 7"
+            fill={isActive ? '#3b82f6' : '#6b7280'}
+          />
+        </marker>
+      </defs>
+      <line
+        x1={startX}
+        y1={startY}
+        x2={endX}
+        y2={endY}
+        stroke={isActive ? '#3b82f6' : '#6b7280'}
+        strokeWidth="2"
+        markerEnd="url(#arrowhead)"
+        strokeDasharray={isActive ? "0" : "5,5"}
+        className="transition-all duration-500"
+      />
+    </svg>
   )
 }
 
 export default function GrowthMapPage() {
   const [currentCommitIndex, setCurrentCommitIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [speed, setSpeed] = useState(1000)
+  const [speed, setSpeed] = useState(1500)
+  const [showFlowTrace, setShowFlowTrace] = useState(true)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const currentCommit = commitTimeline[currentCommitIndex]
-  const visibleFiles = commitTimeline
-    .slice(0, currentCommitIndex + 1)
-    .flatMap((commit, commitIdx) => 
-      commit.filesChanged.map(file => ({
-        ...file,
-        commitIndex: commitIdx,
-        commitHash: commit.hash,
-        isFromCurrentCommit: commitIdx === currentCommitIndex
-      }))
-    )
+  const currentCommit = flowCommitTimeline[currentCommitIndex]
+  const activeSteps = new Set(currentCommit?.flowImpact.map(impact => impact.step) || [])
+  
+  // Get all steps that should be visible up to current commit
+  const completedSteps = new Set(
+    flowCommitTimeline
+      .slice(0, currentCommitIndex + 1)
+      .flatMap(commit => commit.flowImpact.map(impact => impact.step))
+  )
 
   useEffect(() => {
     if (isPlaying) {
       intervalRef.current = setInterval(() => {
         setCurrentCommitIndex(prev => {
-          if (prev >= commitTimeline.length - 1) {
+          if (prev >= flowCommitTimeline.length - 1) {
             setIsPlaying(false)
             return prev
           }
@@ -283,44 +362,53 @@ export default function GrowthMapPage() {
     setCurrentCommitIndex(0)
   }
 
+  const totalLinesEvolution = flowCommitTimeline.slice(0, currentCommitIndex + 1).reduce(
+    (acc, commit) => ({
+      added: acc.added + commit.linesChanged.added,
+      removed: acc.removed + commit.linesChanged.removed,
+      simplified: acc.simplified + commit.linesChanged.simplified
+    }),
+    { added: 0, removed: 0, simplified: 0 }
+  )
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Repository Growth Map
+            Core User Flow Evolution
           </h1>
           <p className="text-gray-300 mb-4">
-            Watch your codebase evolve commit by commit, with semantic organization and real-time impact visualization
+            Trace the actual moving pieces: from complex state machines to simple React patterns
           </p>
         </div>
 
         {/* Controls */}
         <Card className="mb-6 bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-white">Timeline Controls</CardTitle>
+            <CardTitle className="text-white">Flow Timeline Controls</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap items-center gap-4">
               <Button onClick={handlePlayPause} variant={isPlaying ? "destructive" : "default"}>
-                {isPlaying ? '⏸️ Pause' : '▶️ Play'}
+                {isPlaying ? '⏸️ Pause' : '▶️ Play Evolution'}
               </Button>
               <Button onClick={handleReset} variant="outline">
-                🔄 Reset
+                🔄 Reset to Start
               </Button>
               
               <div className="flex items-center gap-2">
                 <span className="text-sm">Speed:</span>
                 <Slider
                   value={[speed]}
-                  onValueChange={([value]) => setSpeed(2500 - value)}
-                  max={2000}
-                  min={200}
-                  step={200}
+                  onValueChange={([value]) => setSpeed(value)}
+                  max={3000}
+                  min={500}
+                  step={250}
                   className="w-32"
                 />
-                <span className="text-xs text-gray-400">{((2500 - speed) / 1000).toFixed(1)}x</span>
+                <span className="text-xs text-gray-400">{(speed/1000).toFixed(1)}s</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -328,30 +416,38 @@ export default function GrowthMapPage() {
                 <Slider
                   value={[currentCommitIndex]}
                   onValueChange={([value]) => setCurrentCommitIndex(value)}
-                  max={commitTimeline.length - 1}
+                  max={flowCommitTimeline.length - 1}
                   min={0}
                   step={1}
                   className="w-48"
                 />
                 <span className="text-xs text-gray-400">
-                  {currentCommitIndex + 1}/{commitTimeline.length}
+                  {currentCommitIndex + 1}/{flowCommitTimeline.length}
                 </span>
               </div>
+
+              <Button 
+                onClick={() => setShowFlowTrace(!showFlowTrace)} 
+                variant="outline"
+                size="sm"
+              >
+                {showFlowTrace ? '👁️ Hide' : '👁️ Show'} Flow Trace
+              </Button>
             </div>
           </CardContent>
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Main Map */}
+          {/* Main Flow Map */}
           <div className="lg:col-span-3">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Semantic Repository Map</CardTitle>
+                <CardTitle className="text-white">User Flow Moving Pieces</CardTitle>
               </CardHeader>
               <CardContent>
                 <div 
                   className="relative bg-gray-900 rounded-lg overflow-hidden"
-                  style={{ height: '600px' }}
+                  style={{ height: '500px' }}
                 >
                   {/* Grid background */}
                   <div 
@@ -362,42 +458,80 @@ export default function GrowthMapPage() {
                     }}
                   />
 
-                  {/* Semantic regions */}
-                  {Object.entries(semanticPositions).map(([type, position]) => (
-                    <SemanticRegion
-                      key={type}
-                      type={type as keyof typeof semanticPositions}
-                      position={position}
-                      impact={currentCommit?.semanticImpact[type as keyof typeof currentCommit.semanticImpact] || 0}
+                  {/* Flow connections */}
+                  {showFlowTrace && userFlowSteps.slice(0, -1).map((step, index) => (
+                    <FlowConnection
+                      key={`${step.id}-connection`}
+                      from={step}
+                      to={userFlowSteps[index + 1]}
+                      isActive={completedSteps.has(step.id) && completedSteps.has(userFlowSteps[index + 1].id)}
                     />
                   ))}
 
-                  {/* File nodes */}
-                  {visibleFiles.map((file, index) => (
-                    <AnimatedFileNode
-                      key={`${file.commitHash}-${file.path}`}
-                      file={file}
-                      position={semanticPositions[file.semantic]}
-                      isActive={true}
-                      delay={file.isFromCurrentCommit ? index * 100 : 0}
+                  {/* Additional connections for storage and APIs */}
+                  {showFlowTrace && (
+                    <>
+                      <FlowConnection
+                        from={userFlowSteps[2]} // explore-page
+                        to={userFlowSteps[3]}   // local-storage
+                        isActive={completedSteps.has('explore-page') && completedSteps.has('local-storage')}
+                      />
+                      <FlowConnection
+                        from={userFlowSteps[4]} // results-page
+                        to={userFlowSteps[5]}   // api-responses
+                        isActive={completedSteps.has('results-page') && completedSteps.has('api-responses')}
+                      />
+                      <FlowConnection
+                        from={userFlowSteps[5]} // api-responses
+                        to={userFlowSteps[6]}   // api-values
+                        isActive={completedSteps.has('api-responses') && completedSteps.has('api-values')}
+                      />
+                    </>
+                  )}
+
+                  {/* Flow step nodes */}
+                  {userFlowSteps.map((step, index) => (
+                    <FlowStepNode
+                      key={step.id}
+                      step={step}
+                      isActive={activeSteps.has(step.id)}
+                      isCompleted={completedSteps.has(step.id)}
+                      delay={activeSteps.has(step.id) ? index * 200 : 0}
                     />
                   ))}
+
+                  {/* Current step highlight */}
+                  <div className="absolute top-4 left-4 bg-black bg-opacity-75 p-3 rounded-lg">
+                    <h4 className="text-sm font-bold mb-2">Current Changes</h4>
+                    <div className="space-y-1 text-xs max-w-64">
+                      {currentCommit.flowImpact.map((impact, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <span className="text-yellow-400 font-bold">
+                            {impact.change === 'added' ? '➕' : 
+                             impact.change === 'fixed' ? '🔧' : 
+                             impact.change === 'simplified' ? '✨' : '❌'}
+                          </span>
+                          <span>{impact.description}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* Legend */}
-                  <div className="absolute bottom-4 left-4 bg-black bg-opacity-75 p-4 rounded-lg">
-                    <h4 className="text-sm font-bold mb-2">File Actions</h4>
+                  <div className="absolute bottom-4 right-4 bg-black bg-opacity-75 p-3 rounded-lg">
+                    <h4 className="text-sm font-bold mb-2">Status Legend</h4>
                     <div className="space-y-1 text-xs">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                        <span>+ Added</span>
+                        <div className="w-3 h-3 rounded bg-green-500 mr-2"></div>
+                        <span>✨ Simplified</span>
                       </div>
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-amber-500 mr-2"></div>
-                        <span>~ Modified</span>
+                        <div className="w-3 h-3 rounded bg-amber-500 mr-2"></div>
+                        <span>🔧 Fixed</span>
                       </div>
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                        <span>- Deleted</span>
+                        <div className="w-3 h-3 rounded bg-blue-500 mr-2"></div>
+                        <span>✅ Working</span>
                       </div>
                     </div>
                   </div>
@@ -427,64 +561,99 @@ export default function GrowthMapPage() {
                     {currentCommit.message}
                   </div>
                   <div className="text-xs text-gray-400">
-                    {currentCommit.filesChanged.length} files changed
+                    {currentCommit.flowImpact.length} flow changes
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Impact Chart */}
+            {/* Code Evolution Stats */}
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white text-sm">Semantic Impact</CardTitle>
+                <CardTitle className="text-white text-sm">Code Evolution</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Lines Added:</span>
+                    <span className="font-mono text-green-400">
+                      +{totalLinesEvolution.added.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Lines Removed:</span>
+                    <span className="font-mono text-red-400">
+                      -{totalLinesEvolution.removed.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Lines Simplified:</span>
+                    <span className="font-mono text-blue-400">
+                      ✨{totalLinesEvolution.simplified.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="border-t border-gray-600 pt-2 mt-2">
+                    <div className="flex justify-between font-bold">
+                      <span>Net Change:</span>
+                      <span className="font-mono">
+                        {(totalLinesEvolution.added - totalLinesEvolution.removed) > 0 ? '+' : ''}
+                        {(totalLinesEvolution.added - totalLinesEvolution.removed).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Flow Complexity */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white text-sm">Flow Complexity</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {Object.entries(currentCommit.semanticImpact).map(([type, impact]) => (
-                    <div key={type} className="flex items-center">
-                      <div className="w-16 text-xs capitalize">{type}:</div>
-                      <div className="flex-1 bg-gray-700 rounded-full h-2 mx-2">
-                        <div
-                          className="h-2 rounded-full transition-all duration-500"
-                          style={{
-                            width: `${impact}%`,
-                            backgroundColor: semanticPositions[type as keyof typeof semanticPositions]?.color || '#gray'
-                          }}
-                        />
-                      </div>
-                      <div className="text-xs w-8">{impact}%</div>
+                  {userFlowSteps.filter(step => completedSteps.has(step.id)).map((step) => (
+                    <div key={step.id} className="flex items-center justify-between text-xs">
+                      <span className="capitalize">{step.name}:</span>
+                      <span className={
+                        step.complexity === 'simple' ? 'text-green-400' :
+                        step.complexity === 'medium' ? 'text-yellow-400' : 'text-red-400'
+                      }>
+                        {step.complexity === 'simple' ? '🟢' : step.complexity === 'medium' ? '🟡' : '🔴'} {step.complexity}
+                      </span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Stats */}
+            {/* Flow Status Summary */}
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white text-sm">Repository Stats</CardTitle>
+                <CardTitle className="text-white text-sm">Flow Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span>Total Files:</span>
-                    <span className="font-mono">{visibleFiles.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Lines Added:</span>
-                    <span className="font-mono text-green-400">
-                      +{visibleFiles.filter(f => f.action === 'added').reduce((sum, f) => sum + f.lines, 0)}
+                    <span>Simplified Steps:</span>
+                    <span className="text-green-400">
+                      {userFlowSteps.filter(s => s.status === 'simplified' && completedSteps.has(s.id)).length}/
+                      {userFlowSteps.filter(s => completedSteps.has(s.id)).length}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Lines Modified:</span>
-                    <span className="font-mono text-amber-400">
-                      ~{visibleFiles.filter(f => f.action === 'modified').reduce((sum, f) => sum + f.lines, 0)}
+                    <span>Simple Components:</span>
+                    <span className="text-green-400">
+                      {userFlowSteps.filter(s => s.complexity === 'simple' && completedSteps.has(s.id)).length}/
+                      {userFlowSteps.filter(s => completedSteps.has(s.id)).length}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Commits:</span>
-                    <span className="font-mono">{currentCommitIndex + 1}/{commitTimeline.length}</span>
+                  <div className="text-center pt-2 border-t border-gray-600">
+                    <span className="text-blue-300 font-bold">
+                      {Math.round((userFlowSteps.filter(s => s.status === 'simplified' && completedSteps.has(s.id)).length / 
+                                   Math.max(1, userFlowSteps.filter(s => completedSteps.has(s.id)).length)) * 100)}% 
+                      Simplified
+                    </span>
                   </div>
                 </div>
               </CardContent>

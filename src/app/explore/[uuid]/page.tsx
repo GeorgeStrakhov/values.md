@@ -34,9 +34,6 @@ export default function ExplorePage({ params }) {
         if (stored) {
           const savedResponses = JSON.parse(stored);
           setResponses(savedResponses);
-          // Ensure currentIndex doesn't exceed available dilemmas
-          const validIndex = Math.min(savedResponses.length, data.dilemmas.length - 1);
-          setCurrentIndex(validIndex);
           
           // If user has completed all dilemmas, redirect to results
           if (savedResponses.length >= data.dilemmas.length) {
@@ -44,6 +41,9 @@ export default function ExplorePage({ params }) {
             router.push('/results');
             return;
           }
+          
+          // Set current index to the next dilemma to answer
+          setCurrentIndex(savedResponses.length);
         }
         
         // Reset timer for current dilemma
@@ -99,23 +99,27 @@ export default function ExplorePage({ params }) {
   }
   
   const currentDilemma = dilemmas[currentIndex];
+  
+  // Safety check: if no current dilemma and we have responses, go to results
+  if (!currentDilemma && responses.length > 0) {
+    router.push('/results');
+    return null;
+  }
+  
+  // If no current dilemma and no responses, show error
   if (!currentDilemma) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="p-6">
           <CardContent>
-            <h2 className="text-xl font-bold mb-4">No More Dilemmas</h2>
-            <p className="mb-4">You've completed all available dilemmas in this set.</p>
+            <h2 className="text-xl font-bold mb-4">No Dilemmas Available</h2>
+            <p className="mb-4">Unable to load dilemmas. Please try again.</p>
             <div className="space-y-3">
-              <Button onClick={() => router.push('/results')} className="w-full">
-                View Results
-              </Button>
               <Button 
                 onClick={() => {
                   localStorage.removeItem('responses');
                   router.push('/api/dilemmas/random');
                 }} 
-                variant="outline" 
                 className="w-full"
               >
                 Start New Session

@@ -32,18 +32,34 @@ export default function ExplorePage({ params }) {
         // Restore previous responses if any
         const stored = localStorage.getItem('responses');
         if (stored) {
-          const savedResponses = JSON.parse(stored);
-          setResponses(savedResponses);
+          const allSavedResponses = JSON.parse(stored);
+          
+          // Filter responses to only include those that match current dilemmas
+          const currentDilemmaIds = new Set(data.dilemmas.map(d => d.dilemmaId));
+          const relevantResponses = allSavedResponses.filter(response => 
+            currentDilemmaIds.has(response.dilemmaId)
+          );
+          
+          setResponses(relevantResponses);
           
           // If user has completed all dilemmas, redirect to results
-          if (savedResponses.length >= data.dilemmas.length) {
-            console.log(`User completed ${savedResponses.length}/${data.dilemmas.length} dilemmas, redirecting to results`);
+          // Use strict equality to ensure we only redirect when truly completed
+          if (relevantResponses.length >= data.dilemmas.length) {
+            console.log(`User completed ${relevantResponses.length}/${data.dilemmas.length} dilemmas, redirecting to results`);
             router.push('/results');
             return;
           }
           
-          // Set current index to the next dilemma to answer
-          setCurrentIndex(savedResponses.length);
+          // Find the next unanswered dilemma
+          const answeredDilemmaIds = new Set(relevantResponses.map(r => r.dilemmaId));
+          const nextUnansweredIndex = data.dilemmas.findIndex(d => !answeredDilemmaIds.has(d.dilemmaId));
+          
+          if (nextUnansweredIndex !== -1) {
+            setCurrentIndex(nextUnansweredIndex);
+          } else {
+            // This shouldn't happen if our logic above is correct, but as a fallback
+            setCurrentIndex(0);
+          }
         }
         
         // Reset timer for current dilemma
@@ -71,9 +87,18 @@ export default function ExplorePage({ params }) {
       perceivedDifficulty: difficulty
     };
     
+    // Get existing responses from localStorage to merge with current session
+    const stored = localStorage.getItem('responses');
+    const existingResponses = stored ? JSON.parse(stored) : [];
+    
+    // Remove any existing response for this dilemma and add the new one
+    const filteredResponses = existingResponses.filter(r => r.dilemmaId !== newResponse.dilemmaId);
+    const allResponses = [...filteredResponses, newResponse];
+    
+    // Update both local state and localStorage
     const newResponses = [...responses, newResponse];
     setResponses(newResponses);
-    localStorage.setItem('responses', JSON.stringify(newResponses));
+    localStorage.setItem('responses', JSON.stringify(allResponses));
     
     // Navigate to next or finish
     if (currentIndex + 1 >= dilemmas.length) {

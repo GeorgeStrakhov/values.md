@@ -24,6 +24,8 @@ const navigation = [
   { name: 'Experiments', href: '/experiments' },
   { name: 'Alignment', href: '/alignment-experiments' },
   { name: 'Workbench', href: '/values-workbench' },
+  { name: 'Waterfall', href: '/waterfall' },
+  { name: 'Growth', href: '/growth-map' },
   { name: 'System', href: '/system-status' },
 ];
 

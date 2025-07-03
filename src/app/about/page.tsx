@@ -9,9 +9,15 @@ export default function AboutPage() {
           </p>
           
           <h2 className="text-2xl font-semibold mb-4 text-foreground">How it works</h2>
-          <p className="mb-6 text-foreground">
-            Through a series of carefully crafted ethical dilemmas, we help you discover and articulate your personal values in a format that can be used to better align AI systems with your moral framework.
+          <p className="mb-4 text-foreground">
+            Through a series of 12 carefully crafted ethical dilemmas across diverse domains, we help you discover and articulate your personal values in a structured format for AI alignment.
           </p>
+          <ul className="list-disc pl-6 mb-6 text-foreground">
+            <li><strong>Ethical Dilemma Sequence:</strong> Navigate 12 scenarios covering technology, medical ethics, social justice, and governance</li>
+            <li><strong>Detailed Response Capture:</strong> Your choices, reasoning, timing, and difficulty ratings are all analyzed</li>
+            <li><strong>TF-IDF Style Analysis:</strong> We weight 34+ ethical motifs by frequency and domain significance</li>
+            <li><strong>Values.md Generation:</strong> Receive a personalized, machine-readable ethical framework file</li>
+          </ul>
           
           <h2 className="text-2xl font-semibold mb-4 text-foreground">Privacy</h2>
           <p className="mb-6 text-foreground">

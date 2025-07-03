@@ -135,8 +135,8 @@ export default function Home() {
               <Link href="/docs/dataset" className="text-primary hover:underline font-medium">
                 Dilemmas dataset
               </Link>
-              <Link href="/blog/llm-biases" className="text-primary hover:underline font-medium">
-                LLM biases research
+              <Link href="/docs/methodology" className="text-primary hover:underline font-medium">
+                Research methodology
               </Link>
             </div>
           </div>

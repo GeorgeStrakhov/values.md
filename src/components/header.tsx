@@ -23,6 +23,8 @@ const navigation = [
   { name: 'Research', href: '/research' },
   { name: 'Experiments', href: '/experiments' },
   { name: 'Alignment', href: '/alignment-experiments' },
+  { name: 'Workbench', href: '/values-workbench' },
+  { name: 'System', href: '/system-status' },
 ];
 
 export function Header() {

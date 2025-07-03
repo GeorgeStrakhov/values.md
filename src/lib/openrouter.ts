@@ -230,3 +230,13 @@ Please make your choice and explain your reasoning.`;
 }
 
 export const openRouter = new OpenRouterService();
+
+// Convenience function for simple API calls
+export async function getOpenRouterResponse(
+  prompt: string, 
+  model: string = 'anthropic/claude-3-5-sonnet-20241022'
+): Promise<string> {
+  return openRouter.generateCompletion([
+    { role: 'user', content: prompt }
+  ], model);
+}

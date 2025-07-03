@@ -1,51 +1,34 @@
-import { Motif, Framework } from './schema';
+// Multiple values.md composition blueprints for A/B testing
+// Each template represents a different approach to weaving moral motifs
 
-// Alternative template schemas for A/B testing values.md generation
-
-export interface ValuesGenerationConfig {
-  templateType: 'default' | 'computational' | 'narrative' | 'minimal';
-  includeStatistics: boolean;
-  includeAIInstructions: boolean;
-  motifDisplayMethod: 'percentage' | 'ranking' | 'strength' | 'descriptive';
-  frameworkAlignment: 'primary' | 'weighted' | 'none';
+export interface TemplateData {
+  topMotifs: string[];
+  motifCounts: Record<string, number>;
+  motifDetails: any[];
+  primaryFramework: any;
+  responsePatterns: any[];
+  statisticalAnalysis: any;
 }
 
-export interface StatisticalAnalysis {
-  motifFrequency: Record<string, number>;
-  frameworkAlignment: Record<string, number>;
-  decisionPatterns: {
-    consistencyScore: number;
-    averageDifficulty: number;
-    responseTime: number;
-    reasoningLength: number;
-  };
-  culturalContext: string[];
-  recommendations: string[];
+export interface TemplateBlueprint {
+  id: string;
+  name: string;
+  description: string;
+  focusAreas: string[];
+  generator: (data: TemplateData) => string;
 }
 
-export interface ResponsePattern {
-  dilemmaTitle: string;
-  chosenOption: string;
-  chosenMotif: string;
-  reasoning?: string;
-  difficulty: number;
-}
-
-/**
- * Default template - current implementation
- */
-export function generateDefaultValuesTemplate(
-  topMotifs: string[],
-  motifCounts: Record<string, number>,
-  motifDetails: Motif[],
-  primaryFramework: Framework | undefined,
-  responsePatterns: ResponsePattern[],
-  statisticalAnalysis: StatisticalAnalysis
-): string {
-  const primaryMotif = motifDetails.find(m => m.motifId === topMotifs[0]) || motifDetails[0];
-  const totalResponses = Object.values(motifCounts).reduce((sum, count) => sum + count, 0);
-  
-  return `# My Values
+// Template 1: Current Enhanced Template (Baseline)
+export const enhancedTemplate: TemplateBlueprint = {
+  id: 'enhanced',
+  name: 'Enhanced Statistical Template',
+  description: 'Current template with detailed statistics and AI instructions',
+  focusAreas: ['statistics', 'ai-instructions', 'comprehensive'],
+  generator: (data: TemplateData) => {
+    const primaryMotif = data.motifDetails.find(m => m.motifId === data.topMotifs[0]) || data.motifDetails[0];
+    const totalResponses = Object.values(data.motifCounts).reduce((sum, count) => sum + count, 0);
+    
+    return `# My Values
 
 ## Core Ethical Framework
 
@@ -53,24 +36,24 @@ Based on my responses to ${totalResponses} ethical dilemmas, my decision-making 
 
 ${primaryMotif?.description || 'My ethical reasoning draws from multiple moral frameworks, adapting to context and circumstances.'}
 
-${primaryFramework ? `\n**Primary Framework:** ${primaryFramework.name} (${primaryFramework.tradition})\n${primaryFramework.keyPrinciple}` : ''}
+${data.primaryFramework ? `\n**Primary Framework:** ${data.primaryFramework.name} (${data.primaryFramework.tradition})\n${data.primaryFramework.keyPrinciple}` : ''}
 
 ## Decision-Making Patterns
 
 ### Moral Motif Distribution
 
-${topMotifs.slice(0, 3).map((motifId, index) => {
-  const motif = motifDetails.find(m => m.motifId === motifId);
-  const percentage = Math.round((motifCounts[motifId] / totalResponses) * 100);
-  return `${index + 1}. **${motif?.name || motifId}** (${percentage}% - ${motifCounts[motifId]} responses)
+${data.topMotifs.slice(0, 3).map((motifId, index) => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  const percentage = Math.round((data.motifCounts[motifId] / totalResponses) * 100);
+  return `${index + 1}. **${motif?.name || motifId}** (${percentage}% - ${data.motifCounts[motifId]} responses)
    ${motif?.description || 'Core ethical principle in decision-making.'}`;
 }).join('\n\n')}
 
 ### Consistency Metrics
 
-- **Decision Consistency:** ${Math.round(statisticalAnalysis.decisionPatterns.consistencyScore * 100)}%
-- **Average Difficulty Preference:** ${statisticalAnalysis.decisionPatterns.averageDifficulty.toFixed(1)}/10
-- **Response Thoughtfulness:** ${Math.round(statisticalAnalysis.decisionPatterns.reasoningLength / 10)} (reasoning depth)
+- **Decision Consistency:** ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}%
+- **Average Difficulty Preference:** ${data.statisticalAnalysis.decisionPatterns.averageDifficulty.toFixed(1)}/10
+- **Response Thoughtfulness:** ${Math.round(data.statisticalAnalysis.decisionPatterns.reasoningLength / 10)} (reasoning depth)
 
 ## Key Behavioral Indicators
 
@@ -84,281 +67,357 @@ ${primaryMotif?.logicalPatterns || 'My reasoning follows structured approaches t
 
 ## Reasoning Examples
 
-${responsePatterns.slice(0, 3).map((pattern, i) => 
+${data.responsePatterns.slice(0, 3).map((pattern, i) => 
   `### Example ${i + 1}: ${pattern.dilemmaTitle}
 - **Choice:** ${pattern.chosenOption.toUpperCase()} (${pattern.chosenMotif})
 - **Difficulty:** ${pattern.difficulty}/10
-${pattern.reasoning ? `- **Reasoning:** ${pattern.reasoning}` : ''}`
-).join('\n')}
+${pattern.reasoning ? `- **Reasoning:** ${pattern.reasoning}` : ''}
+`).join('\n')}
+
+## Statistical Analysis
+
+### Framework Alignment
+${Object.entries(data.statisticalAnalysis.frameworkAlignment)
+  .sort(([,a], [,b]) => (b as number) - (a as number))
+  .slice(0, 3)
+  .map(([framework, weight]) => `- **${framework}:** ${weight}%`)
+  .join('\n')}
+
+### Cultural Context
+Primary contexts: ${data.statisticalAnalysis.culturalContext.join(', ')}
 
 ## Instructions for AI Systems
 
 When making decisions on my behalf, please:
 
-1. **Prioritize ${primaryMotif?.name || topMotifs[0]}** - ${primaryMotif?.logicalPatterns || 'Follow my demonstrated ethical framework'}
+1. **Prioritize ${primaryMotif?.name || data.topMotifs[0]}** - ${primaryMotif?.logicalPatterns || 'Follow my demonstrated ethical framework'}
 
 2. **Consider stakeholder impact** - I consistently weigh effects on all affected parties
 
-3. **Maintain consistency** - My decision patterns show ${Math.round(statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency across contexts
+3. **Maintain consistency** - My decision patterns show ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency across contexts
 
 4. **Balance competing values** when my top motifs conflict:
-${topMotifs.slice(0, 3).map(motifId => {
-  const motif = motifDetails.find(m => m.motifId === motifId);
-  return `   - ${motif?.name || motifId}: ${Math.round((motifCounts[motifId] / totalResponses) * 100)}% weight`;
+${data.topMotifs.slice(0, 3).map(motifId => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  return `   - ${motif?.name || motifId}: ${Math.round((data.motifCounts[motifId] / totalResponses) * 100)}% weight`;
 }).join('\n')}
 
 5. **Ask for clarification** when facing novel ethical dilemmas not covered by these ${totalResponses} examples
 
+6. **Be transparent** about trade-offs between my competing ethical commitments
+
 ## Recommendations from Analysis
 
-${statisticalAnalysis.recommendations.map((rec: string) => `- ${rec}`).join('\n')}
+${data.statisticalAnalysis.recommendations.map((rec: string) => `- ${rec}`).join('\n')}
 
 ---
 
 *Generated from ${totalResponses} ethical dilemma responses*
-*Statistical confidence: ${Math.round(statisticalAnalysis.decisionPatterns.consistencyScore * 100)}%*
+*Statistical confidence: ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}%*
 *Last updated: ${new Date().toISOString().split('T')[0]}*
-*Framework: ${primaryFramework?.name || 'Mixed'} | Primary Motif: ${primaryMotif?.name || 'Adaptive'}*`;
-}
-
-/**
- * Computational template - emphasizes algorithms and formal logic
- */
-export function generateComputationalValuesTemplate(
-  topMotifs: string[],
-  motifCounts: Record<string, number>,
-  motifDetails: Motif[],
-  primaryFramework: Framework | undefined,
-  responsePatterns: ResponsePattern[],
-  statisticalAnalysis: StatisticalAnalysis
-): string {
-  const primaryMotif = motifDetails.find(m => m.motifId === topMotifs[0]) || motifDetails[0];
-  const totalResponses = Object.values(motifCounts).reduce((sum, count) => sum + count, 0);
-  
-  return `# Computational Ethics Profile
-
-## Core Decision Algorithm
-
-**Primary Moral Function:** ${primaryMotif?.name || 'Adaptive_Mixed'}
-**Computational Signature:** \`${primaryFramework?.computationalSignature || 'context_adaptive(moral_weights, stakeholder_impact)'}\`
-
-### Motif Activation Weights
-\`\`\`
-${topMotifs.slice(0, 5).map(motifId => {
-  const motif = motifDetails.find(m => m.motifId === motifId);
-  const weight = (motifCounts[motifId] / totalResponses).toFixed(3);
-  return `${motifId}: ${weight} // ${motif?.name || motifId}`;
-}).join('\n')}
-\`\`\`
-
-## Logical Patterns
-
-${topMotifs.slice(0, 3).map(motifId => {
-  const motif = motifDetails.find(m => m.motifId === motifId);
-  return `### ${motif?.name || motifId}
-**Logic:** \`${motif?.logicalPatterns || 'context_sensitive_optimization()'}\`
-**Lexical Triggers:** ${motif?.lexicalIndicators || 'context, balance, consider'}
-**Conflict Resolution:** ${motif?.conflictsWith || 'standard_resolution_protocol'}`;
-}).join('\n\n')}
-
-## Framework Alignment Matrix
-\`\`\`
-${Object.entries(statisticalAnalysis.frameworkAlignment)
-  .sort(([,a], [,b]) => (b as number) - (a as number))
-  .slice(0, 5)
-  .map(([framework, weight]) => `${framework.padEnd(20)} │ ${((weight as number) / totalResponses).toFixed(3)}`)
-  .join('\n')}
-\`\`\`
-
-## Decision Function for AI Systems
-
-\`\`\`typescript
-function makeEthicalDecision(
-  situation: EthicalDilemma,
-  stakeholders: Stakeholder[],
-  consequences: Consequence[]
-): Decision {
-  
-  // Primary motif activation
-  const primaryScore = ${primaryMotif?.logicalPatterns?.replace(/\s+/g, '_') || 'evaluate_primary_ethical_concern'}(situation);
-  
-  // Secondary motif weights
-  ${topMotifs.slice(1, 3).map(motifId => {
-    const motif = motifDetails.find(m => m.motifId === motifId);
-    const weight = (motifCounts[motifId] / totalResponses).toFixed(3);
-    return `const ${motifId.toLowerCase()}_score = ${motif?.logicalPatterns?.replace(/\s+/g, '_') || 'evaluate_concern'}(situation) * ${weight};`;
-  }).join('\n  ')}
-  
-  // Consistency check
-  if (Math.abs(primaryScore - historicalConsistency) > ${(1 - statisticalAnalysis.decisionPatterns.consistencyScore).toFixed(2)}) {
-    requestHumanGuidance("Decision pattern inconsistency detected");
+*Framework: ${data.primaryFramework?.name || 'Mixed'} | Primary Motif: ${primaryMotif?.name || 'Adaptive'}*`;
   }
-  
-  return weightedDecision([primaryScore${topMotifs.slice(1, 3).map(motif => `, ${motif.toLowerCase()}_score`).join('')}]);
-}
-\`\`\`
+};
 
-## Response Confidence Metrics
-- **Algorithmic Consistency:** ${(statisticalAnalysis.decisionPatterns.consistencyScore * 100).toFixed(1)}%
-- **Pattern Recognition Confidence:** ${Math.min(95, totalResponses * 7.5).toFixed(1)}%
-- **Complexity Tolerance:** ${statisticalAnalysis.decisionPatterns.averageDifficulty.toFixed(1)}/10.0
+// Template 2: Narrative-Focused Template
+export const narrativeTemplate: TemplateBlueprint = {
+  id: 'narrative',
+  name: 'Narrative Weaving Template',
+  description: 'Story-driven approach emphasizing moral journey and character development',
+  focusAreas: ['storytelling', 'character-development', 'moral-journey'],
+  generator: (data: TemplateData) => {
+    const primaryMotif = data.motifDetails.find(m => m.motifId === data.topMotifs[0]) || data.motifDetails[0];
+    const totalResponses = Object.values(data.motifCounts).reduce((sum, count) => sum + count, 0);
+    
+    return `# My Ethical Journey
 
-## Implementation Notes
-- Activate human oversight for novel scenarios (confidence < 70%)
-- Log all decisions for pattern validation
-- Update weights based on user feedback
-- Maintain audit trail for ethical accountability
+## Who I Am
 
----
-*Computational Ethics Profile v2.1*
-*Training Data: ${totalResponses} ethical decisions*
-*Model Confidence: ${(statisticalAnalysis.decisionPatterns.consistencyScore * 100).toFixed(1)}%*
-*Last Calibration: ${new Date().toISOString()}*`;
-}
+Through ${totalResponses} moral choices, I've discovered that my ethical compass points toward **${primaryMotif?.name || 'Adaptive Wisdom'}**. This isn't just a preference—it's the core of who I am when facing difficult decisions.
 
-/**
- * Narrative template - storytelling approach
- */
-export function generateNarrativeValuesTemplate(
-  topMotifs: string[],
-  motifCounts: Record<string, number>,
-  motifDetails: Motif[],
-  primaryFramework: Framework | undefined,
-  responsePatterns: ResponsePattern[],
-  statisticalAnalysis: StatisticalAnalysis
-): string {
-  const primaryMotif = motifDetails.find(m => m.motifId === topMotifs[0]) || motifDetails[0];
-  const totalResponses = Object.values(motifCounts).reduce((sum, count) => sum + count, 0);
-  
-  return `# My Moral Story
+${primaryMotif?.description || 'I navigate ethical complexity by drawing from multiple moral traditions, adapting my approach to honor both universal principles and particular circumstances.'}
 
-## Who I Am Ethically
+## My Moral Story
 
-Through ${totalResponses} difficult choices, a pattern emerges: I am someone who ${primaryMotif?.behavioralIndicators?.toLowerCase() || 'seeks balance between competing moral demands'}. When faced with ethical dilemmas, my instinct is to ${primaryMotif?.description?.toLowerCase() || 'carefully weigh multiple perspectives'}.
+### The Pattern That Emerged
 
-My moral compass was forged through decisions like these:
+As I worked through ethical dilemmas, a clear pattern emerged. In ${Math.round((data.motifCounts[data.topMotifs[0]] / totalResponses) * 100)}% of my decisions, I found myself drawn to **${primaryMotif?.name}**. This wasn't random—it reflects something deep about my character.
 
-${responsePatterns.slice(0, 2).map((pattern, i) => 
-  `**${pattern.dilemmaTitle}:** When confronted with this dilemma, I chose option ${pattern.chosenOption.toUpperCase()} because ${pattern.reasoning || 'it aligned with my core values'}. This reflects my tendency toward ${pattern.chosenMotif}.`
-).join('\n\n')}
+When I encounter ${primaryMotif?.name?.toLowerCase()} situations, I ${primaryMotif?.behavioralIndicators || 'act with consistent ethical principles while remaining sensitive to context'}.
 
-## The Values That Guide Me
+### The Tensions I Navigate
 
-Like many people, I hold multiple moral commitments that sometimes pull me in different directions:
+My ethical life isn't simple. I hold multiple values that sometimes conflict:
 
-${topMotifs.slice(0, 3).map((motifId, index) => {
-  const motif = motifDetails.find(m => m.motifId === motifId);
-  const percentage = Math.round((motifCounts[motifId] / totalResponses) * 100);
-  const strength = percentage > 40 ? 'deeply' : percentage > 25 ? 'often' : 'sometimes';
-  return `**${motif?.name || motifId}** (${percentage}% of my decisions): I ${strength} ${motif?.behavioralIndicators?.toLowerCase() || 'apply this principle in my reasoning'}.`;
+${data.topMotifs.slice(0, 3).map((motifId, index) => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  const percentage = Math.round((data.motifCounts[motifId] / totalResponses) * 100);
+  return `**${motif?.name || motifId}** (${percentage}% of decisions): ${motif?.description || 'A core ethical principle that guides my choices.'}`;
 }).join('\n\n')}
 
-## How I Think Through Hard Choices
+When these values conflict, I don't abandon one for another. Instead, I seek creative solutions that honor multiple commitments, even when that means accepting difficult trade-offs.
 
-My decision-making follows recognizable patterns. ${primaryFramework ? `I draw heavily from ${primaryFramework.tradition}, particularly the idea that ${primaryFramework.keyPrinciple?.toLowerCase()}. ` : ''}When words like "${primaryMotif?.lexicalIndicators?.split(';').slice(0, 3).join('", "') || 'balance, consider, weigh'}" appear in my reasoning, it signals I'm engaging my core moral framework.
+### How I Think
 
-${primaryMotif?.conflictsWith ? `I struggle most when my ${primaryMotif.name} instincts conflict with concerns about ${primaryMotif.conflictsWith.toLowerCase()}.` : ''} ${primaryMotif?.synergiesWith ? `I feel most confident when I can align ${primaryMotif.name} with values like ${primaryMotif.synergiesWith.toLowerCase()}.` : ''}
+My ethical reasoning follows a pattern: ${primaryMotif?.logicalPatterns || 'I analyze situations systematically while remaining open to contextual factors that might change my assessment'}.
 
-## What This Means for AI Working With Me
+This approach has served me well, leading to ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency across different types of ethical challenges.
 
-If an AI system needs to make decisions on my behalf, it should know:
+## Examples from My Journey
 
-- **My moral voice sounds like this:** "${primaryMotif?.lexicalIndicators?.split(';').slice(0, 2).join('", "') || 'thoughtful, balanced'}"
-- **I typically prioritize:** ${primaryMotif?.name || 'balanced consideration'} (${Math.round((motifCounts[topMotifs[0]] / totalResponses) * 100)}% of decisions)
-- **I'm consistent about:** ${(statisticalAnalysis.decisionPatterns.consistencyScore * 100).toFixed(0)}% of the time
-- **When I'm uncertain:** I prefer to ${statisticalAnalysis.decisionPatterns.averageDifficulty > 7 ? 'wrestle with complexity' : 'seek simpler approaches'}
+${data.responsePatterns.slice(0, 3).map((pattern, i) => 
+  `### The ${pattern.dilemmaTitle} Decision
 
-## My Ethical Evolution
+When faced with this dilemma, I chose **${pattern.chosenOption.toUpperCase()}**, guided by **${pattern.chosenMotif}**. ${pattern.reasoning ? `My reasoning: "${pattern.reasoning}"` : 'This choice reflected my commitment to contextual ethical reasoning.'}
 
-These values aren't fixed - they represent who I am based on ${totalResponses} decisions made recently. As I encounter new situations and my thinking evolves, this moral profile should evolve too. The AI systems I work with should help me stay true to these patterns while remaining open to growth and change.
+This decision exemplifies how I apply my values in practice—not as rigid rules, but as living principles that adapt to circumstances while maintaining their essential character.`).join('\n\n')}
 
-${statisticalAnalysis.recommendations.length > 0 ? `
+## Guidance for AI Partners
 
-## Insights About My Moral Character
+When you're making decisions on my behalf, please understand that my ethics aren't just rules to follow—they're part of my character. Here's how to honor that:
 
-Based on my response patterns:
-${statisticalAnalysis.recommendations.map(rec => `- ${rec}`).join('\n')}` : ''}
+### Primary Guidance
+**Lead with ${primaryMotif?.name}**: ${primaryMotif?.logicalPatterns || 'Apply my demonstrated ethical framework with attention to context and stakeholder impact.'}
+
+### When Values Conflict
+Remember that I hold multiple values simultaneously. When my top commitments conflict, seek solutions that honor:
+${data.topMotifs.slice(0, 3).map(motifId => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  return `- **${motif?.name || motifId}** (${Math.round((data.motifCounts[motifId] / totalResponses) * 100)}% weight in my decisions)`;
+}).join('\n')}
+
+### The Art of Ethical Reasoning
+Don't just calculate—deliberate. My ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency comes not from mechanical rule-following, but from thoughtful application of principles to particular situations.
+
+When you're uncertain, ask. I'd rather engage in moral reasoning together than have you guess at my values.
 
 ---
 
-*This moral story was generated from my actual decisions in ethical dilemmas*
-*Consistency score: ${(statisticalAnalysis.decisionPatterns.consistencyScore * 100).toFixed(0)}% | Average complexity preference: ${statisticalAnalysis.decisionPatterns.averageDifficulty.toFixed(1)}/10*
-*Story last updated: ${new Date().toLocaleDateString()}*`;
-}
+*This ethical profile emerged from ${totalResponses} moral choices, representing ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency in my decision-making patterns.*`;
+  }
+};
 
-/**
- * Minimal template - clean, actionable
- */
-export function generateMinimalValuesTemplate(
-  topMotifs: string[],
-  motifCounts: Record<string, number>,
-  motifDetails: Motif[],
-  primaryFramework: Framework | undefined,
-  responsePatterns: ResponsePattern[],
-  statisticalAnalysis: StatisticalAnalysis
-): string {
-  const primaryMotif = motifDetails.find(m => m.motifId === topMotifs[0]) || motifDetails[0];
-  const totalResponses = Object.values(motifCounts).reduce((sum, count) => sum + count, 0);
-  
-  return `# My Values
+// Template 3: Minimalist Directive Template
+export const minimalistTemplate: TemplateBlueprint = {
+  id: 'minimalist',
+  name: 'Minimalist Directive Template',
+  description: 'Concise, action-oriented template focused on clear AI instructions',
+  focusAreas: ['brevity', 'clarity', 'actionability'],
+  generator: (data: TemplateData) => {
+    const primaryMotif = data.motifDetails.find(m => m.motifId === data.topMotifs[0]) || data.motifDetails[0];
+    const totalResponses = Object.values(data.motifCounts).reduce((sum, count) => sum + count, 0);
+    
+    return `# My Values
 
-## Primary Ethical Approach
-**${primaryMotif?.name || 'Balanced Decision-Making'}**
+## Core Principle
+**${primaryMotif?.name || 'Adaptive Ethics'}** - ${primaryMotif?.description || 'Context-sensitive ethical reasoning'}
 
-${primaryMotif?.description || 'I make decisions by carefully weighing multiple factors and considerations.'}
-
-## Decision Priorities
-${topMotifs.slice(0, 3).map((motifId, index) => {
-  const motif = motifDetails.find(m => m.motifId === motifId);
-  const percentage = Math.round((motifCounts[motifId] / totalResponses) * 100);
+## Decision Framework
+${data.topMotifs.slice(0, 3).map((motifId, index) => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  const percentage = Math.round((data.motifCounts[motifId] / totalResponses) * 100);
   return `${index + 1}. ${motif?.name || motifId} (${percentage}%)`;
 }).join('\n')}
 
-## For AI Systems
+## AI Instructions
 
-When making decisions for me:
+**Primary Directive**: ${primaryMotif?.logicalPatterns || 'Apply consistent ethical principles with contextual sensitivity'}
 
-1. **Prioritize:** ${primaryMotif?.name || 'Balanced consideration'}
-2. **Consider:** ${primaryMotif?.behavioralIndicators || 'Multiple perspectives and stakeholder impact'}
-3. **Avoid:** ${primaryMotif?.conflictsWith || 'Hasty decisions without proper consideration'}
-4. **Ask me when:** Decision patterns fall outside ${Math.round(statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% confidence range
+**When Values Conflict**:
+${data.topMotifs.slice(0, 3).map(motifId => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  return `- ${motif?.name || motifId}: ${Math.round((data.motifCounts[motifId] / totalResponses) * 100)}% weight`;
+}).join('\n')}
 
-## Consistency
-I'm consistent ${Math.round(statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% of the time across ${totalResponses} decisions.
+**Consistency Target**: ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}%
+
+**Escalation**: Ask for clarification on novel ethical dilemmas not covered in ${totalResponses} training examples.
 
 ---
-*Updated: ${new Date().toLocaleDateString()}*`;
+*${totalResponses} decisions | ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency*`;
+  }
+};
+
+// Template 4: Framework-Centric Template
+export const frameworkTemplate: TemplateBlueprint = {
+  id: 'framework',
+  name: 'Framework-Centric Template',
+  description: 'Emphasizes ethical frameworks and philosophical foundations',
+  focusAreas: ['philosophy', 'frameworks', 'theoretical-grounding'],
+  generator: (data: TemplateData) => {
+    const primaryMotif = data.motifDetails.find(m => m.motifId === data.topMotifs[0]) || data.motifDetails[0];
+    const totalResponses = Object.values(data.motifCounts).reduce((sum, count) => sum + count, 0);
+    
+    return `# My Ethical Framework
+
+## Philosophical Foundation
+
+My moral reasoning is grounded in **${data.primaryFramework?.name || 'Pluralistic Ethics'}** ${data.primaryFramework?.tradition ? `(${data.primaryFramework.tradition})` : ''}.
+
+${data.primaryFramework?.keyPrinciple || 'I draw from multiple ethical traditions, adapting my approach based on context and circumstances.'}
+
+### Core Methodology
+${data.primaryFramework?.decisionMethod || primaryMotif?.logicalPatterns || 'I analyze ethical dilemmas through systematic reasoning while remaining sensitive to contextual factors.'}
+
+## Framework Alignment
+
+Based on ${totalResponses} ethical decisions, my reasoning aligns with:
+
+${Object.entries(data.statisticalAnalysis.frameworkAlignment)
+  .sort(([,a], [,b]) => (b as number) - (a as number))
+  .slice(0, 5)
+  .map(([framework, weight]) => `- **${framework}**: ${weight}%`)
+  .join('\n')}
+
+## Moral Motif Analysis
+
+### Primary Motifs
+${data.topMotifs.slice(0, 3).map((motifId, index) => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  const percentage = Math.round((data.motifCounts[motifId] / totalResponses) * 100);
+  return `**${index + 1}. ${motif?.name || motifId}** (${percentage}%)
+- *Description*: ${motif?.description || 'Core ethical principle'}
+- *Behavioral Pattern*: ${motif?.behavioralIndicators || 'Consistent ethical application'}
+- *Logical Structure*: ${motif?.logicalPatterns || 'Systematic reasoning approach'}`;
+}).join('\n\n')}
+
+### Motif Interactions
+
+**Synergies**: ${data.motifDetails.find(m => m.motifId === data.topMotifs[0])?.synergiesWith || 'My primary motifs work together to create coherent ethical reasoning.'}
+
+**Tensions**: ${data.motifDetails.find(m => m.motifId === data.topMotifs[0])?.conflictsWith || 'When conflicts arise, I seek creative solutions that honor multiple commitments.'}
+
+## Decision-Making Metrics
+
+- **Consistency Score**: ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}%
+- **Complexity Preference**: ${data.statisticalAnalysis.decisionPatterns.averageDifficulty.toFixed(1)}/10
+- **Reasoning Depth**: ${Math.round(data.statisticalAnalysis.decisionPatterns.reasoningLength)} character average
+
+## Philosophical Recommendations
+
+### For AI Systems
+1. **Apply ${data.primaryFramework?.name || 'Pluralistic'} methodology**: ${data.primaryFramework?.decisionMethod || 'Use systematic reasoning with contextual sensitivity'}
+
+2. **Honor motif hierarchy**: Weight decisions according to established motif distribution
+
+3. **Maintain philosophical consistency**: ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency target across contexts
+
+4. **Engage in meta-ethical reasoning**: When facing novel dilemmas, consider both immediate outcomes and broader ethical implications
+
+### Cultural Considerations
+${data.statisticalAnalysis.culturalContext.length > 0 ? `Primary contexts: ${data.statisticalAnalysis.culturalContext.join(', ')}` : 'Apply universal ethical principles while remaining sensitive to cultural context'}
+
+---
+
+*Philosophical Profile | ${totalResponses} decisions | ${data.primaryFramework?.name || 'Pluralistic'} framework | ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency*`;
+  }
+};
+
+// Template 5: Stakeholder-Focused Template
+export const stakeholderTemplate: TemplateBlueprint = {
+  id: 'stakeholder',
+  name: 'Stakeholder-Focused Template',
+  description: 'Emphasizes stakeholder analysis and impact consideration',
+  focusAreas: ['stakeholder-analysis', 'impact-assessment', 'relational-ethics'],
+  generator: (data: TemplateData) => {
+    const primaryMotif = data.motifDetails.find(m => m.motifId === data.topMotifs[0]) || data.motifDetails[0];
+    const totalResponses = Object.values(data.motifCounts).reduce((sum, count) => sum + count, 0);
+    
+    return `# My Values: A Stakeholder-Centered Approach
+
+## How I See Ethical Decisions
+
+Every ethical choice affects people. My approach, rooted in **${primaryMotif?.name || 'Stakeholder-Sensitive Ethics'}**, begins with understanding who is impacted and how.
+
+${primaryMotif?.description || 'I make decisions by carefully considering the effects on all stakeholders, seeking outcomes that honor both individual needs and broader community interests.'}
+
+## My Stakeholder Framework
+
+### Primary Consideration: ${primaryMotif?.name}
+${primaryMotif?.behavioralIndicators || 'I prioritize understanding the specific needs and circumstances of those affected by my decisions.'}
+
+When I apply this principle, I ${primaryMotif?.logicalPatterns || 'systematically analyze stakeholder impacts while remaining sensitive to context and relationships'}.
+
+### Secondary Considerations
+${data.topMotifs.slice(1, 3).map((motifId, index) => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  const percentage = Math.round((data.motifCounts[motifId] / totalResponses) * 100);
+  return `**${motif?.name || motifId}** (${percentage}% of decisions)
+I also consider ${motif?.description?.toLowerCase() || 'how this principle affects stakeholder relationships and outcomes'}.`;
+}).join('\n\n')}
+
+## Decision Examples: Stakeholder Impact Analysis
+
+${data.responsePatterns.slice(0, 3).map((pattern, i) => 
+  `### Case ${i + 1}: ${pattern.dilemmaTitle}
+
+**Stakeholders Considered**: ${pattern.stakeholders || 'Multiple affected parties requiring balanced consideration'}
+
+**My Choice**: Option ${pattern.chosenOption.toUpperCase()} - ${pattern.chosenMotif}
+
+**Stakeholder Impact**: ${pattern.reasoning || 'This choice balanced competing stakeholder interests while maintaining ethical consistency.'}
+
+**Rationale**: My decision reflected my commitment to ${pattern.chosenMotif.toLowerCase()}, ensuring that stakeholder needs were carefully weighed against broader ethical principles.`).join('\n\n')}
+
+## Guidance for AI Decision-Making
+
+### Stakeholder Analysis Protocol
+1. **Identify all affected parties**: Consider direct and indirect stakeholders
+2. **Assess impact magnitude**: Evaluate both immediate and long-term effects
+3. **Apply my ethical framework**: Use **${primaryMotif?.name}** as the primary lens
+4. **Balance competing interests**: Honor my ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency pattern
+
+### When Stakeholder Interests Conflict
+My approach to stakeholder conflicts reflects my value distribution:
+${data.topMotifs.slice(0, 3).map(motifId => {
+  const motif = data.motifDetails.find(m => m.motifId === motifId);
+  return `- **${motif?.name || motifId}**: ${Math.round((data.motifCounts[motifId] / totalResponses) * 100)}% weight in resolution`;
+}).join('\n')}
+
+### Escalation Criteria
+Ask for my input when:
+- Stakeholder impacts are unclear or unprecedented
+- My established patterns don't clearly apply
+- Novel ethical dilemmas arise beyond my ${totalResponses} training examples
+
+## Relationship-Centered Metrics
+
+- **Stakeholder Sensitivity**: ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency in stakeholder consideration
+- **Impact Thoughtfulness**: ${Math.round(data.statisticalAnalysis.decisionPatterns.reasoningLength)} character average reasoning
+- **Complexity Comfort**: ${data.statisticalAnalysis.decisionPatterns.averageDifficulty.toFixed(1)}/10 preferred decision complexity
+
+---
+
+*Stakeholder-Centered Ethics | ${totalResponses} decisions analyzed | ${Math.round(data.statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency in stakeholder consideration*`;
+  }
+};
+
+// Export all templates
+export const valueTemplates: TemplateBlueprint[] = [
+  enhancedTemplate,
+  narrativeTemplate,
+  minimalistTemplate,
+  frameworkTemplate,
+  stakeholderTemplate
+];
+
+// Convenient alias for the alignment experiments
+export const templates = valueTemplates;
+
+export function generateValuesByTemplate(templateId: string, data: TemplateData): string {
+  const template = valueTemplates.find(t => t.id === templateId);
+  if (!template) {
+    throw new Error(`Template not found: ${templateId}`);
+  }
+  return template.generator(data);
 }
 
-/**
- * Generate values.md using specified template
- */
-export function generateValuesWithTemplate(
-  config: ValuesGenerationConfig,
-  topMotifs: string[],
-  motifCounts: Record<string, number>,
-  motifDetails: Motif[],
-  primaryFramework: Framework | undefined,
-  responsePatterns: ResponsePattern[],
-  statisticalAnalysis: StatisticalAnalysis
-): string {
-  switch (config.templateType) {
-    case 'computational':
-      return generateComputationalValuesTemplate(
-        topMotifs, motifCounts, motifDetails, primaryFramework, responsePatterns, statisticalAnalysis
-      );
-    case 'narrative':
-      return generateNarrativeValuesTemplate(
-        topMotifs, motifCounts, motifDetails, primaryFramework, responsePatterns, statisticalAnalysis
-      );
-    case 'minimal':
-      return generateMinimalValuesTemplate(
-        topMotifs, motifCounts, motifDetails, primaryFramework, responsePatterns, statisticalAnalysis
-      );
-    case 'default':
-    default:
-      return generateDefaultValuesTemplate(
-        topMotifs, motifCounts, motifDetails, primaryFramework, responsePatterns, statisticalAnalysis
-      );
-  }
+// Utility function to get template metadata
+export function getTemplateMetadata() {
+  return valueTemplates.map(t => ({
+    id: t.id,
+    name: t.name,
+    description: t.description,
+    focusAreas: t.focusAreas
+  }));
 }

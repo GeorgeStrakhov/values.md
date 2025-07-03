@@ -36,6 +36,13 @@
       "when": 1749585413155,
       "tag": "0004_public_magik",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1751534090251,
+      "tag": "0005_right_marauders",
+      "breakpoints": true
     }
   ]
 }

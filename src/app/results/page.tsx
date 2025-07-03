@@ -77,7 +77,7 @@ export default function ResultsPage() {
 
   const startOver = () => {
     localStorage.removeItem('responses');
-    router.push('/');
+    router.push('/api/dilemmas/random');
   };
 
   if (loading) {

@@ -74,6 +74,9 @@ export const userDemographics = pgTable('user_demographics', {
   educationLevel: varchar('education_level'),
   culturalBackground: varchar('cultural_background'),
   profession: varchar('profession'),
+  professionalContext: varchar('professional_context'), // workplace, academic, personal
+  geographicRegion: varchar('geographic_region'),
+  primaryLanguage: varchar('primary_language'),
   consentResearch: boolean('consent_research').default(false),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -85,6 +88,22 @@ export const llmResponses = pgTable('llm_responses', {
   dilemmaId: uuid('dilemma_id').notNull().references(() => dilemmas.dilemmaId),
   chosenOption: varchar('chosen_option').notNull(),
   reasoning: text('reasoning'),
+  confidenceScore: decimal('confidence_score'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// LLM alignment experiments - testing different values.md compositions
+export const llmAlignmentExperiments = pgTable('llm_alignment_experiments', {
+  experimentId: uuid('experiment_id').defaultRandom().primaryKey(),
+  humanSessionId: varchar('human_session_id').notNull(),
+  templateType: varchar('template_type').notNull(), // enhanced, narrative, minimalist, framework, stakeholder
+  modelName: varchar('model_name').notNull(),
+  valuesDocument: text('values_document').notNull(),
+  testDilemmaId: uuid('test_dilemma_id').notNull().references(() => dilemmas.dilemmaId),
+  humanChoice: varchar('human_choice').notNull(),
+  llmChoice: varchar('llm_choice').notNull(),
+  llmReasoning: text('llm_reasoning'),
+  alignmentScore: decimal('alignment_score'), // 0-100 how well LLM matched human
   confidenceScore: decimal('confidence_score'),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -142,4 +161,5 @@ export type Dilemma = typeof dilemmas.$inferSelect;
 export type UserResponse = typeof userResponses.$inferSelect;
 export type UserDemographics = typeof userDemographics.$inferSelect;
 export type LlmResponse = typeof llmResponses.$inferSelect;
+export type LlmAlignmentExperiment = typeof llmAlignmentExperiments.$inferSelect;
 export type User = typeof users.$inferSelect;

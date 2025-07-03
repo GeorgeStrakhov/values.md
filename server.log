@@ -1,0 +1,534 @@
+
+> values.md@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://45.90.121.59:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 1308ms
+ ○ Compiling /api/health ...
+ ✓ Compiled /api/health in 1849ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ ○ Compiling /api/dilemmas/random ...
+ ✓ Compiled /api/dilemmas/random in 748ms
+ GET /api/dilemmas/random 307 in 920ms
+🔍 Health check: Testing responses API...
+ ○ Compiling /api/responses ...
+ ✓ Compiled /api/responses in 669ms
+📥 Received 1 responses for session health-check-1751530114335
+💾 Inserting responses into database...
+Error storing responses: Error: Failed query: insert into "user_responses" ("response_id", "session_id", "dilemma_id", "chosen_option", "reasoning", "response_time", "perceived_difficulty", "created_at") values (default, $1, $2, $3, $4, $5, $6, default)
+params: health-check-1751530114335,test-dilemma,a,Test reasoning,1000,5
+    at async POST (src/app/api/responses/route.ts:59:19)
+  57 |
+  58 |     console.log('💾 Inserting responses into database...');
+> 59 |     const result = await db.insert(userResponses).values(responseValues);
+     |                   ^
+  60 |     console.log(`✅ Successfully inserted ${responses.length} responses`);
+  61 |
+  62 |     return NextResponse.json({  {
+  query: 'insert into "user_responses" ("response_id", "session_id", "dilemma_id", "chosen_option", "reasoning", "response_time", "perceived_difficulty", "created_at") values (default, $1, $2, $3, $4, $5, $6, default)',
+  params: [Array],
+  [cause]: Error [NeonDbError]: invalid input syntax for type uuid: "test-dilemma"
+      at async POST (src/app/api/responses/route.ts:59:19)
+    57 |
+    58 |     console.log('💾 Inserting responses into database...');
+  > 59 |     const result = await db.insert(userResponses).values(responseValues);
+       |                   ^
+    60 |     console.log(`✅ Successfully inserted ${responses.length} responses`);
+    61 |
+    62 |     return NextResponse.json({  {
+    severity: 'ERROR',
+    code: '22P02',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: "unnamed portal parameter $2 = '...'",
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'uuid.c',
+    line: '138',
+    routine: 'string_to_uuid',
+    sourceError: undefined
+  }
+}
+ POST /api/responses 500 in 1222ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+ ○ Compiling /api/generate-values ...
+ ✓ Compiled /api/generate-values in 822ms
+🔍 Looking for responses for session: sim-user-1-1750010354931
+📊 Found 12 responses for session sim-user-1-1750010354931
+💾 Cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 1189ms
+✅ Health check completed: fail
+ GET /api/health 500 in 6876ms
+ HEAD /api/dilemmas/random 307 in 339ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 134ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 125ms
+📥 Received 1 responses for session health-check-1751530166397
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 247ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 34ms
+✅ Health check completed: fail
+ GET /api/health 500 in 1737ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 119ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 130ms
+📥 Received 1 responses for session health-check-1751530171191
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 237ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 34ms
+✅ Health check completed: fail
+ GET /api/health 500 in 1165ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 141ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 127ms
+📥 Received 1 responses for session health-check-1751530234268
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 227ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 41ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1824ms
+ GET /api/dilemmas/random 307 in 324ms
+ HEAD /api/dilemmas/random 307 in 885ms
+ ○ Compiling /api/dilemmas/[uuid] ...
+ ✓ Compiled /api/dilemmas/[uuid] in 930ms
+ GET /api/dilemmas/766f29da-5f76-46bd-9633-c3ae14b53de9 200 in 2246ms
+Error generating values: SyntaxError: Unterminated string in JSON at position 27
+    at JSON.parse (<anonymous>)
+    at async POST (src/app/api/generate-values/route.ts:143:26)
+  141 | export async function POST(request: NextRequest) {
+  142 |   try {
+> 143 |     const { sessionId } = await request.json();
+      |                          ^
+  144 |
+  145 |     if (!sessionId) {
+  146 |       return NextResponse.json(
+ POST /api/generate-values 500 in 163ms
+🔍 Looking for responses for session: test-session-1234567890
+📊 Found 0 responses for session test-session-1234567890
+🔍 Recent sessions in database: [
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931',
+  'sim-user-1-1750010354931'
+]
+ POST /api/generate-values 404 in 665ms
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 33ms
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 33ms
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 26ms
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 58ms
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 43ms
+ ○ Compiling /api/experiments/templates ...
+ ✓ Compiled /api/experiments/templates in 733ms
+ GET /api/experiments/templates 200 in 930ms
+ ○ Compiling /api/experiments/generate ...
+ ✓ Compiled /api/experiments/generate in 896ms
+ ⨯ ./src/app/api/experiments/generate/route.ts:167:10
+Ecmascript file had an error
+[0m [90m 165 |[39m [90m// Copy the generateRealStatistics function from the main route[39m[0m
+[0m [90m 166 |[39m [90m// (This should be extracted to a shared utility)[39m[0m
+[0m[31m[1m>[22m[39m[90m 167 |[39m [36mfunction[39m generateRealStatistics(responses[33m:[39m any[]) {[0m
+[0m [90m     |[39m          [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 168 |[39m   [36mif[39m (responses[33m.[39mlength [33m===[39m [35m0[39m) {[0m
+[0m [90m 169 |[39m     [36mreturn[39m {[0m
+[0m [90m 170 |[39m       decisionPatterns[33m:[39m {[0m
+
+the name `generateRealStatistics` is defined multiple times
+
+
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.1s
+ POST /api/experiments/generate 500 in 3265ms
+🧪 Experimental generation: comprehensive_comparison for session sim-user-1-1750010354931
+📊 Found 12 responses for experimental session sim-user-1-1750010354931
+🧪 Experiment comprehensive_comparison: Session sim-user-1-1750010354931 assigned template stakeholder
+ POST /api/experiments/generate 200 in 1122ms
+🧪 Experimental generation: comprehensive_comparison for session test-session-123
+📊 Found 0 responses for experimental session test-session-123
+ POST /api/experiments/generate 404 in 325ms
+🧪 Experimental generation: comprehensive_comparison for session test-session-456
+📊 Found 0 responses for experimental session test-session-456
+ POST /api/experiments/generate 404 in 131ms
+🧪 Experimental generation: comprehensive_comparison for session sim-user-1-1750010354931
+📊 Found 12 responses for experimental session sim-user-1-1750010354931
+🧪 Experiment comprehensive_comparison: Session sim-user-1-1750010354931 assigned template stakeholder
+ POST /api/experiments/generate 200 in 728ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 163ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 122ms
+📥 Received 1 responses for session health-check-1751532072597
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 285ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+🔍 Looking for responses for session: sim-user-1-1750010354931
+📊 Found 12 responses for session sim-user-1-1750010354931
+💾 Cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 415ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1979ms
+ ○ Compiling / ...
+ GET /api/dilemmas/766f29da-5f76-46bd-9633-c3ae14b53de9 200 in 809ms
+ ✓ Compiled / in 5.5s
+ GET / 200 in 5987ms
+ HEAD /api/dilemmas/random 307 in 355ms
+ GET /api/dilemmas/2107ece7-0b79-4953-a68d-e699d3ea31cd 200 in 756ms
+ ○ Compiling /api/admin/generate-dilemma ...
+ ✓ Compiled /api/admin/generate-dilemma in 2.1s
+ POST /api/admin/generate-dilemma 401 in 2186ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 177ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 134ms
+📥 Received 1 responses for session health-check-1751533502561
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 295ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 42ms
+✅ Health check completed: pass
+ GET /api/health 200 in 2193ms
+ HEAD /api/dilemmas/random 307 in 132ms
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 29ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 134ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 128ms
+📥 Received 1 responses for session health-check-1751533511614
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 232ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 34ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1501ms
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 47ms
+ GET /api/experiments/templates 200 in 41ms
+🧪 Experimental generation: comprehensive_comparison for session sim-user-1-1750010354931
+📊 Found 12 responses for experimental session sim-user-1-1750010354931
+🧪 Experiment comprehensive_comparison: Session sim-user-1-1750010354931 assigned template stakeholder
+ POST /api/experiments/generate 200 in 724ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 128ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 125ms
+📥 Received 1 responses for session health-check-1751533528882
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 227ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 21ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1409ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 134ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 128ms
+📥 Received 1 responses for session health-check-1751533536239
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 225ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 26ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1438ms
+ ○ Compiling /health ...
+ ✓ Compiled /health in 2.1s
+ GET /health 200 in 2311ms
+ ○ Compiling /api/admin/check-env ...
+ ✓ Compiled /api/admin/check-env in 1330ms
+ GET /api/admin/check-env 401 in 1376ms
+ ○ Compiling /api/admin/sessions ...
+ ✓ Compiled /api/admin/sessions in 1187ms
+ GET /api/admin/sessions 401 in 1240ms
+ ○ Compiling /health-real ...
+ ✓ Compiled /health-real in 1854ms
+ GET /health-real 200 in 1947ms
+ ○ Compiling /template-experiments ...
+ ✓ Compiled /template-experiments in 1548ms
+ GET /template-experiments 200 in 1643ms
+ ○ Compiling /experiments ...
+ ✓ Compiled /experiments in 1529ms
+ GET /experiments 200 in 1638ms
+ ○ Compiling /api/experiments/alignment ...
+ ✓ Compiled /api/experiments/alignment in 1538ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.x22g0ld1wi'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.x22g0ld1wi'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.x22g0ld1wi'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.x22g0ld1wi'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.7ezssixjhb5'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.7ezssixjhb5'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.7ezssixjhb5'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.7ezssixjhb5'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.8nfp1iioizb'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.8nfp1iioizb'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.8nfp1iioizb'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.8nfp1iioizb'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.eq0p11j0w5'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.eq0p11j0w5'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.eq0p11j0w5'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.eq0p11j0w5'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ○ Compiling /alignment-experiments ...
+ ✓ Compiled /alignment-experiments in 2.2s
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.dhxlejzmson'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.dhxlejzmson'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.dhxlejzmson'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.dhxlejzmson'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/experiments/generate/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/experiments/generate/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/experiments/generate/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/experiments/generate/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/health/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/health/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/health/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/health/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[?25h

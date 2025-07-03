@@ -62,16 +62,16 @@ export async function GET() {
       });
       
       results.checks.randomDilemmaAPI = {
-        status: response.status === 302 ? 'pass' : 'fail',
+        status: [302, 307].includes(response.status) ? 'pass' : 'fail',
         message: `API response: ${response.status}`,
         details: { 
           status: response.status,
-          redirected: response.status === 302,
+          redirected: [302, 307].includes(response.status),
           location: response.headers.get('location')
         }
       };
       
-      if (response.status !== 302) {
+      if (![302, 307].includes(response.status)) {
         results.status = 'fail';
       }
     } catch (error) {
@@ -86,11 +86,24 @@ export async function GET() {
     // 4. Responses API test (critical for our bug)
     console.log('🔍 Health check: Testing responses API...');
     try {
+      // Get a real dilemma UUID first
+      const randomDilemmaResponse = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/dilemmas/random`, {
+        method: 'GET',
+        redirect: 'manual'
+      });
+      
+      const location = randomDilemmaResponse.headers.get('location');
+      const dilemmaId = location?.split('/').pop();
+      
+      if (!dilemmaId) {
+        throw new Error('Could not get dilemma ID from random API');
+      }
+
       const testPayload = {
         sessionId: 'health-check-' + Date.now(),
         responses: [
           {
-            dilemmaId: 'test-dilemma',
+            dilemmaId: dilemmaId,
             chosenOption: 'a',
             reasoning: 'Test reasoning',
             responseTime: 1000,

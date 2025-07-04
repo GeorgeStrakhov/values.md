@@ -112,12 +112,12 @@ export default function Home() {
           {/* Primary CTA */}
           <div className="space-y-4">
             <Button asChild size="lg" className="h-16 px-8 text-lg font-bold">
-              <Link href="/api/dilemmas/random">
+              <Link href="/api/start-fresh">
                 Generate Your VALUES.md
               </Link>
             </Button>
             <p className="text-sm text-muted-foreground font-medium">
-              Discover your values through 12 ethical dilemmas
+              Start fresh with 12 new ethical dilemmas
             </p>
             <p className="text-sm text-muted-foreground font-medium border-t pt-6">
               Your responses are stored locally for privacy. You can optionally contribute 

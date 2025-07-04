@@ -221,3 +221,576 @@ params: 10
  POST /api/generate-values 200 in 393ms
 ✅ Health check completed: pass
  GET /api/health 200 in 1888ms
+ GET /api/dilemmas/random 307 in 486ms
+ GET /api/dilemmas/random 307 in 331ms
+ GET /api/dilemmas/random 307 in 348ms
+ GET /api/dilemmas/random 307 in 345ms
+ GET /api/dilemmas/random 307 in 357ms
+ GET /api/dilemmas/random 307 in 356ms
+ GET /api/dilemmas/random 307 in 366ms
+ GET /api/dilemmas/random 307 in 344ms
+ GET /explore/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 585ms
+ GET /api/dilemmas/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 911ms
+🔍 Looking for responses for session: test-session-1-1751538416915
+📊 Found 12 responses for session test-session-1-1751538416915
+💾 Cached values for session test-session-1-1751538416915
+ POST /api/generate-values 200 in 817ms
+🔨 Generating values variant: narrative for session test-session-1-1751538416915
+✅ Generated narrative variant: 513 words
+ POST /api/workbench/generate-variant 200 in 897ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 138ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 137ms
+📥 Received 1 responses for session health-check-1751549122487
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 236ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 45ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1591ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 138ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 133ms
+📥 Received 1 responses for session health-check-1751549129556
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 233ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 37ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1476ms
+ ○ Compiling /health ...
+ ✓ Compiled /health in 2.3s
+ HEAD /health 200 in 2463ms
+ ✓ Compiled in 370ms
+ ✓ Compiled /health in 36ms
+ HEAD /health 200 in 562ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 139ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 132ms
+📥 Received 1 responses for session health-check-1751549359862
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 237ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 36ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1500ms
+🔨 Generating values variant: minimalist for session test-session-1-1751538416915
+✅ Generated minimalist variant: 78 words
+ POST /api/workbench/generate-variant 200 in 849ms
+ GET /api/dilemmas/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 1036ms
+ GET /api/dilemmas/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 756ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 150ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 152ms
+📥 Received 1 responses for session health-check-1751549546211
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 245ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 40ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1585ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 164ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 139ms
+📥 Received 1 responses for session health-check-1751549620487
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 234ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+♻️ Returning cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 46ms
+✅ Health check completed: pass
+ GET /api/health 200 in 1560ms
+ GET /api/dilemmas/random 307 in 345ms
+ GET /explore/f1caa21a-bd13-4324-84b2-908ecfeca05d 200 in 606ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 281ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 136ms
+📥 Received 1 responses for session health-check-1751550363580
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 339ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+🔍 Looking for responses for session: sim-user-1-1750010354931
+📊 Found 12 responses for session sim-user-1-1750010354931
+💾 Cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 393ms
+✅ Health check completed: pass
+ GET /api/health 200 in 2865ms
+ ○ Compiling /waterfall ...
+ ✓ Compiled /waterfall in 2s
+ GET /waterfall 200 in 2546ms
+ ○ Compiling /growth-map ...
+ ✓ Compiled /growth-map in 2.3s
+ GET /growth-map 200 in 2416ms
+ GET / 200 in 280ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 911ms
+ GET /favicon.ico 200 in 1186ms
+ GET / 200 in 236ms
+ GET / 200 in 210ms
+ GET / 200 in 198ms
+ GET / 200 in 158ms
+ GET /favicon.ico?favicon.90acd04b.ico 200 in 250ms
+ GET /favicon.ico 200 in 245ms
+ ○ Compiling /_not-found/page ...
+ ✓ Compiled /_not-found/page in 2.2s
+ GET /sitemap.xml 404 in 2303ms
+ GET / 200 in 224ms
+ GET / 200 in 220ms
+ GET / 200 in 136ms
+ GET /favicon.ico?favicon.90acd04b.ico 200 in 240ms
+ GET /favicon.ico 200 in 236ms
+ GET /login 404 in 114ms
+ GET / 200 in 189ms
+ GET / 200 in 193ms
+ GET /favicon.ico 200 in 313ms
+ GET / 200 in 221ms
+ GET / 200 in 196ms
+ GET / 200 in 183ms
+ ○ Compiling /api/start-fresh ...
+ ✓ Compiled /api/start-fresh in 1427ms
+ GET /api/start-fresh 200 in 2105ms
+ GET /api/start-fresh 200 in 441ms
+ GET /api/dilemmas/random 307 in 937ms
+ GET /api/dilemmas/random 307 in 366ms
+ GET / 200 in 521ms
+ GET /api/dilemmas/123e4567-e89b-12d3-a456-426614174000 404 in 646ms
+🔍 Health check: Testing database connectivity...
+🔍 Health check: Testing dilemmas table...
+🔍 Health check: Testing random dilemma API...
+ GET /api/dilemmas/random 307 in 270ms
+🔍 Health check: Testing responses API...
+ GET /api/dilemmas/random 307 in 136ms
+📥 Received 1 responses for session health-check-1751590996247
+💾 Inserting responses into database...
+✅ Successfully inserted 1 responses
+ POST /api/responses 200 in 306ms
+🔍 Health check: Testing user responses table...
+🔍 Health check: Testing generate values API...
+🔍 Looking for responses for session: sim-user-1-1750010354931
+📊 Found 12 responses for session sim-user-1-1750010354931
+💾 Cached values for session sim-user-1-1750010354931
+ POST /api/generate-values 200 in 380ms
+✅ Health check completed: pass
+ GET /api/health 200 in 2217ms
+ GET /api/dilemmas/random 307 in 416ms
+ GET /api/dilemmas/random 307 in 348ms
+ GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 995ms
+ GET /api/start-fresh 200 in 361ms
+ GET /explore/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 630ms
+ GET /explore/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 188ms
+ GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 972ms
+ GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 1041ms
+ GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 1027ms
+ GET / 200 in 217ms
+ GET / 200 in 151ms
+ GET /favicon.ico?favicon.90acd04b.ico 200 in 301ms
+ GET /favicon.ico 200 in 250ms
+ GET /security.txt 404 in 157ms
+ ✓ Compiled in 454ms
+ GET / 200 in 720ms
+ GET / 200 in 133ms
+ GET /favicon.ico?favicon.90acd04b.ico 200 in 285ms
+ GET /favicon.ico 200 in 235ms
+ GET /login 404 in 114ms
+ GET / 200 in 240ms
+ GET /favicon.ico 200 in 264ms
+ GET / 200 in 181ms
+ GET /favicon.ico 200 in 314ms
+ GET / 200 in 180ms
+ GET / 200 in 204ms
+ GET / 200 in 201ms
+ GET / 200 in 207ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}

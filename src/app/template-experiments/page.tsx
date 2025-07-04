@@ -244,7 +244,7 @@ export default function TemplateExperimentsPage() {
                     <div key={key} className="flex justify-between text-sm">
                       <span className="capitalize">{key.replace('_', ' ')}:</span>
                       <span className="font-medium">
-                        {typeof value === 'number' ? value.toFixed(2) : value}
+                        {typeof value === 'number' ? value.toFixed(2) : String(value)}
                       </span>
                     </div>
                   ))}

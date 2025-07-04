@@ -145,7 +145,7 @@ describe('Response Validation', () => {
       const responses = Array.from({ length: 10 }, (_, i) => ({
         ...validResponse,
         dilemmaId: `123e4567-e89b-12d3-a456-42661417400${i}`,
-        chosenOption: 'a' as const
+        chosenOption: 'a' as 'a'
       }));
       
       const result = detectSuspiciousPatterns(responses);
@@ -158,6 +158,7 @@ describe('Response Validation', () => {
       const responses = Array.from({ length: 10 }, (_, i) => ({
         ...validResponse,
         dilemmaId: `123e4567-e89b-12d3-a456-42661417400${i}`,
+        chosenOption: 'a' as 'a',
         responseTime: 1000 // Very fast
       }));
       
@@ -171,6 +172,7 @@ describe('Response Validation', () => {
       const responses = Array.from({ length: 10 }, (_, i) => ({
         ...validResponse,
         dilemmaId: `123e4567-e89b-12d3-a456-42661417400${i}`,
+        chosenOption: 'a' as 'a',
         perceivedDifficulty: 5
       }));
       
@@ -184,6 +186,7 @@ describe('Response Validation', () => {
       const responses = Array.from({ length: 10 }, (_, i) => ({
         ...validResponse,
         dilemmaId: `123e4567-e89b-12d3-a456-42661417400${i}`,
+        chosenOption: 'a' as 'a',
         reasoning: '' // No reasoning
       }));
       
@@ -205,7 +208,7 @@ describe('Response Validation', () => {
       const responses = Array.from({ length: 20 }, (_, i) => ({
         ...validResponse,
         dilemmaId: `123e4567-e89b-12d3-a456-42661417400${i}`,
-        chosenOption: 'a' as const, // Same choice
+        chosenOption: 'a' as 'a', // Same choice
         responseTime: 500, // Very fast
         perceivedDifficulty: 5, // Same difficulty
         reasoning: '' // No reasoning
@@ -222,10 +225,10 @@ describe('Response Validation', () => {
       const responses = [
         validResponse,
         { ...validResponse, dilemmaId: '123e4567-e89b-12d3-a456-426614174001' },
-        { ...validResponse, chosenOption: 'invalid' } // Invalid
+        { ...validResponse, dilemmaId: '123e4567-e89b-12d3-a456-426614174002', chosenOption: 'invalid' } // Invalid
       ];
       
-      const result = checkDataIntegrity(responses);
+      const result = checkDataIntegrity(responses as any);
       
       expect(result.totalResponses).toBe(3);
       expect(result.validResponses).toBe(2);
@@ -236,12 +239,12 @@ describe('Response Validation', () => {
 
     it('should generate appropriate recommendations', () => {
       const responses = [
-        { ...validResponse, chosenOption: 'invalid' }, // Invalid
+        { ...validResponse, dilemmaId: '123e4567-e89b-12d3-a456-426614174003', chosenOption: 'invalid' }, // Invalid
         validResponse,
         validResponse // Duplicate
       ];
       
-      const result = checkDataIntegrity(responses);
+      const result = checkDataIntegrity(responses as any);
       
       expect(result.recommendations).toContain('Some responses have validation errors and should be reviewed');
       expect(result.recommendations).toContain('Remove duplicate responses to improve data quality');
@@ -251,12 +254,12 @@ describe('Response Validation', () => {
       const responses = Array.from({ length: 10 }, (_, i) => ({
         ...validResponse,
         dilemmaId: `123e4567-e89b-12d3-a456-42661417400${i}`,
-        chosenOption: 'a' as const,
+        chosenOption: 'a' as 'a',
         responseTime: 800,
         reasoning: ''
       }));
       
-      const result = checkDataIntegrity(responses);
+      const result = checkDataIntegrity(responses as any);
       
       expect(result.riskScore).toBeGreaterThan(50);
       expect(result.recommendations).toContain('Response patterns suggest low engagement - consider encouraging more thoughtful responses');

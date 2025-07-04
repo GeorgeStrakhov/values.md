@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
           chosenMotif,
           reasoning: response.reasoning || undefined,
           difficulty: response.perceivedDifficulty || 5,
-          stakeholders: dilemma.stakeholders
+          stakeholders: dilemma.stakeholders || undefined
         });
       }
     }

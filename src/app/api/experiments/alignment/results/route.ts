@@ -10,14 +10,15 @@ export async function GET(request: NextRequest) {
     const templateType = searchParams.get('templateType');
     const modelName = searchParams.get('modelName');
     
-    let query = db.select().from(llmAlignmentExperiments);
-    
     // Apply filters
-    if (sessionId) {
-      query = query.where(eq(llmAlignmentExperiments.humanSessionId, sessionId));
-    }
-    
-    const results = await query.orderBy(desc(llmAlignmentExperiments.createdAt)).limit(100);
+    const results = sessionId 
+      ? await db.select().from(llmAlignmentExperiments)
+          .where(eq(llmAlignmentExperiments.humanSessionId, sessionId))
+          .orderBy(desc(llmAlignmentExperiments.createdAt))
+          .limit(100)
+      : await db.select().from(llmAlignmentExperiments)
+          .orderBy(desc(llmAlignmentExperiments.createdAt))
+          .limit(100);
     
     // Calculate aggregate statistics
     const templates = [...new Set(results.map(r => r.templateType))];

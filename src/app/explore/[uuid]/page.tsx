@@ -280,10 +280,10 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto py-4">
         {/* Progress indicator */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-3">
             <div>
               <span className="text-sm text-muted-foreground">
                 Question {currentIndex + 1} of {pagination.total || dilemmas.length}
@@ -297,9 +297,9 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
                 </span>
               )}
             </div>
-            <div className="w-64 bg-gray-200 rounded-full h-2">
+            <div className="w-72 bg-gray-200 rounded-full h-2.5 shadow-inner">
               <div 
-                className="bg-primary h-2 rounded-full transition-all"
+                className="bg-primary h-2.5 rounded-full transition-all duration-300 shadow-sm"
                 style={{ width: `${((currentIndex + 1) / (pagination.total || dilemmas.length)) * 100}%` }}
               />
             </div>
@@ -318,29 +318,40 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
           )}
           
           {responses.length >= 12 && (
-            <div className="text-center">
-              <p className="text-xs text-green-600 mb-1">✓ You have enough responses for a comprehensive values.md</p>
-              <Button 
-                onClick={() => router.push('/results')}
-                variant="outline" 
-                size="sm"
-                className="text-xs"
-              >
-                Generate Values Now
-              </Button>
+            <div className="text-center bg-green-50/80 border border-green-200 rounded-lg p-6 my-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <p className="text-sm font-medium text-green-700">
+                    You have enough responses for a comprehensive values.md
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => router.push('/results')}
+                  size="lg"
+                  className="h-12 px-8 text-base font-semibold bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                >
+                  Generate Values Now
+                </Button>
+                <p className="text-xs text-green-600/80">
+                  Continue answering or generate your personalized VALUES.md file
+                </p>
+              </div>
             </div>
           )}
         </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">{currentDilemma.title}</CardTitle>
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-2xl leading-tight text-foreground">
+              {currentDilemma.title}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-8 px-8 pb-8">
             <p className="text-lg leading-relaxed">{currentDilemma.scenario}</p>
             
             {/* Choices */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               {[
                 { key: 'a', text: currentDilemma.choiceA },
                 { key: 'b', text: currentDilemma.choiceB },
@@ -350,10 +361,10 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
                 <button
                   key={option.key}
                   onClick={() => setChoice(option.key)}
-                  className={`w-full p-4 text-left border rounded-lg transition-all ${
+                  className={`w-full p-5 text-left border rounded-xl transition-all duration-200 ${
                     choice === option.key 
-                      ? 'border-primary bg-primary/10 shadow-md' 
-                      : 'border-border hover:border-primary/50'
+                      ? 'border-primary bg-primary/10 shadow-md ring-1 ring-primary/20' 
+                      : 'border-border hover:border-primary/50 hover:shadow-sm'
                   }`}
                 >
                   <span className="font-medium">{option.key.toUpperCase()})</span> {option.text}
@@ -394,11 +405,12 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
             </div>
             
             {/* Next button */}
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-4">
               <Button
                 onClick={handleNext}
                 disabled={!choice}
                 size="lg"
+                className="h-12 px-8 text-base font-semibold"
               >
                 {currentIndex + 1 >= dilemmas.length ? 'Finish & See Results' : 'Next Question'}
               </Button>

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authConfig } from '@/lib/auth';
 import AlignmentExperimentRunner from '@/lib/experiment-runner';
 
 export async function POST(request: NextRequest) {
   try {
     // Check admin authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authConfig);
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin authentication required' },
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check admin authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authConfig);
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin authentication required' },

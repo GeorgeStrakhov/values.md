@@ -27,6 +27,8 @@ export default function AdminPage() {
   const [newPassword, setNewPassword] = useState('');
   const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importMessage, setImportMessage] = useState('');
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,6 +136,34 @@ export default function AdminPage() {
       console.error('Error:', error);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const handleImportSampleData = async () => {
+    setImporting(true);
+    setImportMessage('');
+    
+    try {
+      const response = await fetch('/api/admin/import-sample-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          await signOut();
+          return;
+        }
+        throw new Error('Failed to import sample data');
+      }
+
+      const data = await response.json();
+      setImportMessage(`✅ Successfully imported ${data.imported.dilemmas} dilemmas and ${data.imported.motifs} motifs`);
+    } catch (error) {
+      setImportMessage('❌ Failed to import sample data. Please try again.');
+      console.error('Import error:', error);
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -301,6 +331,29 @@ export default function AdminPage() {
                   <p className="text-sm">{passwordChangeMessage}</p>
                 </div>
               )}
+            </div>
+
+            {/* Import Sample Data Section */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Database Management</h2>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Import sample dilemmas and motifs to populate the database for testing.
+                </p>
+                <Button
+                  onClick={handleImportSampleData}
+                  disabled={importing}
+                  variant="outline"
+                  className="w-full"
+                >
+                  {importing ? 'Importing...' : 'Import Sample Data (6 dilemmas, 5 motifs)'}
+                </Button>
+                {importMessage && (
+                  <div className="mt-3">
+                    <p className="text-sm">{importMessage}</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Generate Dilemma Section */}

@@ -106,7 +106,7 @@ export default function AlignmentExperimentsPage() {
           <CardHeader>
             <CardTitle>Run New Experiment</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Test how well different values.md templates help LLMs align with a specific user's ethical decisions
+              Test how well different values.md templates help LLMs align with a specific user&apos;s ethical decisions
             </p>
           </CardHeader>
           <CardContent className="space-y-4">

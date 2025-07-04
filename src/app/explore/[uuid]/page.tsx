@@ -193,9 +193,9 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <p className="text-lg mb-2">You've completed all {dilemmas.length} available dilemmas!</p>
+                <p className="text-lg mb-2">You&apos;ve completed all {dilemmas.length} available dilemmas!</p>
                 <p className="text-sm text-muted-foreground">
-                  You've answered {responses.length} ethical scenarios. 
+                  You&apos;ve answered {responses.length} ethical scenarios. 
                   This rich dataset will create a comprehensive values.md file.
                 </p>
               </div>

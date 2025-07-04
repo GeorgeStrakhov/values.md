@@ -313,7 +313,7 @@ When working with AI systems, you should:
             Values.md Computation Waterfall
           </h1>
           <p className="text-gray-300 mb-4">
-            Watch how responses → statistics → TF-IDF → tags → weaving creates your personalized values document
+            Privacy-first analysis: responses → motifs → statistics → TF-IDF → template selection → VALUES.md weaving
           </p>
         </div>
 
@@ -347,7 +347,7 @@ When working with AI systems, you should:
             <Card className="bg-gray-800 border-gray-700 h-full">
               <CardHeader>
                 <CardTitle className="text-white">Data Weaving Through Ethical Striations</CardTitle>
-                <p className="text-sm text-gray-400">Watch responses flow through framework layers, deconstruct into motifs, and weave into VALUES.md</p>
+                <p className="text-sm text-gray-400">Watch responses flow through ethical framework striations, analyzed with Claude 3.5 Sonnet, and woven into personalized VALUES.md</p>
               </CardHeader>
               <CardContent>
                 {/* Striations Visualization */}

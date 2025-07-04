@@ -199,7 +199,7 @@ export default function HealthPage() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded">
-                    <h3 className="font-semibold text-blue-800">Step 1: Click "Generate Your VALUES.md"</h3>
+                    <h3 className="font-semibold text-blue-800">Step 1: Click &quot;Generate Your VALUES.md&quot;</h3>
                     <p className="text-sm text-blue-600">✅ Button exists on home page, links to /api/dilemmas/random</p>
                   </div>
                   
@@ -215,7 +215,7 @@ export default function HealthPage() {
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
                     <h3 className="font-semibold text-yellow-800">Step 3: Explore Page Loads</h3>
                     <p className="text-sm text-yellow-600">
-                      ⚠️ <strong>ISSUE IDENTIFIED:</strong> Page shows "Setting up your session..." spinner indefinitely
+                      ⚠️ <strong>ISSUE IDENTIFIED:</strong> Page shows &quot;Setting up your session...&quot; spinner indefinitely
                       <br />
                       <strong>Root Cause:</strong> useEffect dependency loop in src/app/explore/[uuid]/page.tsx
                       <br />
@@ -226,7 +226,7 @@ export default function HealthPage() {
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
                     <h3 className="font-semibold text-yellow-800">Step 4: Session Management</h3>
                     <p className="text-sm text-yellow-600">
-                      ⚠️ <strong>ISSUE IDENTIFIED:</strong> "Restoring your session..." / "Saving your progress..." cycling
+                      ⚠️ <strong>ISSUE IDENTIFIED:</strong> &quot;Restoring your session...&quot; / &quot;Saving your progress...&quot; cycling
                       <br />
                       <strong>Fix Applied:</strong> Debounced progress updates to prevent rapid state changes
                     </p>

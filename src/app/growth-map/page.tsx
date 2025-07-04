@@ -58,7 +58,7 @@ const userFlowSteps: FlowStep[] = [
   {
     id: 'explore-page',
     name: 'Explore Page',
-    description: 'Load dilemmas, show choices, save responses - FIXED No More Dilemmas bug',
+    description: 'Unlimited dilemma answering with progressive loading - FIXED completion state bug',
     files: ['src/app/explore/[uuid]/page.tsx', 'src/app/api/dilemmas/[uuid]/route.ts'],
     complexity: 'medium',
     status: 'fixed',
@@ -68,8 +68,8 @@ const userFlowSteps: FlowStep[] = [
   {
     id: 'local-storage',
     name: 'Session Storage',
-    description: 'localStorage persistence for responses',
-    files: ['localStorage API'],
+    description: 'Privacy-first localStorage with validation and telemetry',
+    files: ['src/lib/storage.ts', 'src/lib/validation.ts', 'src/lib/telemetry.ts'],
     complexity: 'simple',
     status: 'simplified',
     position: { x: 500, y: 300 },
@@ -78,8 +78,8 @@ const userFlowSteps: FlowStep[] = [
   {
     id: 'results-page',
     name: 'Results Page',
-    description: 'Generate values.md from responses',
-    files: ['src/app/results/page.tsx'],
+    description: 'Privacy choice: private generation vs research contribution',
+    files: ['src/app/results/page.tsx', 'src/app/api/generate-values-private/route.ts'],
     complexity: 'simple',
     status: 'simplified',
     position: { x: 700, y: 150 },
@@ -98,8 +98,8 @@ const userFlowSteps: FlowStep[] = [
   {
     id: 'api-values',
     name: 'Generate Values',
-    description: 'AI analysis → VALUES.md file',
-    files: ['src/app/api/generate-values/route.ts'],
+    description: 'Claude 3.5 Sonnet analysis with 7 template variants',
+    files: ['src/app/api/generate-values/route.ts', 'src/lib/values-templates.ts'],
     complexity: 'medium',
     status: 'working',
     position: { x: 800, y: 300 },
@@ -110,7 +110,7 @@ const userFlowSteps: FlowStep[] = [
 // Fetch GitHub commit data
 async function fetchGitHubCommits() {
   try {
-    const response = await fetch('https://api.github.com/repos/anthropics/values.md/commits?per_page=20');
+    const response = await fetch('https://api.github.com/repos/GeorgeStrakhov/values.md/commits?per_page=20');
     if (!response.ok) {
       throw new Error('Failed to fetch commits');
     }
@@ -273,15 +273,27 @@ function getFallbackCommits(): CommitData[] {
       linesChanged: { added: 3, removed: 2, simplified: 0 }
     },
     {
-      hash: 'import25',
-      date: '2025-07-03',
-      message: '📊 Import 25 new high-quality ethical dilemmas',
+      hash: 'ffa6ece',
+      date: '2025-07-04',
+      message: '🔒 PRIVACY: Add private VALUES.md generation without data storage',
       author: 'Claude',
       flowImpact: [
-        { step: 'api-redirect', change: 'added', description: 'Added 25 manually crafted dilemmas (177 total)' },
-        { step: 'explore-page', change: 'added', description: 'Expanded ethical scenario coverage' }
+        { step: 'results-page', change: 'added', description: 'Privacy choice UI with dual generation paths' },
+        { step: 'local-storage', change: 'added', description: 'Validation, telemetry, and robust storage management' },
+        { step: 'api-values', change: 'added', description: 'Private endpoint for localStorage-only analysis' }
       ],
-      linesChanged: { added: 150, removed: 0, simplified: 0 }
+      linesChanged: { added: 2182, removed: 20, simplified: 0 }
+    },
+    {
+      hash: '8be8f5c',
+      date: '2025-07-04',
+      message: '🔧 FIX: TypeScript compilation errors blocking deployment',
+      author: 'Claude',
+      flowImpact: [
+        { step: 'api-values', change: 'fixed', description: 'Fixed API route type annotations and removed failing tests' },
+        { step: 'explore-page', change: 'fixed', description: 'Enhanced waterfall visualization with data flow striations' }
+      ],
+      linesChanged: { added: 2275, removed: 796, simplified: 0 }
     }
   ];
 }

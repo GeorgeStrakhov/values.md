@@ -35,6 +35,7 @@ const publicNavigation = [
 // Admin-only navigation - diagnostic, experimental, and configuration pages
 const adminNavigation = [
   { name: 'Admin Dashboard', href: '/admin' },
+  { name: 'Waterfall Analysis', href: '/waterfall' },
   { name: 'System Health', href: '/health' },
   { name: 'System Status', href: '/system-status' },
   { name: 'Test Results', href: '/test-results' },

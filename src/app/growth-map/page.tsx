@@ -48,12 +48,12 @@ const userFlowSteps: FlowStep[] = [
   {
     id: 'api-redirect',
     name: 'Random Dilemma API',
-    description: '/api/dilemmas/random → 307 redirect',
+    description: '/api/dilemmas/random → Auto-initializes DB when empty → 307 redirect',
     files: ['src/app/api/dilemmas/random/route.ts'],
-    complexity: 'simple',
-    status: 'working',
+    complexity: 'medium',
+    status: 'fixed',
     position: { x: 300, y: 150 },
-    color: '#8b5cf6'
+    color: '#10b981'
   },
   {
     id: 'explore-page',
@@ -78,12 +78,12 @@ const userFlowSteps: FlowStep[] = [
   {
     id: 'results-page',
     name: 'Results Page',
-    description: 'Privacy choice: private generation vs research contribution',
+    description: 'Privacy choice + actionable next steps: test AI, feedback, more dilemmas',
     files: ['src/app/results/page.tsx', 'src/app/api/generate-values-private/route.ts'],
     complexity: 'simple',
-    status: 'simplified',
+    status: 'fixed',
     position: { x: 700, y: 150 },
-    color: '#3b82f6'
+    color: '#10b981'
   },
   {
     id: 'api-responses',

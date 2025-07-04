@@ -222,7 +222,7 @@ export default function ProofOfConceptPage() {
                     Try Another Style
                   </Button>
                   <Button asChild>
-                    <a href="/explore/demo">Create Your Full VALUES.md</a>
+                    <a href="/api/dilemmas/random">Create Your Full VALUES.md</a>
                   </Button>
                 </div>
               </CardContent>

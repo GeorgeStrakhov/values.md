@@ -146,7 +146,7 @@ javascript:(function(){
               </p>
               <div className="flex gap-3">
                 <Button asChild variant="outline">
-                  <a href="/explore/demo">Generate My VALUES.md</a>
+                  <a href="/api/dilemmas/random">Generate My VALUES.md</a>
                 </Button>
                 <Button asChild variant="outline">
                   <a href="https://pastebin.com" target="_blank">

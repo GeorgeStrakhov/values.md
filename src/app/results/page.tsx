@@ -256,14 +256,52 @@ export default function ResultsPage() {
               </CardContent>
             </Card>
 
-            <div className="text-center space-x-4">
-              <Button onClick={downloadValues} size="lg">
-                Download VALUES.md
-              </Button>
-              <Button onClick={startOver} variant="outline">
-                Start Over
-              </Button>
-            </div>
+            {/* Next Steps */}
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
+              <CardHeader>
+                <CardTitle className="text-blue-900">🎯 What's Next?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-blue-800 mb-6">
+                  Your VALUES.md file is ready! Here's how to put it to work and explore further:
+                </p>
+                
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-2">🔬 Test Your Values</h4>
+                    <ul className="space-y-2 text-sm text-blue-700">
+                      <li>• <a href="/integration" className="underline hover:text-blue-900">Try the browser bookmarklet</a> with ChatGPT, Claude, or Gemini</li>
+                      <li>• <a href="/proof-of-concept" className="underline hover:text-blue-900">See side-by-side AI comparisons</a> with/without your values</li>
+                      <li>• <a href="/feedback" className="underline hover:text-blue-900">Share your results</a> - did VALUES.md actually change AI behavior?</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-blue-900 mb-2">📊 Explore Further</h4>
+                    <ul className="space-y-2 text-sm text-blue-700">
+                      <li>• Answer more dilemmas to <a href="/api/dilemmas/random" className="underline hover:text-blue-900">refine your profile</a></li>
+                      <li>• <a href="/waterfall" className="underline hover:text-blue-900">Analyze your response patterns</a> (admin)</li>
+                      <li>• Learn <a href="/about" className="underline hover:text-blue-900">how the ethical framework works</a></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <Button onClick={downloadValues} size="lg" className="bg-blue-600 hover:bg-blue-700">
+                    📥 Download VALUES.md
+                  </Button>
+                  <Button asChild variant="outline" size="lg">
+                    <a href="/integration">🔧 Test with AI</a>
+                  </Button>
+                  <Button asChild variant="outline" size="lg">
+                    <a href="/proof-of-concept">🔬 See Examples</a>
+                  </Button>
+                  <Button onClick={startOver} variant="ghost">
+                    🔄 Start Over
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </>
         )}
       </div>

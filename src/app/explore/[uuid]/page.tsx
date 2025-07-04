@@ -42,13 +42,8 @@ export default function ExplorePage({ params }) {
           
           setResponses(relevantResponses);
           
-          // If user has completed all dilemmas, redirect to results
-          // Use strict equality to ensure we only redirect when truly completed
-          if (relevantResponses.length >= data.dilemmas.length) {
-            console.log(`User completed ${relevantResponses.length}/${data.dilemmas.length} dilemmas, redirecting to results`);
-            router.push('/results');
-            return;
-          }
+          // Note: We no longer auto-redirect when all dilemmas are completed
+          // Users can now choose to continue or view results
           
           // Find the next unanswered dilemma
           const answeredDilemmaIds = new Set(relevantResponses.map(r => r.dilemmaId));
@@ -100,15 +95,18 @@ export default function ExplorePage({ params }) {
     setResponses(newResponses);
     localStorage.setItem('responses', JSON.stringify(allResponses));
     
-    // Navigate to next or finish
-    if (currentIndex + 1 >= dilemmas.length) {
-      router.push('/results');
-    } else {
-      setCurrentIndex(currentIndex + 1);
+    // Navigate to next dilemma
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < dilemmas.length) {
+      setCurrentIndex(nextIndex);
       setChoice('');
       setReasoning('');
       setDifficulty(5); // Reset to default
       setStartTime(Date.now()); // Reset timer for next dilemma
+    } else {
+      // User has answered all available dilemmas
+      // Show completion UI instead of auto-redirecting
+      setCurrentIndex(-1); // Special state to show completion options
     }
   };
 
@@ -123,13 +121,76 @@ export default function ExplorePage({ params }) {
     );
   }
   
-  const currentDilemma = dilemmas[currentIndex];
-  
-  // Safety check: if no current dilemma and we have responses, go to results
-  if (!currentDilemma && responses.length > 0) {
-    router.push('/results');
-    return null;
+  // Handle completion state (currentIndex === -1)
+  if (currentIndex === -1) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-4xl mx-auto">
+          <Card className="text-center">
+            <CardHeader>
+              <CardTitle className="text-2xl text-green-600">🎉 Amazing Work!</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <p className="text-lg mb-2">You've completed all {dilemmas.length} available dilemmas!</p>
+                <p className="text-sm text-muted-foreground">
+                  You've answered {responses.length} ethical scenarios. 
+                  This rich dataset will create a comprehensive values.md file.
+                </p>
+              </div>
+              
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-2">Your Response Summary:</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <span className="text-2xl font-bold text-primary">{responses.length}</span>
+                    <p className="text-muted-foreground">Scenarios</p>
+                  </div>
+                  <div>
+                    <span className="text-2xl font-bold text-primary">
+                      {Math.round(responses.reduce((sum, r) => sum + (r.responseTime || 0), 0) / responses.length / 1000)}s
+                    </span>
+                    <p className="text-muted-foreground">Avg. Time</p>
+                  </div>
+                  <div>
+                    <span className="text-2xl font-bold text-primary">
+                      {Math.round(responses.reduce((sum, r) => sum + (r.perceivedDifficulty || 5), 0) / responses.length * 10) / 10}
+                    </span>
+                    <p className="text-muted-foreground">Avg. Difficulty</p>
+                  </div>
+                  <div>
+                    <span className="text-2xl font-bold text-primary">
+                      {responses.filter(r => r.reasoning && r.reasoning.length > 0).length}
+                    </span>
+                    <p className="text-muted-foreground">With Reasoning</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <Button 
+                  onClick={() => router.push('/results')}
+                  size="lg" 
+                  className="w-full h-12 text-lg font-semibold"
+                >
+                  Generate My VALUES.md
+                </Button>
+                <Button 
+                  onClick={() => router.push('/api/start-fresh')}
+                  variant="outline" 
+                  className="w-full"
+                >
+                  Start Fresh Session
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
+
+  const currentDilemma = dilemmas[currentIndex];
   
   // If no current dilemma and no responses, show error
   if (!currentDilemma) {
@@ -143,7 +204,7 @@ export default function ExplorePage({ params }) {
               <Button 
                 onClick={() => {
                   localStorage.removeItem('responses');
-                  router.push('/api/dilemmas/random');
+                  router.push('/api/start-fresh');
                 }} 
                 className="w-full"
               >
@@ -161,10 +222,15 @@ export default function ExplorePage({ params }) {
       <div className="max-w-4xl mx-auto">
         {/* Progress indicator */}
         <div className="mb-6">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">
-              Question {currentIndex + 1} of {dilemmas.length}
-            </span>
+          <div className="flex justify-between items-center mb-2">
+            <div>
+              <span className="text-sm text-muted-foreground">
+                Question {currentIndex + 1} of {dilemmas.length}
+              </span>
+              <span className="text-xs text-muted-foreground ml-4">
+                Answered: {responses.length}
+              </span>
+            </div>
             <div className="w-64 bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-primary h-2 rounded-full transition-all"
@@ -172,6 +238,19 @@ export default function ExplorePage({ params }) {
               />
             </div>
           </div>
+          {responses.length >= 12 && (
+            <div className="text-center">
+              <p className="text-xs text-green-600 mb-1">✓ You have enough responses for a comprehensive values.md</p>
+              <Button 
+                onClick={() => router.push('/results')}
+                variant="outline" 
+                size="sm"
+                className="text-xs"
+              >
+                Generate Values Now
+              </Button>
+            </div>
+          )}
         </div>
         
         <Card>

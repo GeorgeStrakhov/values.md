@@ -24,14 +24,14 @@ export async function GET(
       );
     }
 
-    // Get 11 more dilemmas in a deterministic way based on the UUID
+    // Get ALL other dilemmas in a deterministic way based on the UUID
     // This ensures the same UUID always returns the same set of dilemmas
+    // But now users can answer as many as they want
     const otherDilemmas = await db
       .select()
       .from(dilemmas)
       .where(ne(dilemmas.dilemmaId, uuid))
-      .orderBy(sql`dilemma_id`) // Deterministic ordering instead of RANDOM()
-      .limit(11);
+      .orderBy(sql`dilemma_id`); // Deterministic ordering, no limit
 
     // Combine with the specific dilemma at the start
     const allDilemmas = [dilemma[0], ...otherDilemmas];

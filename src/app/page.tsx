@@ -117,7 +117,7 @@ export default function Home() {
               </Link>
             </Button>
             <p className="text-sm text-muted-foreground font-medium">
-              Start fresh with 12 new ethical dilemmas
+              Answer ethical dilemmas to discover your values (12+ recommended)
             </p>
             <p className="text-sm text-muted-foreground font-medium border-t pt-6">
               Your responses are stored locally for privacy. You can optionally contribute 

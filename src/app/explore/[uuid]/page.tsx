@@ -52,8 +52,8 @@ export default function ExplorePage({ params }) {
           if (nextUnansweredIndex !== -1) {
             setCurrentIndex(nextUnansweredIndex);
           } else {
-            // This shouldn't happen if our logic above is correct, but as a fallback
-            setCurrentIndex(0);
+            // User has answered all dilemmas - show completion state
+            setCurrentIndex(-1);
           }
         }
         

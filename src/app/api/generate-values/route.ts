@@ -303,11 +303,30 @@ function generateEnhancedValuesMarkdown(
   const primaryMotif = motifDetails.find(m => m.motifId === topMotifs[0]) || motifDetails[0];
   const totalResponses = Object.values(motifCounts).reduce((sum, count) => sum + count, 0);
   
+  // Calculate confidence based on response count and consistency
+  const getConfidenceLevel = (responses: number, consistency: number) => {
+    if (responses < 6) return { level: 'Low', warning: 'Need more responses for reliable assessment' };
+    if (responses < 12) return { level: 'Medium', warning: 'Assessment based on limited data' };
+    if (consistency < 0.6) return { level: 'Low', warning: 'Inconsistent response patterns detected' };
+    if (responses >= 20 && consistency >= 0.8) return { level: 'High', warning: null };
+    return { level: 'Medium', warning: 'Reasonably confident but could improve with more data' };
+  };
+  
+  const confidence = getConfidenceLevel(totalResponses, statisticalAnalysis.decisionPatterns.consistencyScore);
+  const primaryMotifPercentage = topMotifs.length > 0 ? Math.round((motifCounts[topMotifs[0]] / totalResponses) * 100) : 0;
+  
   return `# My Values
+
+## Confidence Assessment
+**Data Quality:** ${confidence.level} confidence (${totalResponses} responses, ${Math.round(statisticalAnalysis.decisionPatterns.consistencyScore * 100)}% consistency)
+${confidence.warning ? `\n⚠️ **Note:** ${confidence.warning}` : ''}
 
 ## Core Ethical Framework
 
-Based on my responses to ${totalResponses} ethical dilemmas, my decision-making is primarily guided by **${primaryMotif?.name || 'Mixed Approaches'}**.
+${totalResponses >= 6 
+  ? `Based on my responses to ${totalResponses} ethical dilemmas, my decision-making appears to be primarily guided by **${primaryMotif?.name || 'Mixed Approaches'}** (${primaryMotifPercentage}% of decisions).`
+  : `Based on my responses to ${totalResponses} ethical dilemmas, there isn't enough data yet to confidently identify a primary ethical framework. More responses needed for reliable assessment.`
+}
 
 ${primaryMotif?.description || 'My ethical reasoning draws from multiple moral frameworks, adapting to context and circumstances.'}
 

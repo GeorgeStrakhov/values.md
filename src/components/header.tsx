@@ -26,9 +26,9 @@ import { useSession } from 'next-auth/react';
 // Main public navigation - only mature, polished pages
 const publicNavigation = [
   { name: 'Home', href: '/' },
+  { name: 'Demo', href: '/proof-of-concept' },
   { name: 'About', href: '/about' },
   { name: 'Research', href: '/research' },
-  { name: 'Waterfall', href: '/waterfall' },
 ];
 
 // Admin-only navigation - diagnostic, experimental, and configuration pages

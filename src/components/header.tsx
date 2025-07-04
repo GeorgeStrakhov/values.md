@@ -27,8 +27,9 @@ import { useSession } from 'next-auth/react';
 const publicNavigation = [
   { name: 'Home', href: '/' },
   { name: 'Demo', href: '/proof-of-concept' },
+  { name: 'Test', href: '/integration' },
+  { name: 'Feedback', href: '/feedback' },
   { name: 'About', href: '/about' },
-  { name: 'Research', href: '/research' },
 ];
 
 // Admin-only navigation - diagnostic, experimental, and configuration pages

@@ -318,22 +318,22 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
           )}
           
           {responses.length >= 12 && (
-            <div className="text-center bg-green-50/80 border border-green-200 rounded-lg p-6 my-6">
+            <div className="text-center bg-muted/50 border rounded-lg p-6 my-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <p className="text-sm font-medium text-green-700">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <p className="text-sm font-medium">
                     You have enough responses for a comprehensive values.md
                   </p>
                 </div>
                 <Button 
                   onClick={() => router.push('/results')}
                   size="lg"
-                  className="h-12 px-8 text-base font-semibold bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                  className="h-12 px-8 text-base font-semibold"
                 >
                   Generate Values Now
                 </Button>
-                <p className="text-xs text-green-600/80">
+                <p className="text-xs text-muted-foreground">
                   Continue answering or generate your personalized VALUES.md file
                 </p>
               </div>

@@ -794,3 +794,95 @@ params: 10
   syscall: 'open',
   path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
 }
+ ✓ Compiled in 3.6s
+ ✓ Compiled / in 174ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/_not-found/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/_not-found/page/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
+}

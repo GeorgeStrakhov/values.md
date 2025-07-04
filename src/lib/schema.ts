@@ -1,4 +1,4 @@
-import { pgTable, varchar, text, integer, decimal, timestamp, boolean, uuid, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, text, integer, decimal, timestamp, boolean, uuid, primaryKey, jsonb } from 'drizzle-orm/pg-core';
 
 // Ethical frameworks taxonomy
 export const frameworks = pgTable('frameworks', {
@@ -155,6 +155,78 @@ export const verificationTokens = pgTable('verificationTokens', {
   compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
 }));
 
+// Experiment validation tables
+export const alignmentExperimentBatches = pgTable('alignment_experiment_batches', {
+  batchId: uuid('batch_id').defaultRandom().primaryKey(),
+  experimentType: varchar('experiment_type').notNull(),
+  description: text('description'),
+  llmProviders: text('llm_providers').array(),
+  testScenariosCount: integer('test_scenarios_count'),
+  humanSessionsCount: integer('human_sessions_count'),
+  status: varchar('status').default('queued'),
+  progressPercent: integer('progress_percent').default(0),
+  estimatedCostUsd: decimal('estimated_cost_usd', { precision: 10, scale: 2 }),
+  actualCostUsd: decimal('actual_cost_usd', { precision: 10, scale: 2 }),
+  startedAt: timestamp('started_at'),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const experimentTestScenarios = pgTable('experiment_test_scenarios', {
+  scenarioId: uuid('scenario_id').defaultRandom().primaryKey(),
+  batchId: uuid('batch_id').references(() => alignmentExperimentBatches.batchId),
+  sourceDilemmaId: uuid('source_dilemma_id').references(() => dilemmas.dilemmaId),
+  variationType: varchar('variation_type'),
+  scenarioText: text('scenario_text').notNull(),
+  choiceA: text('choice_a').notNull(),
+  choiceB: text('choice_b').notNull(),
+  choiceC: text('choice_c').notNull(),
+  choiceD: text('choice_d').notNull(),
+  expectedMotifs: jsonb('expected_motifs'),
+  difficultyRating: integer('difficulty_rating'),
+  domain: varchar('domain'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const experimentLlmResponses = pgTable('experiment_llm_responses', {
+  responseId: uuid('response_id').defaultRandom().primaryKey(),
+  batchId: uuid('batch_id').references(() => alignmentExperimentBatches.batchId),
+  scenarioId: uuid('scenario_id').references(() => experimentTestScenarios.scenarioId),
+  humanSessionId: varchar('human_session_id'),
+  llmProvider: varchar('llm_provider').notNull(),
+  alignmentCondition: varchar('alignment_condition').notNull(),
+  valuesDocument: text('values_document'),
+  chosenOption: varchar('chosen_option').notNull(),
+  reasoning: text('reasoning'),
+  confidenceScore: integer('confidence_score'),
+  responseTimeMs: integer('response_time_ms'),
+  tokenCount: integer('token_count'),
+  costUsd: decimal('cost_usd', { precision: 8, scale: 4 }),
+  identifiedMotifs: text('identified_motifs').array(),
+  consistencyWithValues: decimal('consistency_with_values'),
+  choiceConfidence: varchar('choice_confidence'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const experimentConsistencyAnalysis = pgTable('experiment_consistency_analysis', {
+  analysisId: uuid('analysis_id').defaultRandom().primaryKey(),
+  batchId: uuid('batch_id').references(() => alignmentExperimentBatches.batchId),
+  humanSessionId: varchar('human_session_id'),
+  llmProvider: varchar('llm_provider'),
+  scenarioCount: integer('scenario_count'),
+  consistentChoices: integer('consistent_choices'),
+  consistencyPercentage: decimal('consistency_percentage'),
+  baselineAccuracy: decimal('baseline_accuracy'),
+  alignedAccuracy: decimal('aligned_accuracy'),
+  improvementDelta: decimal('improvement_delta'),
+  motifConsistency: jsonb('motif_consistency'),
+  dominantMotifs: text('dominant_motifs').array(),
+  conflictingChoices: integer('conflicting_choices'),
+  statisticalSignificance: decimal('statistical_significance'),
+  sampleSize: integer('sample_size'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export type Framework = typeof frameworks.$inferSelect;
 export type Motif = typeof motifs.$inferSelect;
 export type Dilemma = typeof dilemmas.$inferSelect;
@@ -163,3 +235,6 @@ export type UserDemographics = typeof userDemographics.$inferSelect;
 export type LlmResponse = typeof llmResponses.$inferSelect;
 export type LlmAlignmentExperiment = typeof llmAlignmentExperiments.$inferSelect;
 export type User = typeof users.$inferSelect;
+export type AlignmentExperimentBatch = typeof alignmentExperimentBatches.$inferSelect;
+export type ExperimentTestScenario = typeof experimentTestScenarios.$inferSelect;
+export type ExperimentLlmResponse = typeof experimentLlmResponses.$inferSelect;

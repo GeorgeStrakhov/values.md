@@ -47,8 +47,8 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
         const allSavedResponses = loadResponses();
           
         // Filter responses to only include those that match current dilemmas
-        const currentDilemmaIds = new Set(data.dilemmas.map(d => d.dilemmaId));
-        const relevantResponses = allSavedResponses.filter(response => 
+        const currentDilemmaIds = new Set(data.dilemmas.map((d: any) => d.dilemmaId));
+        const relevantResponses = allSavedResponses.filter((response: any) => 
           currentDilemmaIds.has(response.dilemmaId)
         );
         
@@ -58,8 +58,8 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
         // Users can now choose to continue or view results
         
         // Find the next unanswered dilemma
-        const answeredDilemmaIds = new Set(relevantResponses.map(r => r.dilemmaId));
-        const nextUnansweredIndex = data.dilemmas.findIndex(d => !answeredDilemmaIds.has(d.dilemmaId));
+        const answeredDilemmaIds = new Set(relevantResponses.map((r: any) => r.dilemmaId));
+        const nextUnansweredIndex = data.dilemmas.findIndex((d: any) => !answeredDilemmaIds.has(d.dilemmaId));
         
         if (nextUnansweredIndex !== -1) {
           setCurrentIndex(nextUnansweredIndex);
@@ -99,7 +99,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     const existingResponses = stored ? JSON.parse(stored) : [];
     
     // Remove any existing response for this dilemma and add the new one
-    const filteredResponses = existingResponses.filter(r => r.dilemmaId !== newResponse.dilemmaId);
+    const filteredResponses = existingResponses.filter((r: any) => r.dilemmaId !== newResponse.dilemmaId);
     const allResponses = [...filteredResponses, newResponse];
     
     // Validate response before saving
@@ -150,7 +150,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
     setLoadingMore(true);
     try {
       const resolvedParams = await params;
-      const res = await fetch(`/api/dilemmas/${resolvedParams.uuid}?offset=${pagination.nextOffset}&limit=25`);
+      const res = await fetch(`/api/dilemmas/${resolvedParams.uuid}?offset=${(pagination as any).nextOffset}&limit=25`);
       if (!res.ok) throw new Error('Failed to load more dilemmas');
       
       const data = await res.json();
@@ -209,19 +209,19 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
                   </div>
                   <div>
                     <span className="text-2xl font-bold text-primary">
-                      {Math.round(responses.reduce((sum, r) => sum + (r.responseTime || 0), 0) / responses.length / 1000)}s
+                      {Math.round(responses.reduce((sum: number, r: any) => sum + (r.responseTime || 0), 0) / responses.length / 1000)}s
                     </span>
                     <p className="text-muted-foreground">Avg. Time</p>
                   </div>
                   <div>
                     <span className="text-2xl font-bold text-primary">
-                      {Math.round(responses.reduce((sum, r) => sum + (r.perceivedDifficulty || 5), 0) / responses.length * 10) / 10}
+                      {Math.round(responses.reduce((sum: number, r: any) => sum + (r.perceivedDifficulty || 5), 0) / responses.length * 10) / 10}
                     </span>
                     <p className="text-muted-foreground">Avg. Difficulty</p>
                   </div>
                   <div>
                     <span className="text-2xl font-bold text-primary">
-                      {responses.filter(r => r.reasoning && r.reasoning.length > 0).length}
+                      {responses.filter((r: any) => r.reasoning && r.reasoning.length > 0).length}
                     </span>
                     <p className="text-muted-foreground">With Reasoning</p>
                   </div>
@@ -311,7 +311,7 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
               <span className="text-yellow-800">
                 ⚠️ Storage space low ({Math.round(storageHealth.usage.percentage)}% used)
               </span>
-              {storageHealth.recommendations.map((rec, i) => (
+              {storageHealth.recommendations.map((rec: string, i: number) => (
                 <p key={i} className="text-yellow-700 mt-1">{rec}</p>
               ))}
             </div>

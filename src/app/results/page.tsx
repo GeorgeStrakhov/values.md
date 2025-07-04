@@ -10,6 +10,7 @@ export default function ResultsPage() {
   const [valuesMarkdown, setValuesMarkdown] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPrivacyChoice, setShowPrivacyChoice] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -22,7 +23,42 @@ export default function ResultsPage() {
     }
   }, [router]);
 
-  const generateValues = async () => {
+  const handleGenerateClick = () => {
+    setShowPrivacyChoice(true);
+  };
+
+  const generateValuesPrivate = async () => {
+    if (responses.length === 0) {
+      setError('No responses found. Please complete the dilemmas first.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Generate values using ONLY localStorage data (no database storage)
+      const valuesResponse = await fetch('/api/generate-values-private', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ responses })
+      });
+      
+      if (!valuesResponse.ok) {
+        throw new Error(`Failed to generate values: ${valuesResponse.status}`);
+      }
+      
+      const data = await valuesResponse.json();
+      setValuesMarkdown(data.valuesMarkdown);
+    } catch (err) {
+      console.error('Private values generation error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate values');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateValuesWithDataSharing = async () => {
     if (responses.length === 0) {
       setError('No responses found. Please complete the dilemmas first.');
       return;
@@ -34,7 +70,7 @@ export default function ResultsPage() {
     try {
       const sessionId = `session-${Date.now()}`;
       
-      // Save responses to database
+      // Save responses to database for research
       const saveResponse = await fetch('/api/responses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,12 +81,13 @@ export default function ResultsPage() {
         throw new Error(`Failed to save responses: ${saveResponse.status}`);
       }
       
-      // Generate values
+      // Generate values using database analysis
       const valuesResponse = await fetch('/api/generate-values', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId })
       });
+      
       if (!valuesResponse.ok) {
         throw new Error(`Failed to generate values: ${valuesResponse.status}`);
       }
@@ -114,7 +151,7 @@ export default function ResultsPage() {
           </Card>
         )}
 
-        {!valuesMarkdown ? (
+        {!valuesMarkdown && !showPrivacyChoice ? (
           <Card className="text-center">
             <CardHeader>
               <CardTitle>Generate Your Values Profile</CardTitle>
@@ -124,11 +161,82 @@ export default function ResultsPage() {
                 Ready to analyze your responses and create your personalized VALUES.md file?
               </p>
               <Button
-                onClick={generateValues}
+                onClick={handleGenerateClick}
                 disabled={loading || responses.length === 0}
                 size="lg"
               >
-                {loading ? 'Generating...' : 'Generate Your VALUES.md'}
+                Generate Your VALUES.md
+              </Button>
+            </CardContent>
+          </Card>
+        ) : showPrivacyChoice && !valuesMarkdown ? (
+          <Card className="text-center">
+            <CardHeader>
+              <CardTitle>🔒 Choose Your Privacy Level</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <p className="text-muted-foreground">
+                How would you like your VALUES.md file generated?
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-4 text-left">
+                <Card className="border-green-200 bg-green-50">
+                  <CardHeader>
+                    <CardTitle className="text-green-800 flex items-center gap-2">
+                      🔒 Private Generation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-green-700 mb-4">
+                      <li>✅ Your data stays on your device</li>
+                      <li>✅ No database storage</li>
+                      <li>✅ Full VALUES.md analysis</li>
+                      <li>✅ Same quality results</li>
+                    </ul>
+                    <Button 
+                      onClick={generateValuesPrivate}
+                      disabled={loading}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      Generate Privately
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-blue-200 bg-blue-50">
+                  <CardHeader>
+                    <CardTitle className="text-blue-800 flex items-center gap-2">
+                      📊 Support Research
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-blue-700 mb-4">
+                      <li>✅ Same VALUES.md quality</li>
+                      <li>✅ Anonymous data contribution</li>
+                      <li>✅ Help improve the platform</li>
+                      <li>✅ Support ethics research</li>
+                    </ul>
+                    <Button 
+                      onClick={generateValuesWithDataSharing}
+                      disabled={loading}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      Generate & Contribute
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
+                <strong>Both options provide identical VALUES.md quality.</strong> The only difference is whether your anonymous responses are stored to help improve the platform for future users.
+              </div>
+              
+              <Button 
+                onClick={() => setShowPrivacyChoice(false)}
+                variant="outline"
+                size="sm"
+              >
+                ← Back
               </Button>
             </CardContent>
           </Card>

@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
+import { saveResponses, loadResponses, getStorageHealth } from '@/lib/storage';
+import { validateResponse, checkDataIntegrity } from '@/lib/validation';
+import { trackEvent, trackResponse, trackStorageIssue, trackApiError } from '@/lib/telemetry';
 
 export default function ExplorePage({ params }) {
   const [dilemmas, setDilemmas] = useState([]);
@@ -16,6 +19,9 @@ export default function ExplorePage({ params }) {
   const [difficulty, setDifficulty] = useState(5);
   const [loading, setLoading] = useState(true);
   const [startTime, setStartTime] = useState(Date.now());
+  const [pagination, setPagination] = useState({ total: 0, loaded: 0, hasMore: true });
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [storageHealth, setStorageHealth] = useState<any>(null);
   const router = useRouter();
 
   // Load dilemmas once on mount
@@ -29,18 +35,24 @@ export default function ExplorePage({ params }) {
         const data = await res.json();
         setDilemmas(data.dilemmas);
         
+        // Set pagination info
+        if (data.pagination) {
+          setPagination(data.pagination);
+        }
+        
+        // Check storage health
+        setStorageHealth(getStorageHealth());
+        
         // Restore previous responses if any
-        const stored = localStorage.getItem('responses');
-        if (stored) {
-          const allSavedResponses = JSON.parse(stored);
+        const allSavedResponses = loadResponses();
           
-          // Filter responses to only include those that match current dilemmas
-          const currentDilemmaIds = new Set(data.dilemmas.map(d => d.dilemmaId));
-          const relevantResponses = allSavedResponses.filter(response => 
-            currentDilemmaIds.has(response.dilemmaId)
-          );
-          
-          setResponses(relevantResponses);
+        // Filter responses to only include those that match current dilemmas
+        const currentDilemmaIds = new Set(data.dilemmas.map(d => d.dilemmaId));
+        const relevantResponses = allSavedResponses.filter(response => 
+          currentDilemmaIds.has(response.dilemmaId)
+        );
+        
+        setResponses(relevantResponses);
           
           // Note: We no longer auto-redirect when all dilemmas are completed
           // Users can now choose to continue or view results
@@ -61,6 +73,7 @@ export default function ExplorePage({ params }) {
         setStartTime(Date.now());
       } catch (error) {
         console.error('Error loading dilemmas:', error);
+        trackApiError('/api/dilemmas', error);
       } finally {
         setLoading(false);
       }
@@ -90,10 +103,31 @@ export default function ExplorePage({ params }) {
     const filteredResponses = existingResponses.filter(r => r.dilemmaId !== newResponse.dilemmaId);
     const allResponses = [...filteredResponses, newResponse];
     
-    // Update both local state and localStorage
+    // Validate response before saving
+    const validationResult = validateResponse(newResponse);
+    if (!validationResult.isValid) {
+      console.warn('Invalid response detected:', validationResult.errors);
+      trackApiError('/explore', { validation: validationResult.errors });
+      return; // Don't save invalid responses
+    }
+    
+    // Track response submission
+    trackResponse(newResponse, validationResult);
+    
+    // Update both local state and secure storage
     const newResponses = [...responses, newResponse];
     setResponses(newResponses);
-    localStorage.setItem('responses', JSON.stringify(allResponses));
+    
+    // Use robust storage system
+    const saveSuccess = saveResponses(allResponses);
+    if (!saveSuccess) {
+      console.warn('Failed to save responses to storage');
+      trackStorageIssue('save_failed', { responseCount: allResponses.length });
+      // Still continue with the flow, data is in memory
+    }
+    
+    // Update storage health
+    setStorageHealth(getStorageHealth());
     
     // Navigate to next dilemma
     const nextIndex = currentIndex + 1;
@@ -109,6 +143,34 @@ export default function ExplorePage({ params }) {
       setCurrentIndex(-1); // Special state to show completion options
     }
   };
+
+  // Load more dilemmas when approaching the end
+  const loadMoreDilemmas = async () => {
+    if (!pagination.hasMore || loadingMore) return;
+    
+    setLoadingMore(true);
+    try {
+      const resolvedParams = await params;
+      const res = await fetch(`/api/dilemmas/${resolvedParams.uuid}?offset=${pagination.nextOffset}&limit=25`);
+      if (!res.ok) throw new Error('Failed to load more dilemmas');
+      
+      const data = await res.json();
+      setDilemmas(prev => [...prev, ...data.dilemmas]);
+      setPagination(data.pagination);
+    } catch (error) {
+      console.error('Error loading more dilemmas:', error);
+      trackApiError('/api/dilemmas/pagination', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // Auto-load more dilemmas when approaching the end
+  useEffect(() => {
+    if (currentIndex >= dilemmas.length - 5 && pagination.hasMore && !loadingMore) {
+      loadMoreDilemmas();
+    }
+  }, [currentIndex, dilemmas.length, pagination.hasMore, loadingMore]);
 
   if (loading) {
     return (
@@ -225,19 +287,37 @@ export default function ExplorePage({ params }) {
           <div className="flex justify-between items-center mb-2">
             <div>
               <span className="text-sm text-muted-foreground">
-                Question {currentIndex + 1} of {dilemmas.length}
+                Question {currentIndex + 1} of {pagination.total || dilemmas.length}
               </span>
               <span className="text-xs text-muted-foreground ml-4">
                 Answered: {responses.length}
               </span>
+              {pagination.hasMore && (
+                <span className="text-xs text-blue-500 ml-2">
+                  ({pagination.loaded} loaded)
+                </span>
+              )}
             </div>
             <div className="w-64 bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-primary h-2 rounded-full transition-all"
-                style={{ width: `${((currentIndex + 1) / dilemmas.length) * 100}%` }}
+                style={{ width: `${((currentIndex + 1) / (pagination.total || dilemmas.length)) * 100}%` }}
               />
             </div>
           </div>
+          
+          {/* Storage health warning */}
+          {storageHealth && !storageHealth.healthy && (
+            <div className="mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+              <span className="text-yellow-800">
+                ⚠️ Storage space low ({Math.round(storageHealth.usage.percentage)}% used)
+              </span>
+              {storageHealth.recommendations.map((rec, i) => (
+                <p key={i} className="text-yellow-700 mt-1">{rec}</p>
+              ))}
+            </div>
+          )}
+          
           {responses.length >= 12 && (
             <div className="text-center">
               <p className="text-xs text-green-600 mb-1">✓ You have enough responses for a comprehensive values.md</p>

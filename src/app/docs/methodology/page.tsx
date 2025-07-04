@@ -105,7 +105,7 @@ Weight = TF × IDF`}
                 <div>
                   <h4 className="font-semibold">Consistency Analysis</h4>
                   <p className="text-sm text-muted-foreground">
-                    Measure of domain-specific consistency: percentage of domains where primary motif appears in >60% of responses
+                    Measure of domain-specific consistency: percentage of domains where primary motif appears in {'>'}60% of responses
                   </p>
                 </div>
                 <div>

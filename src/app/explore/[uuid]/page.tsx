@@ -10,10 +10,10 @@ import { saveResponses, loadResponses, getStorageHealth } from '@/lib/storage';
 import { validateResponse, checkDataIntegrity } from '@/lib/validation';
 import { trackEvent, trackResponse, trackStorageIssue, trackApiError } from '@/lib/telemetry';
 
-export default function ExplorePage({ params }) {
-  const [dilemmas, setDilemmas] = useState([]);
+export default function ExplorePage({ params }: { params: Promise<{ uuid: string }> }) {
+  const [dilemmas, setDilemmas] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [responses, setResponses] = useState([]);
+  const [responses, setResponses] = useState<any[]>([]);
   const [choice, setChoice] = useState('');
   const [reasoning, setReasoning] = useState('');
   const [difficulty, setDifficulty] = useState(5);
@@ -54,19 +54,18 @@ export default function ExplorePage({ params }) {
         
         setResponses(relevantResponses);
           
-          // Note: We no longer auto-redirect when all dilemmas are completed
-          // Users can now choose to continue or view results
-          
-          // Find the next unanswered dilemma
-          const answeredDilemmaIds = new Set(relevantResponses.map(r => r.dilemmaId));
-          const nextUnansweredIndex = data.dilemmas.findIndex(d => !answeredDilemmaIds.has(d.dilemmaId));
-          
-          if (nextUnansweredIndex !== -1) {
-            setCurrentIndex(nextUnansweredIndex);
-          } else {
-            // User has answered all dilemmas - show completion state
-            setCurrentIndex(-1);
-          }
+        // Note: We no longer auto-redirect when all dilemmas are completed
+        // Users can now choose to continue or view results
+        
+        // Find the next unanswered dilemma
+        const answeredDilemmaIds = new Set(relevantResponses.map(r => r.dilemmaId));
+        const nextUnansweredIndex = data.dilemmas.findIndex(d => !answeredDilemmaIds.has(d.dilemmaId));
+        
+        if (nextUnansweredIndex !== -1) {
+          setCurrentIndex(nextUnansweredIndex);
+        } else {
+          // User has answered all dilemmas - show completion state
+          setCurrentIndex(-1);
         }
         
         // Reset timer for current dilemma

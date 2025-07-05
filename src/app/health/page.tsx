@@ -28,6 +28,12 @@ export default function HealthDashboard() {
   const { hasOpenRouterKey, hasUserResponses, hasGeneratedValues, databaseHasData } = useSystemState();
 
   const healthChecks = {
+    'fibration-consistency': {
+      name: 'Fibration Layer Consistency',
+      description: 'Mathematical verification that abstraction layers derive from executing code',
+      category: 'Category Theory',
+      icon: '🔬'
+    },
     'system-architecture': {
       name: 'System Architecture',
       description: 'Core architecture integrity and component health',
@@ -94,6 +100,10 @@ export default function HealthDashboard() {
       const statusResponse = await fetch('/api/system-status');
       const statusData = await statusResponse.json();
 
+      // Get fibration consistency check
+      const fibrationResponse = await fetch('/api/fibration-check');
+      const fibrationData = await fibrationResponse.json();
+
       // Store canary data for display
       setCanaryData(canaryData);
 
@@ -111,6 +121,42 @@ export default function HealthDashboard() {
         let status: HealthStatus;
 
         switch (key) {
+          case 'fibration-consistency':
+            const fibrationStatus = fibrationData?.status === 'consistent' ? 'pass' : 
+                                   fibrationData?.status === 'inconsistent' ? 'warning' : 'fail';
+            const layerConsistency = fibrationData?.fibrationCheck?.layers || {};
+            const issues = fibrationData?.fibrationCheck?.issues || [];
+            const consistencyScore = fibrationData?.categoryTheory?.consistencyScore || 0;
+            
+            status = {
+              status: fibrationStatus,
+              message: `${Math.round(consistencyScore * 100)}% layer consistency - ${issues.length} structural issues`,
+              details: [
+                `🔬 Mathematical Verification of Abstraction Layers`,
+                `📊 Performance Layer: ${layerConsistency.performance?.consistent ? '✅' : '❌'} ${layerConsistency.performance?.description || ''}`,
+                `🧪 Test Layer: ${layerConsistency.tests?.consistent ? '✅' : '❌'} ${layerConsistency.tests?.description || ''}`,
+                `🏗️ Architecture Layer: ${layerConsistency.architecture?.consistent ? '✅' : '❌'} ${layerConsistency.architecture?.description || ''}`,
+                `💭 Conceptual Layer: ${layerConsistency.concepts?.consistent ? '✅' : '❌'} ${layerConsistency.concepts?.description || ''}`,
+                ``,
+                `📐 Fibration Properties:`,
+                `  Base Space: ${fibrationData?.fibrationCheck?.fibrationProperties?.baseSpace || 'Unknown'}`,
+                `  Structure Maps: ${fibrationData?.fibrationCheck?.fibrationProperties?.structureMaps?.length || 0} defined`,
+                `  Coherence: ${fibrationData?.fibrationCheck?.fibrationProperties?.coherenceCondition || 'Unknown'}`,
+                ``,
+                ...(issues.length > 0 ? [`🔧 Structural Issues:`, ...issues.map((issue: string) => `  • ${issue}`)] : ['✅ No structural inconsistencies detected'])
+              ],
+              metrics: {
+                consistencyScore: `${Math.round(consistencyScore * 100)}%`,
+                layersChecked: Object.keys(layerConsistency).length,
+                issuesFound: issues.length,
+                fibrationValid: fibrationData?.categoryTheory?.fibrationValid,
+                topologicalCoherence: fibrationData?.categoryTheory?.topologicalCoherence,
+                checkDuration: `${fibrationData?.duration || 0}ms`
+              },
+              lastChecked: new Date().toISOString()
+            };
+            break;
+
           case 'system-architecture':
             status = {
               status: 'pass',

@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
+import { useDilemmaStore } from '@/store/dilemma-store'
+import { combinatorialGenerator, type ResponsePattern } from '@/lib/combinatorial-values-generator'
 
 interface DataStratum {
   id: string
@@ -22,19 +24,83 @@ interface DataFlow {
   active: boolean
 }
 
+interface SubsequenceSelection {
+  start: number
+  end: number
+  selected: boolean
+}
+
+interface GenerationResult {
+  id: string
+  name: string
+  subsequence: { start: number; end: number }
+  valuesMarkdown: string
+  profile: any
+  timestamp: Date
+  status: 'generating' | 'complete' | 'error'
+}
+
 const ValuesWaterfallPage = () => {
   const [currentStage, setCurrentStage] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(2000)
   const [dataFlows, setDataFlows] = useState<DataFlow[]>([])
   const [activeDatum, setActiveDatum] = useState<any>(null)
+  
+  // Subsequence selection state
+  const [responses, setResponses] = useState<ResponsePattern[]>([])
+  const [selectedRange, setSelectedRange] = useState<{ start: number; end: number }>({ start: 0, end: 0 })
+  const [isSelecting, setIsSelecting] = useState(false)
+  
+  // Results comparison state
+  const [generationResults, setGenerationResults] = useState<GenerationResult[]>([])
+  const [activeResultIndex, setActiveResultIndex] = useState<number | null>(null)
+  
+  // Get actual user responses from store
+  const dilemmaStore = useDilemmaStore()
 
-  // Sample data representing actual database content
-  const sampleUserResponses = [
-    { id: 'resp-1', dilemmaTitle: 'Autonomous Vehicle Dilemma', choice: 'B', motif: 'HARM_MINIMIZE', reasoning: 'Protecting vulnerable pedestrians must be the priority', difficulty: 7 },
-    { id: 'resp-2', dilemmaTitle: 'Medical Resource Allocation', choice: 'A', motif: 'UTIL_CALC', reasoning: 'Save the most lives with available resources', difficulty: 8 },
-    { id: 'resp-3', dilemmaTitle: 'Privacy vs Security', choice: 'C', motif: 'AUTONOMY_RESPECT', reasoning: 'Individual privacy rights cannot be violated', difficulty: 6 }
+  // Convert store responses to ResponsePattern format
+  useEffect(() => {
+    const storeResponses = dilemmaStore.responses
+    const converted: ResponsePattern[] = storeResponses.map((response, index) => ({
+      chosenOption: response.chosenOption,
+      motif: inferMotifFromChoice(response.chosenOption, response.reasoning),
+      domain: 'general', // Could be enhanced with dilemma domain mapping
+      difficulty: response.perceivedDifficulty,
+      reasoning: response.reasoning,
+      responseTime: response.responseTime
+    }))
+    setResponses(converted)
+    if (converted.length > 0) {
+      setSelectedRange({ start: 0, end: Math.min(converted.length - 1, 11) }) // Default to first 12 responses
+    }
+  }, [dilemmaStore.responses])
+  
+  // Sample data for demonstration when no real responses
+  const sampleUserResponses = responses.length > 0 ? responses : [
+    { chosenOption: 'B', motif: 'HARM_MINIMIZE', domain: 'autonomous_vehicles', difficulty: 7, reasoning: 'Protecting vulnerable pedestrians must be the priority' },
+    { chosenOption: 'A', motif: 'UTIL_CALC', domain: 'medical_ethics', difficulty: 8, reasoning: 'Save the most lives with available resources' },
+    { chosenOption: 'C', motif: 'AUTONOMY_RESPECT', domain: 'privacy', difficulty: 6, reasoning: 'Individual privacy rights cannot be violated' },
+    { chosenOption: 'A', motif: 'RULES_FIRST', domain: 'business_ethics', difficulty: 5, reasoning: 'Following established protocols ensures fairness' },
+    { chosenOption: 'B', motif: 'PERSON_FIRST', domain: 'social_justice', difficulty: 9, reasoning: 'The human impact must be our primary consideration' },
+    { chosenOption: 'D', motif: 'PROCESS_FIRST', domain: 'governance', difficulty: 4, reasoning: 'Transparent processes build trust' },
+    { chosenOption: 'C', motif: 'SAFETY_FIRST', domain: 'environmental', difficulty: 8, reasoning: 'Preventing catastrophic outcomes takes priority' },
+    { chosenOption: 'A', motif: 'NUMBERS_FIRST', domain: 'resource_allocation', difficulty: 6, reasoning: 'Data-driven decisions yield better outcomes' }
   ]
+  
+  // Helper function to infer motif from choice and reasoning
+  function inferMotifFromChoice(choice: string, reasoning: string): string {
+    const reasoningLower = reasoning.toLowerCase()
+    if (reasoningLower.includes('harm') || reasoningLower.includes('protect')) return 'HARM_MINIMIZE'
+    if (reasoningLower.includes('most') || reasoningLower.includes('greatest') || reasoningLower.includes('benefit')) return 'UTIL_CALC'
+    if (reasoningLower.includes('rights') || reasoningLower.includes('autonomy') || reasoningLower.includes('choice')) return 'AUTONOMY_RESPECT'
+    if (reasoningLower.includes('rule') || reasoningLower.includes('principle') || reasoningLower.includes('duty')) return 'RULES_FIRST'
+    if (reasoningLower.includes('people') || reasoningLower.includes('human') || reasoningLower.includes('relationship')) return 'PERSON_FIRST'
+    if (reasoningLower.includes('process') || reasoningLower.includes('procedure') || reasoningLower.includes('fair')) return 'PROCESS_FIRST'
+    if (reasoningLower.includes('safe') || reasoningLower.includes('risk') || reasoningLower.includes('prevent')) return 'SAFETY_FIRST'
+    if (reasoningLower.includes('data') || reasoningLower.includes('number') || reasoningLower.includes('measure')) return 'NUMBERS_FIRST'
+    return 'BALANCED'
+  }
 
   const sampleMotifs = [
     { id: 'HARM_MINIMIZE', name: 'Harm Minimization', category: 'harm_principle', weight: 0.35, frequency: 5 },
@@ -136,6 +202,95 @@ const ValuesWaterfallPage = () => {
     return currentAnalysis.activeStratum === stratumId ? 1 : 0.3
   }
 
+  // Generate VALUES.md for selected subsequence
+  const generateValuesForSubsequence = async (start: number, end: number, name?: string) => {
+    const subsequenceResponses = sampleUserResponses.slice(start, end + 1)
+    const resultId = `result_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`
+    
+    // Add pending result
+    const newResult: GenerationResult = {
+      id: resultId,
+      name: name || `Responses ${start + 1}-${end + 1}`,
+      subsequence: { start, end },
+      valuesMarkdown: '',
+      profile: null,
+      timestamp: new Date(),
+      status: 'generating'
+    }
+    
+    setGenerationResults(prev => [...prev, newResult])
+    setActiveResultIndex(generationResults.length)
+    
+    try {
+      // Generate using combinatorial analysis
+      const profile = combinatorialGenerator.analyzeResponses(subsequenceResponses)
+      const valuesMarkdown = combinatorialGenerator.generateValuesMarkdown(profile, {
+        useDetailedMotifAnalysis: true,
+        includeFrameworkAlignment: true,
+        includeDecisionPatterns: true,
+        templateFormat: 'standard',
+        targetAudience: 'personal'
+      })
+      
+      // Update result with generated content
+      setGenerationResults(prev => prev.map(result => 
+        result.id === resultId 
+          ? { ...result, valuesMarkdown, profile, status: 'complete' as const }
+          : result
+      ))
+    } catch (error) {
+      setGenerationResults(prev => prev.map(result => 
+        result.id === resultId 
+          ? { ...result, status: 'error' as const }
+          : result
+      ))
+    }
+  }
+
+  // Handle histogram bar selection
+  const handleResponseSelection = (index: number, isShiftHeld: boolean) => {
+    if (!isSelecting) {
+      setSelectedRange({ start: index, end: index })
+      setIsSelecting(true)
+    } else if (isShiftHeld && selectedRange.start !== -1) {
+      const start = Math.min(selectedRange.start, index)
+      const end = Math.max(selectedRange.start, index)
+      setSelectedRange({ start, end })
+    } else {
+      setSelectedRange({ start: index, end: index })
+    }
+  }
+
+  // Clear selection
+  const clearSelection = () => {
+    setIsSelecting(false)
+    setSelectedRange({ start: 0, end: 0 })
+  }
+
+  // Remove result
+  const removeResult = (resultId: string) => {
+    setGenerationResults(prev => prev.filter(result => result.id !== resultId))
+    if (activeResultIndex !== null && activeResultIndex >= generationResults.length - 1) {
+      setActiveResultIndex(Math.max(0, generationResults.length - 2))
+    }
+  }
+
+  // Get semantic color for motif (minimal palette)
+  const getMotifColor = (motif: string): string => {
+    const colorMap: Record<string, string> = {
+      'HARM_MINIMIZE': '#dc2626',     // Red - harm/danger
+      'UTIL_CALC': '#2563eb',         // Blue - calculation/utility  
+      'AUTONOMY_RESPECT': '#16a34a',  // Green - growth/freedom
+      'RULES_FIRST': '#7c3aed',       // Purple - authority/rules
+      'PERSON_FIRST': '#ea580c',      // Orange - warmth/people
+      'PROCESS_FIRST': '#0891b2',     // Cyan - process/system
+      'SAFETY_FIRST': '#dc2626',      // Red - safety/caution
+      'NUMBERS_FIRST': '#4338ca',     // Indigo - data/analysis
+      'BALANCED': '#6b7280'           // Gray - balanced/neutral
+    }
+    return colorMap[motif] || '#6b7280'
+  }
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
@@ -148,6 +303,108 @@ const ValuesWaterfallPage = () => {
             Watch how responses flow through ethical framework analysis to create personalized VALUES.md
           </p>
         </div>
+
+        {/* Response Subsequence Selector */}
+        {sampleUserResponses.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Response Subsequence Selector</span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    {sampleUserResponses.length} responses
+                  </Badge>
+                  {isSelecting && (
+                    <Badge className="text-xs">
+                      {selectedRange.start + 1}-{selectedRange.end + 1} selected
+                    </Badge>
+                  )}
+                </div>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Select a subsequence of responses to generate VALUES.md. Click to start selection, shift+click to extend range.
+              </p>
+            </CardHeader>
+            <CardContent>
+              {/* Histogram Bar Selector */}
+              <div className="mb-4">
+                <div className="flex items-center gap-1 mb-2">
+                  {sampleUserResponses.map((response, index) => {
+                    const isSelected = isSelecting && 
+                      index >= selectedRange.start && 
+                      index <= selectedRange.end
+                    const motifColor = getMotifColor(response.motif)
+                    
+                    return (
+                      <div
+                        key={index}
+                        className={`
+                          relative cursor-pointer transition-all duration-200 
+                          ${isSelected ? 'ring-2 ring-blue-500 scale-110' : 'hover:scale-105'}
+                        `}
+                        style={{ 
+                          width: `${Math.max(100 / sampleUserResponses.length, 8)}%`,
+                          height: `${Math.max(response.difficulty * 6, 24)}px`,
+                          backgroundColor: motifColor,
+                          opacity: isSelected ? 1 : 0.7
+                        }}
+                        onClick={(e) => handleResponseSelection(index, e.shiftKey)}
+                        title={`Response ${index + 1}: ${response.motif} (difficulty: ${response.difficulty})`}
+                      >
+                        {/* Response number */}
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-muted-foreground">
+                          {index + 1}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                
+                {/* Motif Legend */}
+                <div className="flex flex-wrap gap-2 text-xs mt-8">
+                  {Array.from(new Set(sampleUserResponses.map(r => r.motif))).map(motif => (
+                    <div key={motif} className="flex items-center gap-1">
+                      <div 
+                        className="w-3 h-3 rounded-sm" 
+                        style={{ backgroundColor: getMotifColor(motif) }}
+                      />
+                      <span className="text-muted-foreground">{motif.replace(/_/g, ' ')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Selection Controls */}
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={() => generateValuesForSubsequence(selectedRange.start, selectedRange.end)}
+                  disabled={!isSelecting}
+                  size="sm"
+                >
+                  Generate VALUES.md
+                </Button>
+                <Button
+                  onClick={clearSelection}
+                  variant="outline"
+                  size="sm"
+                  disabled={!isSelecting}
+                >
+                  Clear Selection
+                </Button>
+                <Button
+                  onClick={() => {
+                    setSelectedRange({ start: 0, end: sampleUserResponses.length - 1 })
+                    setIsSelecting(true)
+                  }}
+                  variant="outline"
+                  size="sm"
+                >
+                  Select All
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Controls */}
         <Card className="mb-8">
@@ -372,6 +629,152 @@ const ValuesWaterfallPage = () => {
             </Card>
           </div>
         </div>
+
+        {/* Side-by-Side Results Comparison */}
+        {generationResults.length > 0 && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Generated VALUES.md Comparison</span>
+                <Badge variant="outline" className="text-xs">
+                  {generationResults.length} results
+                </Badge>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Compare VALUES.md files generated from different response subsequences.
+              </p>
+            </CardHeader>
+            <CardContent>
+              {/* Results Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                {generationResults.map((result, index) => (
+                  <div 
+                    key={result.id}
+                    className={`
+                      relative border rounded-lg p-4 transition-all duration-200
+                      ${activeResultIndex === index ? 'ring-2 ring-blue-500 bg-blue-50/50' : 'hover:bg-gray-50'}
+                      cursor-pointer
+                    `}
+                    onClick={() => setActiveResultIndex(index)}
+                  >
+                    {/* Result Header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <h4 className="font-medium text-sm">{result.name}</h4>
+                        <p className="text-xs text-muted-foreground">
+                          {result.timestamp.toLocaleTimeString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {result.status === 'generating' && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                        )}
+                        {result.status === 'complete' && (
+                          <div className="w-2 h-2 bg-green-500 rounded-full" />
+                        )}
+                        {result.status === 'error' && (
+                          <div className="w-2 h-2 bg-red-500 rounded-full" />
+                        )}
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeResult(result.id)
+                          }}
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-red-500"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Subsequence Visualization */}
+                    <div className="mb-3">
+                      <div className="flex items-center gap-1 mb-1">
+                        {sampleUserResponses.map((response, responseIndex) => {
+                          const isInSubsequence = responseIndex >= result.subsequence.start && 
+                                                responseIndex <= result.subsequence.end
+                          return (
+                            <div
+                              key={responseIndex}
+                              className="w-2 h-2 rounded-sm"
+                              style={{
+                                backgroundColor: isInSubsequence 
+                                  ? getMotifColor(response.motif)
+                                  : '#e5e7eb',
+                                opacity: isInSubsequence ? 1 : 0.3
+                              }}
+                            />
+                          )
+                        })}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Responses {result.subsequence.start + 1}-{result.subsequence.end + 1} 
+                        ({result.subsequence.end - result.subsequence.start + 1} total)
+                      </p>
+                    </div>
+
+                    {/* VALUES.md Preview */}
+                    {result.status === 'complete' && result.valuesMarkdown && (
+                      <div className="bg-white/70 rounded border p-3 text-xs font-mono max-h-40 overflow-y-auto">
+                        <div className="whitespace-pre-wrap">
+                          {result.valuesMarkdown.split('\n').slice(0, 8).join('\n')}
+                          {result.valuesMarkdown.split('\n').length > 8 && '\n...'}
+                        </div>
+                      </div>
+                    )}
+
+                    {result.status === 'generating' && (
+                      <div className="bg-gray-100 rounded border p-3 text-xs text-center text-muted-foreground">
+                        Generating VALUES.md...
+                      </div>
+                    )}
+
+                    {result.status === 'error' && (
+                      <div className="bg-red-50 border border-red-200 rounded p-3 text-xs text-center text-red-600">
+                        Generation failed
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Active Result Detail */}
+              {activeResultIndex !== null && 
+               generationResults[activeResultIndex]?.status === 'complete' && (
+                <div className="mt-6 border-t pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-medium">
+                      {generationResults[activeResultIndex].name} - Full Details
+                    </h4>
+                    <Button
+                      onClick={() => {
+                        const result = generationResults[activeResultIndex]
+                        const blob = new Blob([result.valuesMarkdown], { type: 'text/markdown' })
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `values-${result.subsequence.start + 1}-${result.subsequence.end + 1}.md`
+                        a.click()
+                        URL.revokeObjectURL(url)
+                      }}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Download
+                    </Button>
+                  </div>
+                  <div className="bg-white border rounded-lg p-4 max-h-96 overflow-y-auto">
+                    <pre className="text-sm font-mono whitespace-pre-wrap">
+                      {generationResults[activeResultIndex].valuesMarkdown}
+                    </pre>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )

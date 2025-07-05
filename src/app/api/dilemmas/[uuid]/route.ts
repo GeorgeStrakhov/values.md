@@ -2,142 +2,130 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { dilemmas } from '@/lib/schema';
 import { eq, ne, sql } from 'drizzle-orm';
+import { z } from 'zod';
+import {
+  withErrorHandler,
+  ApiErrors,
+  CommonSchemas,
+  logRequest,
+  logResponse,
+  checkRateLimit,
+  getClientIP,
+  addCorsHeaders,
+  addSecurityHeaders
+} from '@/lib/api-error-handler';
 
-// Simple rate limiting cache
-const requestCache = new Map<string, number>();
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 10;
+// Pagination schema for validation
+const PaginationSchema = z.object({
+  limit: z.coerce.number().int().min(1).max(50).default(25),
+  offset: z.coerce.number().int().min(0).default(0),
+  all: z.enum(['true', 'false']).transform(val => val === 'true').default('false')
+});
 
-function checkRateLimit(clientId: string): boolean {
-  const now = Date.now();
-  const windowStart = now - RATE_LIMIT_WINDOW;
+async function handleGET(request: NextRequest, { params }: { params: Promise<{ uuid: string }> }) {
+  const startTime = Date.now();
+  logRequest(request, 'GET');
   
-  // Clean old entries
-  for (const [key, timestamp] of requestCache.entries()) {
-    if (timestamp < windowStart) {
-      requestCache.delete(key);
-    }
+  // Rate limiting
+  const clientIP = getClientIP(request);
+  if (!checkRateLimit(clientIP, 10, 60 * 1000)) {
+    throw ApiErrors.tooManyRequests('Rate limit exceeded. Please wait before requesting more dilemmas.');
   }
   
-  // Count requests from this client in the window
-  const clientRequests = Array.from(requestCache.entries())
-    .filter(([key]) => key.startsWith(clientId))
-    .length;
-    
-  if (clientRequests >= MAX_REQUESTS_PER_WINDOW) {
-    return false;
-  }
+  // Parse and validate parameters
+  const { uuid } = await params;
+  const url = new URL(request.url);
   
-  requestCache.set(`${clientId}-${now}`, now);
-  return true;
-}
+  // Validate UUID using common schema
+  const validatedUuid = CommonSchemas.dilemmaId.parse(uuid);
+  
+  // Validate pagination parameters
+  const paginationParams = PaginationSchema.parse({
+    limit: url.searchParams.get('limit'),
+    offset: url.searchParams.get('offset'),
+    all: url.searchParams.get('all')
+  });
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ uuid: string }> }
-) {
-  try {
-    const { uuid } = await params;
-    
-    // Rate limiting based on IP
-    const clientId = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
-    if (!checkRateLimit(clientId)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Please wait before requesting more dilemmas.' },
-        { status: 429 }
-      );
-    }
-    
-    // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(uuid)) {
-      return NextResponse.json(
-        { error: 'Invalid UUID format' },
-        { status: 400 }
-      );
-    }
+  // Get the specific dilemma
+  const dilemma = await db
+    .select()
+    .from(dilemmas)
+    .where(eq(dilemmas.dilemmaId, validatedUuid))
+    .limit(1);
 
-    // Get the specific dilemma
-    const dilemma = await db
+  if (dilemma.length === 0) {
+    throw ApiErrors.notFound('Dilemma');
+  }
+
+  const { limit, offset, all: loadAll } = paginationParams;
+  
+  console.log(`📥 Fetching dilemmas: UUID=${validatedUuid}, limit=${limit}, offset=${offset}, loadAll=${loadAll}`);
+
+  if (loadAll) {
+    // Legacy behavior: load all dilemmas (for backward compatibility)
+    const otherDilemmas = await db
       .select()
       .from(dilemmas)
-      .where(eq(dilemmas.dilemmaId, uuid))
-      .limit(1);
-
-    if (dilemma.length === 0) {
-      return NextResponse.json(
-        { error: 'Dilemma not found' },
-        { status: 404 }
-      );
-    }
-
-    // Get pagination parameters
-    const url = new URL(request.url);
-    const limit = parseInt(url.searchParams.get('limit') || '25'); // Default to 25 dilemmas
-    const offset = parseInt(url.searchParams.get('offset') || '0');
-    const loadAll = url.searchParams.get('all') === 'true';
+      .where(ne(dilemmas.dilemmaId, validatedUuid))
+      .orderBy(sql`dilemma_id`);
     
-    // Validate pagination parameters
-    const safeLimit = Math.min(Math.max(limit, 1), loadAll ? 1000 : 50); // Max 50 unless explicitly requesting all
-    const safeOffset = Math.max(offset, 0);
-
-    if (loadAll) {
-      // Legacy behavior: load all dilemmas (for backward compatibility)
-      const otherDilemmas = await db
-        .select()
-        .from(dilemmas)
-        .where(ne(dilemmas.dilemmaId, uuid))
-        .orderBy(sql`dilemma_id`);
-      
-      const allDilemmas = [dilemma[0], ...otherDilemmas];
-      
-      return NextResponse.json({
-        dilemmas: allDilemmas,
-        startingDilemma: dilemma[0],
-        pagination: {
-          total: allDilemmas.length,
-          loaded: allDilemmas.length,
-          hasMore: false
-        }
-      });
-    } else {
-      // Progressive loading: get limited set
-      const otherDilemmas = await db
-        .select()
-        .from(dilemmas)
-        .where(ne(dilemmas.dilemmaId, uuid))
-        .orderBy(sql`dilemma_id`)
-        .limit(safeLimit - 1) // -1 because we include the starting dilemma
-        .offset(safeOffset);
-
-      // Get total count for pagination info
-      const totalCount = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(dilemmas);
-
-      const currentBatch = safeOffset === 0 
-        ? [dilemma[0], ...otherDilemmas] 
-        : otherDilemmas;
-      
-      const totalDilemmas = totalCount[0].count;
-      const loaded = safeOffset + currentBatch.length;
-      
-      return NextResponse.json({
-        dilemmas: currentBatch,
-        startingDilemma: dilemma[0],
-        pagination: {
-          total: totalDilemmas,
-          loaded: loaded,
-          hasMore: loaded < totalDilemmas,
-          nextOffset: loaded
-        }
-      });
-    }
-  } catch (error) {
-    console.error('Error fetching dilemma:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch dilemma' },
-      { status: 500 }
-    );
+    const allDilemmas = [dilemma[0], ...otherDilemmas];
+    
+    const response = NextResponse.json({
+      dilemmas: allDilemmas,
+      startingDilemma: dilemma[0],
+      pagination: {
+        total: allDilemmas.length,
+        loaded: allDilemmas.length,
+        hasMore: false
+      }
+    });
+    
+    logResponse(response, Date.now() - startTime);
+    return addSecurityHeaders(addCorsHeaders(response));
   }
+
+  // Progressive loading: get limited set
+  const otherDilemmas = await db
+    .select()
+    .from(dilemmas)
+    .where(ne(dilemmas.dilemmaId, validatedUuid))
+    .orderBy(sql`dilemma_id`)
+    .limit(limit - 1) // -1 because we include the starting dilemma
+    .offset(offset);
+
+  // Get total count for pagination info
+  const [totalCount] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(dilemmas);
+
+  const currentBatch = offset === 0 
+    ? [dilemma[0], ...otherDilemmas] 
+    : otherDilemmas;
+  
+  const totalDilemmas = totalCount?.count || 0;
+  const loaded = offset + currentBatch.length;
+  
+  const response = NextResponse.json({
+    dilemmas: currentBatch,
+    startingDilemma: dilemma[0],
+    pagination: {
+      total: totalDilemmas,
+      loaded: loaded,
+      hasMore: loaded < totalDilemmas,
+      nextOffset: loaded
+    }
+  });
+  
+  logResponse(response, Date.now() - startTime);
+  return addSecurityHeaders(addCorsHeaders(response));
+}
+
+// Main GET handler with error handling
+export const GET = withErrorHandler(handleGET);
+
+// Handle preflight requests
+export async function OPTIONS(request: NextRequest) {
+  const response = new NextResponse(null, { status: 200 });
+  return addCorsHeaders(response);
 }

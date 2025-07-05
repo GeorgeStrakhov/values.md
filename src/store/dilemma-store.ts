@@ -33,6 +33,12 @@ interface DilemmaState {
   perceivedDifficulty: number;
   startTime: number;
   
+  // State management
+  isProcessing: boolean;
+  lastStateUpdate: number;
+  optimisticUpdates: Map<string, any>;
+  stateVersion: number;
+  
   // Actions
   setDilemmas: (dilemmas: Dilemma[], startingDilemmaId?: string) => void;
   setCurrentIndex: (index: number) => void;
@@ -55,6 +61,14 @@ interface DilemmaState {
   getCurrentDilemmaId: () => string | null;
   getProgress: () => { current: number; total: number };
   
+  // Response handling
+  saveCurrentResponseAtomic: () => Promise<void>;
+  
+  // State management
+  resolveStateConflict: (remoteState: any) => void;
+  recoverState: () => any;
+  validateState: () => boolean;
+  
   // Reset
   reset: () => void;
 }
@@ -65,7 +79,7 @@ const generateSessionId = () =>
 export const useDilemmaStore = create<DilemmaState>()(
   persist(
     (set, get) => ({
-      // Initial state
+          // Initial state
       dilemmas: [],
       currentIndex: 0,
       responses: [],
@@ -75,6 +89,12 @@ export const useDilemmaStore = create<DilemmaState>()(
       reasoning: '',
       perceivedDifficulty: 5,
       startTime: Date.now(),
+      
+      // State management
+      isProcessing: false,
+      lastStateUpdate: Date.now(),
+      optimisticUpdates: new Map(),
+      stateVersion: 1,
       
       // Actions
       setDilemmas: (dilemmas, startingDilemmaId) => {
@@ -104,45 +124,83 @@ export const useDilemmaStore = create<DilemmaState>()(
       setPerceivedDifficulty: (difficulty) => set({ perceivedDifficulty: difficulty }),
       setStartTime: (time) => set({ startTime: time }),
       
-      // Navigation
+      // Navigation with atomic updates
       goToNext: async () => {
-        const state = get();
+        const startTime = Date.now();
+        let state = get();
         
-        // Always save the current response first
-        state.saveCurrentResponse();
-        
-        if (state.currentIndex < state.dilemmas.length - 1) {
-          const nextIndex = state.currentIndex + 1;
-          set({
-            currentIndex: nextIndex,
-            selectedOption: '',
-            reasoning: '',
-            perceivedDifficulty: 5,
-            startTime: Date.now()
-          });
-          
-          // Restore response if one exists for this dilemma
-          const updatedState = get();
-          updatedState.restoreResponseForIndex(nextIndex);
-          
-          // Scroll to top on navigation
-          if (typeof window !== 'undefined') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-          return true; // Not last
+        // Prevent concurrent navigation
+        if (state.isProcessing) {
+          console.warn('Navigation already in progress, ignoring duplicate request');
+          return state.currentIndex < state.dilemmas.length - 1;
         }
         
-        // This was the final dilemma - submit all responses to database
-        const success = await state.submitResponsesToDatabase();
+        // Set processing flag atomically
+        set({ isProcessing: true, lastStateUpdate: startTime });
         
-        return false; // Was last
+        try {
+          state = get(); // Get fresh state
+          
+          // Always save the current response first (atomic operation)
+          await state.saveCurrentResponseAtomic();
+          
+          if (state.currentIndex < state.dilemmas.length - 1) {
+            const nextIndex = state.currentIndex + 1;
+            
+            // Atomic state update with version increment
+            set({
+              currentIndex: nextIndex,
+              selectedOption: '',
+              reasoning: '',
+              perceivedDifficulty: 5,
+              startTime: Date.now(),
+              stateVersion: state.stateVersion + 1,
+              lastStateUpdate: Date.now(),
+              isProcessing: false
+            });
+            
+            // Restore response if one exists for this dilemma
+            const updatedState = get();
+            updatedState.restoreResponseForIndex(nextIndex);
+            
+            // Scroll to top on navigation
+            if (typeof window !== 'undefined') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            return true; // Not last
+          }
+          
+          // This was the final dilemma - submit all responses to database
+          const success = await state.submitResponsesToDatabase();
+          
+          set({ isProcessing: false });
+          return false; // Was last
+          
+        } catch (error) {
+          console.error('Navigation error:', error);
+          set({ isProcessing: false });
+          throw error;
+        }
       },
       
       goToPrevious: () => {
         const state = get();
+        
+        // Prevent navigation if processing
+        if (state.isProcessing) {
+          console.warn('Cannot navigate backwards while processing');
+          return;
+        }
+        
         if (state.currentIndex > 0) {
           const prevIndex = state.currentIndex - 1;
-          set({ currentIndex: prevIndex });
+          
+          // Atomic state update
+          set({ 
+            currentIndex: prevIndex,
+            stateVersion: state.stateVersion + 1,
+            lastStateUpdate: Date.now()
+          });
           
           // Need to get fresh state after currentIndex update
           const updatedState = get();
@@ -155,13 +213,20 @@ export const useDilemmaStore = create<DilemmaState>()(
         }
       },
       
-      // Response handling
+      // Response handling with atomic updates
       saveCurrentResponse: () => {
+        const state = get();
+        state.saveCurrentResponseAtomic();
+      },
+      
+      saveCurrentResponseAtomic: async () => {
         const state = get();
         const currentDilemma = state.getCurrentDilemma();
         
         if (currentDilemma && state.selectedOption) {
           const responseTime = Date.now() - state.startTime;
+          const responseId = `${currentDilemma.dilemmaId}_${state.sessionId}`;
+          
           const newResponse: Response = {
             dilemmaId: currentDilemma.dilemmaId,
             chosenOption: state.selectedOption,
@@ -170,17 +235,41 @@ export const useDilemmaStore = create<DilemmaState>()(
             perceivedDifficulty: state.perceivedDifficulty,
           };
           
-          // Update or add response
-          const responses = [...state.responses];
-          const existingIndex = responses.findIndex(r => r.dilemmaId === currentDilemma.dilemmaId);
+          // Optimistic update with rollback capability
+          const previousResponses = state.responses;
+          state.optimisticUpdates.set(responseId, previousResponses);
           
-          if (existingIndex !== -1) {
-            responses[existingIndex] = newResponse;
-          } else {
-            responses.push(newResponse);
+          try {
+            // Atomic response update
+            const responses = [...state.responses];
+            const existingIndex = responses.findIndex(r => r.dilemmaId === currentDilemma.dilemmaId);
+            
+            if (existingIndex !== -1) {
+              responses[existingIndex] = newResponse;
+            } else {
+              responses.push(newResponse);
+            }
+            
+            // Atomic state update with version increment
+            set({ 
+              responses,
+              stateVersion: state.stateVersion + 1,
+              lastStateUpdate: Date.now()
+            });
+            
+            // Clear optimistic update on success
+            state.optimisticUpdates.delete(responseId);
+            
+          } catch (error) {
+            console.error('Failed to save response, rolling back:', error);
+            // Rollback on failure
+            const rollbackData = state.optimisticUpdates.get(responseId);
+            if (rollbackData) {
+              set({ responses: rollbackData });
+              state.optimisticUpdates.delete(responseId);
+            }
+            throw error;
           }
-          
-          set({ responses });
         }
       },
       
@@ -250,25 +339,121 @@ export const useDilemmaStore = create<DilemmaState>()(
         };
       },
       
-      // Reset
-      reset: () => set({
-        dilemmas: [],
-        currentIndex: 0,
-        responses: [],
-        sessionId: generateSessionId(),
-        selectedOption: '',
-        reasoning: '',
-        perceivedDifficulty: 5,
-        startTime: Date.now()
-      })
+      // State conflict resolution
+      resolveStateConflict: (remoteState: any) => {
+        const localState = get();
+        
+        // Use timestamp-based resolution - most recent wins
+        const useRemote = remoteState.lastStateUpdate > localState.lastStateUpdate;
+        
+        if (useRemote) {
+          console.log('Resolving state conflict: using remote state');
+          set({
+            ...remoteState,
+            conflictResolution: {
+              resolvedBy: 'timestamp',
+              conflictTime: Date.now(),
+              chosenState: 'remote'
+            }
+          });
+        } else {
+          console.log('Resolving state conflict: keeping local state');
+          set({
+            conflictResolution: {
+              resolvedBy: 'timestamp',
+              conflictTime: Date.now(),
+              chosenState: 'local'
+            }
+          });
+        }
+      },
+      
+      // State recovery after crashes
+      recoverState: () => {
+        const state = get();
+        const recoveredData = {
+          ...state,
+          isProcessing: false, // Clear any stuck processing flags
+          lastStateUpdate: Date.now(),
+          optimisticUpdates: new Map(), // Clear optimistic updates
+          stateVersion: state.stateVersion + 1
+        };
+        
+        set(recoveredData);
+        console.log('State recovered after crash/reload');
+        return recoveredData;
+      },
+      
+      // Validate state consistency
+      validateState: () => {
+        const state = get();
+        const isValid = 
+          Array.isArray(state.responses) &&
+          typeof state.currentIndex === 'number' &&
+          state.currentIndex >= 0 &&
+          state.currentIndex < state.dilemmas.length &&
+          typeof state.sessionId === 'string' &&
+          state.sessionId.length > 0;
+          
+        if (!isValid) {
+          console.warn('Invalid state detected, resetting to safe defaults');
+          state.reset();
+          return false;
+        }
+        
+        return true;
+      },
+      
+      // Reset with proper cleanup
+      reset: () => {
+        const newSessionId = generateSessionId();
+        set({
+          dilemmas: [],
+          currentIndex: 0,
+          responses: [],
+          sessionId: newSessionId,
+          selectedOption: '',
+          reasoning: '',
+          perceivedDifficulty: 5,
+          startTime: Date.now(),
+          isProcessing: false,
+          lastStateUpdate: Date.now(),
+          optimisticUpdates: new Map(),
+          stateVersion: 1
+        });
+        console.log('Store reset with new session:', newSessionId);
+      }
     }),
     {
       name: 'dilemma-session',
-      // Only persist responses and session data
+      // Persist state with version tracking for conflict resolution
       partialize: (state) => ({
         responses: state.responses,
-        sessionId: state.sessionId
-      })
+        sessionId: state.sessionId,
+        currentIndex: state.currentIndex,
+        selectedOption: state.selectedOption,
+        reasoning: state.reasoning,
+        perceivedDifficulty: state.perceivedDifficulty,
+        lastStateUpdate: state.lastStateUpdate,
+        stateVersion: state.stateVersion
+      }),
+      
+      // State migration for version compatibility
+      migrate: (persistedState: any, version: number) => {
+        if (version === 0) {
+          // Migrate from version 0 to 1 - add state management fields
+          return {
+            ...persistedState,
+            isProcessing: false,
+            lastStateUpdate: Date.now(),
+            optimisticUpdates: new Map(),
+            stateVersion: 1
+          };
+        }
+        return persistedState;
+      },
+      
+      version: 1
     }
   )
 );

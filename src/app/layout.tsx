@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
 import { Header } from "@/components/header";
+import ErrorBoundary from "@/components/error-boundary";
 // Progress provider removed - now using simple page-level state
 
 const geistSans = Geist({
@@ -38,8 +39,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Header />
-            {children}
+            <ErrorBoundary>
+              <Header />
+              {children}
+            </ErrorBoundary>
           </ThemeProvider>
         </AuthProvider>
       </body>

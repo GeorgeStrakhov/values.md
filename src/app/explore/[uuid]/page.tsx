@@ -9,8 +9,10 @@ import { Slider } from '@/components/ui/slider';
 import { saveResponses, loadResponses, getStorageHealth } from '@/lib/storage';
 import { validateResponse, checkDataIntegrity } from '@/lib/validation';
 import { trackEvent, trackResponse, trackStorageIssue, trackApiError } from '@/lib/telemetry';
+import { DilemmaErrorBoundary } from '@/components/error-boundary';
+import { SystemStatePanel, StateAwareButton } from '@/components/system-state';
 
-export default function ExplorePage({ params }: { params: Promise<{ uuid: string }> }) {
+function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
   const [dilemmas, setDilemmas] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [responses, setResponses] = useState<any[]>([]);
@@ -406,18 +408,27 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
             
             {/* Next button */}
             <div className="flex justify-end pt-4">
-              <Button
+              <StateAwareButton
+                state="cyan"
+                active={!!choice}
                 onClick={handleNext}
                 disabled={!choice}
-                size="lg"
                 className="h-12 px-8 text-base font-semibold"
               >
                 {currentIndex + 1 >= dilemmas.length ? 'Finish & See Results' : 'Next Question'}
-              </Button>
+              </StateAwareButton>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ExplorePage({ params }: { params: Promise<{ uuid: string }> }) {
+  return (
+    <DilemmaErrorBoundary>
+      <ExplorePageContent params={params} />
+    </DilemmaErrorBoundary>
   );
 }

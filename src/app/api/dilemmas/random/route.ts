@@ -58,35 +58,21 @@ export async function GET(request: NextRequest) {
         }
 
         // Insert a minimal dilemma to get started
-        await db.insert(dilemmas).values({
-          dilemmaId: 'START-001',
-          domain: 'general',
-          generatorType: 'starter',
-          difficulty: 5,
+        const [insertedDilemma] = await db.insert(dilemmas).values({
           title: 'Quick Start Dilemma',
           scenario: 'You need to make a decision that balances different considerations. This is a simple scenario to get you started with the VALUES.md platform.',
           choiceA: 'Focus on the most logical, data-driven approach',
-          choiceAMotif: 'NUMBERS_FIRST',
           choiceB: 'Consider the specific people and relationships involved',
-          choiceBMotif: 'PERSON_FIRST',
-          choiceC: null,
-          choiceCMotif: null,
-          choiceD: null,
-          choiceDMotif: null,
-          targetMotifs: 'NUMBERS_FIRST,PERSON_FIRST',
-          stakeholders: 'individual_users',
-          culturalContext: 'general',
-          validationScore: 8.0,
-          realismScore: 8.0,
-          tensionStrength: 7.0
-        });
+          choiceC: 'Not applicable',
+          choiceD: 'Not applicable'
+        }).returning();
         
         console.log('✅ Essential data initialized');
         
         // Redirect to the starter dilemma
         const baseUrl = getBaseUrl();
         return NextResponse.redirect(
-          new URL(`/explore/START-001`, baseUrl)
+          new URL(`/explore/${insertedDilemma.dilemmaId}`, baseUrl)
         );
         
       } catch (initError) {

@@ -34,7 +34,18 @@
     "db:sync-production": "npm run data:sync",
     "validate": "npm run lint && npm run typecheck && npm run test:unit && npm run build",
     "pre-deploy": "npx tsx scripts/pre-deploy-validation.ts",
-    "health-check": "npx tsx scripts/health-check.ts"
+    "health-check": "npx tsx scripts/health-check.ts",
+    "quick-test": "npx tsx scripts/quick-test.ts",
+    "test:fast": "vitest run tests/fast-unit.test.ts tests/user-scenarios.test.ts --reporter=basic",
+    "test:regression": "vitest run tests/actual-navigation.test.ts tests/page-component-bug.test.ts --reporter=basic",
+    "test:tier1": "vitest run tests/tier1-infrastructure.test.ts --reporter=verbose",
+    "test:tier2": "vitest run tests/tier2-user-experience.test.ts --reporter=verbose",
+    "test:tier3": "vitest run tests/tier3-research-experimentation.test.ts --reporter=verbose",
+    "test:tier4": "vitest run tests/tier4-production-scale.test.ts --reporter=verbose",
+    "test:tier5": "vitest run tests/tier5-advanced-features.test.ts --reporter=verbose",
+    "test:comprehensive": "vitest run tests/comprehensive-test-runner.test.ts --reporter=verbose",
+    "test:systematic": "npm run test:tier1 && npm run test:tier2 && npm run test:tier3 && npm run test:tier4 && npm run test:tier5",
+    "test:implementation-guide": "npm run test:comprehensive && npm run test:systematic"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",
@@ -67,6 +78,7 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.3.0",
     "tsx": "^4.19.4",
+    "zod": "^3.25.74",
     "zustand": "^5.0.5"
   },
   "devDependencies": {

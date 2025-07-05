@@ -101,7 +101,8 @@ export default function ExperimentPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId: sessionData.sessionId,
-          templateType
+          templateIds: [templateType], // Map to new API structure
+          experimentType: 'template_comparison'
         })
       });
 
@@ -110,10 +111,25 @@ export default function ExperimentPage() {
       }
 
       const data = await valuesResponse.json();
-      setResults(prev => ({
-        ...prev,
-        [templateType]: { templateType, ...data }
-      }));
+      
+      // Find the result for this specific template
+      const templateResult = data.results?.find((r: any) => r.template === templateType);
+      
+      if (templateResult) {
+        setResults(prev => ({
+          ...prev,
+          [templateType]: {
+            templateType,
+            valuesMarkdown: templateResult.valuesMarkdown,
+            motifAnalysis: templateResult.metadata || {},
+            frameworkAlignment: templateResult.metadata || {},
+            statisticalAnalysis: templateResult.metrics || {},
+            responsePatterns: []
+          }
+        }));
+      } else {
+        throw new Error(`No result found for template ${templateType}`);
+      }
 
     } catch (error) {
       console.error(`Error generating ${templateType} template:`, error);

@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Activity, TestTube, Map, ExternalLink, Zap } from 'lucide-react';
+import { AdminProtection, DestructiveActionProtection } from '@/components/admin-protection';
+import { AdminErrorBoundary } from '@/components/error-boundary';
+import { AdminStateIndicators, StateAwareButton } from '@/components/system-state';
 
 interface GeneratedDilemma {
   title: string;
@@ -15,7 +18,7 @@ interface GeneratedDilemma {
   choices: { text: string; motif: string }[];
 }
 
-export default function AdminPage() {
+function AdminPageContent() {
   const { data: session, status } = useSession();
   const [email, setEmail] = useState('admin@values.md');
   const [password, setPassword] = useState('');
@@ -236,6 +239,9 @@ export default function AdminPage() {
           </CardHeader>
           
           <CardContent className="space-y-8">
+            {/* System State Indicators */}
+            <AdminStateIndicators />
+            
             {/* Technical Dashboards Section */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold">System Monitoring & Research</h2>
@@ -340,14 +346,15 @@ export default function AdminPage() {
                 <p className="text-sm text-muted-foreground mb-4">
                   Import sample dilemmas and motifs to populate the database for testing.
                 </p>
-                <Button
+                <StateAwareButton
+                  state="cyan"
+                  active={!importing}
                   onClick={handleImportSampleData}
                   disabled={importing}
-                  variant="outline"
                   className="w-full"
                 >
                   {importing ? 'Importing...' : 'Import Sample Data (6 dilemmas, 5 motifs)'}
-                </Button>
+                </StateAwareButton>
                 {importMessage && (
                   <div className="mt-3">
                     <p className="text-sm">{importMessage}</p>
@@ -387,13 +394,14 @@ export default function AdminPage() {
                   </p>
                 </div>
                 
-                <Button
+                <StateAwareButton
+                  state="gold"
+                  active={!generating}
                   onClick={generateDilemma}
                   disabled={generating}
-                  variant="default"
                 >
                   {generating ? 'Generating...' : `Generate ${generationType === 'ai' ? 'AI' : 'Template'} Dilemma`}
-                </Button>
+                </StateAwareButton>
               </div>
             </div>
             
@@ -433,5 +441,15 @@ export default function AdminPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <AdminProtection>
+      <AdminErrorBoundary>
+        <AdminPageContent />
+      </AdminErrorBoundary>
+    </AdminProtection>
   );
 }

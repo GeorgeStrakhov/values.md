@@ -8,881 +8,301 @@
    - Environments: .env.local, .env
 
  ✓ Starting...
- ✓ Ready in 1859ms
+ ✓ Ready in 1417ms
+ ○ Compiling /api/dilemmas/[uuid] ...
+ ✓ Compiled /api/dilemmas/[uuid] in 2.3s
+[2025-07-06T13:26:16.953Z] GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594
+Headers: {
+  accept: '*/*',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+API Error: Error [ZodError]: [
+  {
+    "code": "too_small",
+    "minimum": 1,
+    "type": "number",
+    "inclusive": true,
+    "exact": false,
+    "message": "Number must be greater than or equal to 1",
+    "path": [
+      "limit"
+    ]
+  },
+  {
+    "expected": "'true' | 'false'",
+    "received": "null",
+    "code": "invalid_type",
+    "path": [
+      "all"
+    ],
+    "message": "Expected 'true' | 'false', received null"
+  }
+]
+    at handleGET (src/app/api/dilemmas/[uuid]/route.ts:43:44)
+    at async (src/lib/api-error-handler.ts:163:13)
+  41 |   
+  42 |   // Validate pagination parameters
+> 43 |   const paginationParams = PaginationSchema.parse({
+     |                                            ^
+  44 |     limit: url.searchParams.get('limit'),
+  45 |     offset: url.searchParams.get('offset'),
+  46 |     all: url.searchParams.get('all') {
+  issues: [Array],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)]
+}
+ GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594 400 in 3412ms
  ○ Compiling /api/health ...
- ✓ Compiled /api/health in 1858ms
+ ✓ Compiled /api/health in 1132ms
 🔍 Health check: Testing database connectivity...
 🔍 Health check: Testing dilemmas table...
 🔍 Health check: Testing random dilemma API...
  ○ Compiling /api/dilemmas/random ...
- ✓ Compiled /api/dilemmas/random in 774ms
- GET /api/dilemmas/random 307 in 950ms
+ ✓ Compiled /api/dilemmas/random in 926ms
+ GET /api/dilemmas/random 307 in 1103ms
 🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 122ms
+ GET /api/dilemmas/random 307 in 133ms
  ○ Compiling /api/responses ...
- ✓ Compiled /api/responses in 656ms
-📥 Received 1 responses for session health-check-1751538411590
+ ✓ Compiled /api/responses in 906ms
+[2025-07-06T13:40:04.175Z] POST /api/responses
+Headers: {
+  accept: '*/*',
+  'accept-encoding': 'gzip, deflate',
+  'accept-language': '*',
+  connection: 'keep-alive',
+  'content-length': '201',
+  'content-type': 'application/json',
+  host: 'localhost:3000',
+  'sec-fetch-mode': 'cors',
+  'user-agent': 'node',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+📥 Received 1 responses for session health-check-1751809203224
 💾 Inserting responses into database...
 ✅ Successfully inserted 1 responses
- POST /api/responses 200 in 952ms
+[2025-07-06T13:40:04.433Z] Response 200 (258ms)
+ POST /api/responses 200 in 1209ms
 🔍 Health check: Testing user responses table...
 🔍 Health check: Testing generate values API...
  ○ Compiling /api/generate-values ...
- ✓ Compiled /api/generate-values in 736ms
+ ✓ Compiled /api/generate-values in 900ms
 🔍 Looking for responses for session: sim-user-1-1750010354931
 📊 Found 12 responses for session sim-user-1-1750010354931
 💾 Cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 1091ms
+ POST /api/generate-values 200 in 1253ms
 ✅ Health check completed: pass
- GET /api/health 200 in 6694ms
- GET /api/dilemmas/random 307 in 122ms
- ○ Compiling /api/dilemmas/[uuid] ...
- ✓ Compiled /api/dilemmas/[uuid] in 788ms
- GET /api/dilemmas/544daee8-694f-4685-9d66-bbc707653005 200 in 1633ms
-📥 Received 12 responses for session test-session-1-1751538416915
-💾 Inserting responses into database...
-✅ Successfully inserted 12 responses
- POST /api/responses 200 in 235ms
-🔍 Looking for responses for session: test-session-1-1751538416915
-📊 Found 12 responses for session test-session-1-1751538416915
-💾 Cached values for session test-session-1-1751538416915
- POST /api/generate-values 200 in 325ms
- GET /api/dilemmas/random 307 in 125ms
- GET /api/dilemmas/df0952aa-3849-439e-85de-9b6af4a6606b 200 in 245ms
-📥 Received 12 responses for session test-session-2-1751538420079
-💾 Inserting responses into database...
-✅ Successfully inserted 12 responses
- POST /api/responses 200 in 222ms
-🔍 Looking for responses for session: test-session-2-1751538420079
-📊 Found 12 responses for session test-session-2-1751538420079
-💾 Cached values for session test-session-2-1751538420079
- POST /api/generate-values 200 in 316ms
- GET /api/dilemmas/random 307 in 120ms
- GET /api/dilemmas/1ce4ba6a-adb4-41e6-8e7b-bfd9afb6ff74 200 in 250ms
-📥 Received 12 responses for session test-session-3-1751538423204
-💾 Inserting responses into database...
-✅ Successfully inserted 12 responses
- POST /api/responses 200 in 228ms
-🔍 Looking for responses for session: test-session-3-1751538423204
-📊 Found 12 responses for session test-session-3-1751538423204
-💾 Cached values for session test-session-3-1751538423204
- POST /api/generate-values 200 in 317ms
- GET /api/dilemmas/random 307 in 229ms
- GET /api/dilemmas/3673429e-5126-4092-be14-701d112cd04b 200 in 239ms
-📥 Received 12 responses for session test-session-4-1751538426432
-💾 Inserting responses into database...
-✅ Successfully inserted 12 responses
- POST /api/responses 200 in 224ms
-🔍 Looking for responses for session: test-session-4-1751538426432
-📊 Found 12 responses for session test-session-4-1751538426432
-💾 Cached values for session test-session-4-1751538426432
- POST /api/generate-values 200 in 314ms
- GET /api/dilemmas/random 307 in 117ms
- GET /api/dilemmas/597992a3-5b80-4723-a111-585c4aca9a9c 200 in 239ms
-📥 Received 12 responses for session test-session-5-1751538429543
-💾 Inserting responses into database...
-✅ Successfully inserted 12 responses
- POST /api/responses 200 in 229ms
-🔍 Looking for responses for session: test-session-5-1751538429543
-📊 Found 12 responses for session test-session-5-1751538429543
-💾 Cached values for session test-session-5-1751538429543
- POST /api/generate-values 200 in 321ms
- ○ Compiling / ...
- ✓ Compiled / in 4.9s
- GET /api/dilemmas/random 307 in 1143ms
- GET /api/dilemmas/random 307 in 347ms
- ○ Compiling /explore/[uuid] ...
- ✓ Compiled /explore/[uuid] in 2.7s
- GET /explore/f6cf8dde-3ea5-450d-a344-67cc1b434e2a 200 in 3596ms
- ○ Compiling /api/workbench/session/[sessionId] ...
- ✓ Compiled /api/workbench/session/[sessionId] in 1350ms
- GET /api/workbench/session/test-session-1-1751538416915 200 in 2669ms
- ○ Compiling /api/workbench/generate-variant ...
- ✓ Compiled /api/workbench/generate-variant in 1061ms
- ⨯ ./src/lib/values-templates.ts:563:14
-Ecmascript file had an error
-[0m [90m 561 |[39m[0m
-[0m [90m 562 |[39m [90m// Export all templates including new ones[39m[0m
-[0m[31m[1m>[22m[39m[90m 563 |[39m [36mexport[39m [36mconst[39m valueTemplates[33m:[39m [33mTemplateBlueprint[39m[] [33m=[39m [[0m
-[0m [90m     |[39m              [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
-[0m [90m 564 |[39m   enhancedTemplate[33m,[39m[0m
-[0m [90m 565 |[39m   narrativeTemplate[33m,[39m[0m
-[0m [90m 566 |[39m   minimalistTemplate[33m,[39m[0m
-
-the name `valueTemplates` is defined multiple times
-
-
- ○ Compiling /_error ...
- ✓ Compiled /_error in 1591ms
- POST /api/workbench/generate-variant 500 in 2958ms
-🔨 Generating values variant: enhanced for session test-session-1-1751538416915
-✅ Generated enhanced variant: 352 words
- POST /api/workbench/generate-variant 200 in 1141ms
- ○ Compiling /api/workbench/test-alignment ...
- ✓ Compiled /api/workbench/test-alignment in 1342ms
-🧪 Testing alignment: enhanced with claude-3.5-sonnet
-Alignment test error: Error: OpenRouter API error: 401 - {"error":{"message":"No auth credentials found","code":401}}
-    at OpenRouterService.generateCompletion (src/lib/openrouter.ts:56:12)
-    at async POST (src/app/api/workbench/test-alignment/route.ts:46:21)
-  54 |     if (!response.ok) {
-  55 |       const error = await response.text();
-> 56 |       throw new Error(`OpenRouter API error: ${response.status} - ${error}`);
-     |            ^
-  57 |     }
-  58 |
-  59 |     const data: OpenRouterResponse = await response.json();
- POST /api/workbench/test-alignment 500 in 1891ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 151ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 124ms
-📥 Received 1 responses for session health-check-1751548037377
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 269ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-🔍 Looking for responses for session: sim-user-1-1750010354931
-📊 Found 12 responses for session sim-user-1-1750010354931
-💾 Cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 358ms
-✅ Health check completed: pass
- GET /api/health 200 in 1946ms
- ○ Compiling /values-workbench ...
- ✓ Compiled /values-workbench in 1800ms
- HEAD /values-workbench 200 in 2242ms
- ○ Compiling /system-status ...
- ✓ Compiled /system-status in 2.3s
- HEAD /system-status 200 in 2772ms
- ○ Compiling /api/system-status ...
- ✓ Compiled /api/system-status in 1136ms
-🔍 Comprehensive system status check...
-System status check failed: Error: Failed query: select "session_id", count(*), max() from "user_responses" group by "user_responses"."session_id" order by max() desc limit $1
-params: 10
-    at async GET (src/app/api/system-status/route.ts:19:8)
-  17 |       frameworkCount,
-  18 |       recentSessions
-> 19 |     ] = await Promise.all([
-     |        ^
-  20 |       db.select({ count: sql<number>`count(*)` }).from(dilemmas),
-  21 |       db.select({ count: sql<number>`count(*)` }).from(userResponses),
-  22 |       db.select({ count: sql<number>`count(*)` }).from(motifs), {
-  query: 'select "session_id", count(*), max() from "user_responses" group by "user_responses"."session_id" order by max() desc limit $1',
-  params: [Array],
-  [cause]: Error [NeonDbError]: function max() does not exist
-      at async GET (src/app/api/system-status/route.ts:19:8)
-    17 |       frameworkCount,
-    18 |       recentSessions
-  > 19 |     ] = await Promise.all([
-       |        ^
-    20 |       db.select({ count: sql<number>`count(*)` }).from(dilemmas),
-    21 |       db.select({ count: sql<number>`count(*)` }).from(userResponses),
-    22 |       db.select({ count: sql<number>`count(*)` }).from(motifs), {
-    severity: 'ERROR',
-    code: '42883',
-    detail: undefined,
-    hint: 'No function matches the given name and argument types. You might need to add explicit type casts.',
-    position: '32',
-    internalPosition: undefined,
-    internalQuery: undefined,
-    where: undefined,
-    schema: undefined,
-    table: undefined,
-    column: undefined,
-    dataType: undefined,
-    constraint: undefined,
-    file: 'parse_func.c',
-    line: '629',
-    routine: 'ParseFuncOrColumn',
-    sourceError: undefined
+ GET /api/health 200 in 6317ms
+[2025-07-06T13:40:20.768Z] GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594?all=true
+Headers: {
+  accept: '*/*',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+API Error: Error [ZodError]: [
+  {
+    "code": "too_small",
+    "minimum": 1,
+    "type": "number",
+    "inclusive": true,
+    "exact": false,
+    "message": "Number must be greater than or equal to 1",
+    "path": [
+      "limit"
+    ]
   }
+]
+    at handleGET (src/app/api/dilemmas/[uuid]/route.ts:43:44)
+    at async (src/lib/api-error-handler.ts:163:13)
+  41 |   
+  42 |   // Validate pagination parameters
+> 43 |   const paginationParams = PaginationSchema.parse({
+     |                                            ^
+  44 |     limit: url.searchParams.get('limit'),
+  45 |     offset: url.searchParams.get('offset'),
+  46 |     all: url.searchParams.get('all') {
+  issues: [Array],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)]
 }
- GET /api/system-status 500 in 1948ms
-🔍 Comprehensive system status check...
-✅ System status complete: 523ms
- GET /api/system-status 200 in 734ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 150ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 130ms
-📥 Received 1 responses for session health-check-1751548289162
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 256ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-🔍 Looking for responses for session: sim-user-1-1750010354931
-📊 Found 12 responses for session sim-user-1-1750010354931
-💾 Cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 393ms
-✅ Health check completed: pass
- GET /api/health 200 in 1888ms
- GET /api/dilemmas/random 307 in 486ms
- GET /api/dilemmas/random 307 in 331ms
- GET /api/dilemmas/random 307 in 348ms
- GET /api/dilemmas/random 307 in 345ms
- GET /api/dilemmas/random 307 in 357ms
- GET /api/dilemmas/random 307 in 356ms
- GET /api/dilemmas/random 307 in 366ms
- GET /api/dilemmas/random 307 in 344ms
- GET /explore/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 585ms
- GET /api/dilemmas/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 911ms
-🔍 Looking for responses for session: test-session-1-1751538416915
-📊 Found 12 responses for session test-session-1-1751538416915
-💾 Cached values for session test-session-1-1751538416915
- POST /api/generate-values 200 in 817ms
-🔨 Generating values variant: narrative for session test-session-1-1751538416915
-✅ Generated narrative variant: 513 words
- POST /api/workbench/generate-variant 200 in 897ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 138ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 137ms
-📥 Received 1 responses for session health-check-1751549122487
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 236ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-♻️ Returning cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 45ms
-✅ Health check completed: pass
- GET /api/health 200 in 1591ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 138ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 133ms
-📥 Received 1 responses for session health-check-1751549129556
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 233ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-♻️ Returning cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 37ms
-✅ Health check completed: pass
- GET /api/health 200 in 1476ms
- ○ Compiling /health ...
- ✓ Compiled /health in 2.3s
- HEAD /health 200 in 2463ms
- ✓ Compiled in 370ms
- ✓ Compiled /health in 36ms
- HEAD /health 200 in 562ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 139ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 132ms
-📥 Received 1 responses for session health-check-1751549359862
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 237ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-♻️ Returning cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 36ms
-✅ Health check completed: pass
- GET /api/health 200 in 1500ms
-🔨 Generating values variant: minimalist for session test-session-1-1751538416915
-✅ Generated minimalist variant: 78 words
- POST /api/workbench/generate-variant 200 in 849ms
- GET /api/dilemmas/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 1036ms
- GET /api/dilemmas/aed12ccf-e428-4fc5-9e14-a32302ee0ef5 200 in 756ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 150ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 152ms
-📥 Received 1 responses for session health-check-1751549546211
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 245ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-♻️ Returning cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 40ms
-✅ Health check completed: pass
- GET /api/health 200 in 1585ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 164ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 139ms
-📥 Received 1 responses for session health-check-1751549620487
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 234ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-♻️ Returning cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 46ms
-✅ Health check completed: pass
- GET /api/health 200 in 1560ms
- GET /api/dilemmas/random 307 in 345ms
- GET /explore/f1caa21a-bd13-4324-84b2-908ecfeca05d 200 in 606ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 281ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 136ms
-📥 Received 1 responses for session health-check-1751550363580
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 339ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-🔍 Looking for responses for session: sim-user-1-1750010354931
-📊 Found 12 responses for session sim-user-1-1750010354931
-💾 Cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 393ms
-✅ Health check completed: pass
- GET /api/health 200 in 2865ms
- ○ Compiling /waterfall ...
- ✓ Compiled /waterfall in 2s
- GET /waterfall 200 in 2546ms
- ○ Compiling /growth-map ...
- ✓ Compiled /growth-map in 2.3s
- GET /growth-map 200 in 2416ms
- GET / 200 in 280ms
- ○ Compiling /favicon.ico ...
- ✓ Compiled /favicon.ico in 911ms
- GET /favicon.ico 200 in 1186ms
- GET / 200 in 236ms
- GET / 200 in 210ms
- GET / 200 in 198ms
- GET / 200 in 158ms
- GET /favicon.ico?favicon.90acd04b.ico 200 in 250ms
- GET /favicon.ico 200 in 245ms
+ GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594?all=true 400 in 328ms
+[2025-07-06T13:40:28.601Z] GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594?all=true&limit=25
+Headers: {
+  accept: '*/*',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+📥 Fetching dilemmas: UUID=a616e43d-85ed-44d7-948e-d69cb160d594, limit=25, offset=0, loadAll=true
+[2025-07-06T13:40:29.584Z] Response 200 (983ms)
+ GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594?all=true&limit=25 200 in 1041ms
+ HEAD /api/dilemmas/random 307 in 390ms
+[2025-07-06T13:40:56.843Z] GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594
+Headers: {
+  accept: '*/*',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+API Error: Error [ZodError]: [
+  {
+    "code": "too_small",
+    "minimum": 1,
+    "type": "number",
+    "inclusive": true,
+    "exact": false,
+    "message": "Number must be greater than or equal to 1",
+    "path": [
+      "limit"
+    ]
+  },
+  {
+    "expected": "'true' | 'false'",
+    "received": "null",
+    "code": "invalid_type",
+    "path": [
+      "all"
+    ],
+    "message": "Expected 'true' | 'false', received null"
+  }
+]
+    at handleGET (src/app/api/dilemmas/[uuid]/route.ts:47:44)
+    at async (src/lib/api-error-handler.ts:163:13)
+  45 |   
+  46 |   // Validate pagination parameters
+> 47 |   const paginationParams = PaginationSchema.parse({
+     |                                            ^
+  48 |     limit: url.searchParams.get('limit'),
+  49 |     offset: url.searchParams.get('offset'),
+  50 |     all: url.searchParams.get('all') {
+  issues: [Array],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)]
+}
+ GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594 400 in 535ms
+[2025-07-06T13:41:27.200Z] GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594
+Headers: {
+  accept: '*/*',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+📥 Fetching dilemmas: UUID=a616e43d-85ed-44d7-948e-d69cb160d594, limit=25, offset=0, loadAll=false
+[2025-07-06T13:41:27.993Z] Response 200 (792ms)
+ GET /api/dilemmas/a616e43d-85ed-44d7-948e-d69cb160d594 200 in 1131ms
+ GET /api/dilemmas/random 307 in 363ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.9s
+ GET / 200 in 4627ms
  ○ Compiling /_not-found/page ...
- ✓ Compiled /_not-found/page in 2.2s
- GET /sitemap.xml 404 in 2303ms
- GET / 200 in 224ms
- GET / 200 in 220ms
- GET / 200 in 136ms
- GET /favicon.ico?favicon.90acd04b.ico 200 in 240ms
- GET /favicon.ico 200 in 236ms
- GET /login 404 in 114ms
- GET / 200 in 189ms
- GET / 200 in 193ms
- GET /favicon.ico 200 in 313ms
- GET / 200 in 221ms
- GET / 200 in 196ms
- GET / 200 in 183ms
- ○ Compiling /api/start-fresh ...
- ✓ Compiled /api/start-fresh in 1427ms
- GET /api/start-fresh 200 in 2105ms
- GET /api/start-fresh 200 in 441ms
- GET /api/dilemmas/random 307 in 937ms
- GET /api/dilemmas/random 307 in 366ms
- GET / 200 in 521ms
- GET /api/dilemmas/123e4567-e89b-12d3-a456-426614174000 404 in 646ms
-🔍 Health check: Testing database connectivity...
-🔍 Health check: Testing dilemmas table...
-🔍 Health check: Testing random dilemma API...
- GET /api/dilemmas/random 307 in 270ms
-🔍 Health check: Testing responses API...
- GET /api/dilemmas/random 307 in 136ms
-📥 Received 1 responses for session health-check-1751590996247
-💾 Inserting responses into database...
-✅ Successfully inserted 1 responses
- POST /api/responses 200 in 306ms
-🔍 Health check: Testing user responses table...
-🔍 Health check: Testing generate values API...
-🔍 Looking for responses for session: sim-user-1-1750010354931
-📊 Found 12 responses for session sim-user-1-1750010354931
-💾 Cached values for session sim-user-1-1750010354931
- POST /api/generate-values 200 in 380ms
-✅ Health check completed: pass
- GET /api/health 200 in 2217ms
- GET /api/dilemmas/random 307 in 416ms
- GET /api/dilemmas/random 307 in 348ms
- GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 995ms
- GET /api/start-fresh 200 in 361ms
- GET /explore/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 630ms
- GET /explore/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 188ms
- GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 972ms
- GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 1041ms
- GET /api/dilemmas/23fb5758-792b-4d66-b2ec-f4d86dde7778 200 in 1027ms
- GET / 200 in 217ms
- GET / 200 in 151ms
- GET /favicon.ico?favicon.90acd04b.ico 200 in 301ms
- GET /favicon.ico 200 in 250ms
- GET /security.txt 404 in 157ms
- ✓ Compiled in 454ms
- GET / 200 in 720ms
- GET / 200 in 133ms
- GET /favicon.ico?favicon.90acd04b.ico 200 in 285ms
- GET /favicon.ico 200 in 235ms
- GET /login 404 in 114ms
- GET / 200 in 240ms
- GET /favicon.ico 200 in 264ms
- GET / 200 in 181ms
- GET /favicon.ico 200 in 314ms
- GET / 200 in 180ms
- GET / 200 in 204ms
- GET / 200 in 201ms
- GET / 200 in 207ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/[uuid]/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/responses/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/dilemmas/random/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/api/generate-values/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ✓ Compiled in 3.6s
- ✓ Compiled / in 174ms
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/server-reference-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/_not-found/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/_not-found/page/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/pages/_app/build-manifest.json'
-}
+ ✓ Compiled /_not-found/page in 1616ms
+ GET /api/v1/users/search 404 in 1728ms
+ GET /api/v1/users/search 404 in 81ms
+ ○ Compiling /api/generate-values-combinatorial ...
+ ✓ Compiled /api/generate-values-combinatorial in 1173ms
+[2025-07-06T17:46:57.753Z] POST /api/generate-values-combinatorial
+Headers: {
+  accept: '*/*',
+  'content-length': '118',
+  'content-type': 'application/json',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+API Error: Error [ZodError]: [
+  {
+    "validation": "uuid",
+    "code": "invalid_string",
+    "message": "Invalid uuid",
+    "path": [
+      "responses",
+      0,
+      "dilemmaId"
+    ]
+  }
+]
+    at <unknown> (src/lib/api-quality-patterns.ts:67:47)
+    at async (src/lib/api-error-handler.ts:163:13)
+  65 |       try {
+  66 |         const body = await request.json();
+> 67 |         validatedBody = config.validateRequest.parse(body);
+     |                                               ^
+  68 |       } catch (error) {
+  69 |         if (error instanceof z.ZodError) {
+  70 |           throw error; // Will be handled by withErrorHandler {
+  issues: [Array],
+  addIssue: [Function (anonymous)],
+  addIssues: [Function (anonymous)]
+}
+ POST /api/generate-values-combinatorial 400 in 1467ms
+[2025-07-06T17:47:11.415Z] POST /api/generate-values-combinatorial
+Headers: {
+  accept: '*/*',
+  'content-length': '160',
+  'content-type': 'application/json',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+🔄 Processing Generate VALUES.md (Combinatorial): POST http://localhost:3000/api/generate-values-combinatorial
+🎯 COMBINATORIAL: Generating VALUES.md for 1 responses, template=comprehensive
+[2025-07-06T17:47:11.417Z] Response 200 (2ms)
+ POST /api/generate-values-combinatorial 200 in 47ms
+[2025-07-06T17:57:37.155Z] POST /api/generate-values-combinatorial
+Headers: {
+  accept: '*/*',
+  'content-length': '180',
+  'content-type': 'application/json',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+🔄 Processing Generate VALUES.md (Combinatorial): POST http://localhost:3000/api/generate-values-combinatorial
+🎯 COMBINATORIAL: Generating VALUES.md for 1 responses, template=comprehensive
+[2025-07-06T17:57:37.160Z] Response 200 (5ms)
+ POST /api/generate-values-combinatorial 200 in 65ms
+[2025-07-06T17:59:12.928Z] POST /api/generate-values-combinatorial
+Headers: {
+  accept: '*/*',
+  'content-length': '180',
+  'content-type': 'application/json',
+  host: 'localhost:3000',
+  'user-agent': 'curl/7.81.0',
+  'x-forwarded-for': '::ffff:127.0.0.1',
+  'x-forwarded-host': 'localhost:3000',
+  'x-forwarded-port': '3000',
+  'x-forwarded-proto': 'http'
+}
+🔄 Processing Generate VALUES.md (Combinatorial): POST http://localhost:3000/api/generate-values-combinatorial
+🎯 COMBINATORIAL: Generating VALUES.md for 1 responses, template=comprehensive
+[2025-07-06T17:59:13.846Z] Response 200 (918ms)
+ POST /api/generate-values-combinatorial 200 in 1411ms

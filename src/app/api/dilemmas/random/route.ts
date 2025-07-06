@@ -6,12 +6,21 @@ import { getBaseUrl } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get a random dilemma to start with
-    const randomDilemma = await db
-      .select()
-      .from(dilemmas)
-      .orderBy(sql`RANDOM()`)
-      .limit(1);
+    console.log('🔍 Fetching random dilemma - NODE_ENV:', process.env.NODE_ENV);
+    
+    // Test database connection first
+    let randomDilemma;
+    try {
+      randomDilemma = await db
+        .select()
+        .from(dilemmas)
+        .orderBy(sql`RANDOM()`)
+        .limit(1);
+      console.log('✅ Database query successful, found', randomDilemma.length, 'dilemmas');
+    } catch (dbError) {
+      console.error('❌ Database connection failed:', dbError);
+      throw new Error(`Database connection failed: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`);
+    }
 
     if (randomDilemma.length === 0) {
       // Database is empty - initialize with essential sample data

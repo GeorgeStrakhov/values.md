@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { dilemmas } from '@/lib/schema';
+import { dilemmas, motifs } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
 import { getBaseUrl } from '@/lib/config';
 
@@ -14,17 +14,88 @@ export async function GET(request: NextRequest) {
       .limit(1);
 
     if (randomDilemma.length === 0) {
-      return NextResponse.json(
-        { error: 'No dilemmas found' },
-        { status: 404 }
-      );
+      // Database is empty - initialize with essential sample data
+      console.log('🔄 No dilemmas found, initializing database...');
+      
+      try {
+        // Check if motifs exist first
+        const existingMotifs = await db.select().from(motifs).limit(1);
+        
+        if (existingMotifs.length === 0) {
+          // Insert essential motifs
+          await db.insert(motifs).values([
+            {
+              motifId: 'NUMBERS_FIRST',
+              name: 'Numbers First',
+              category: 'quantitative',
+              subcategory: 'calculation',
+              description: 'Mathematical optimization, quantified outcomes',
+              lexicalIndicators: 'calculate;maximize;optimize;numbers;percentage;probability',
+              behavioralIndicators: 'chooses mathematically optimal outcomes;weighs probabilities',
+              logicalPatterns: 'IF total_utility(A) > total_utility(B) THEN choose(A)',
+              conflictsWith: 'RULES_FIRST,PERSON_FIRST',
+              synergiesWith: 'PROCESS_FIRST',
+              weight: 0.9,
+              culturalVariance: 'low',
+              cognitiveLoad: 'high',
+            },
+            {
+              motifId: 'PERSON_FIRST',
+              name: 'Person First',
+              category: 'care_ethics',
+              subcategory: 'particular',
+              description: 'Individual focus, contextual care, specific relationships',
+              lexicalIndicators: 'this person;particular case;individual needs;context;specific situation',
+              behavioralIndicators: 'focuses on individual rather than universal;contextual responses',
+              logicalPatterns: 'respond_to(particular_other) IN specific_context',
+              conflictsWith: 'NUMBERS_FIRST,RULES_FIRST',
+              synergiesWith: 'SAFETY_FIRST',
+              weight: 0.8,
+              culturalVariance: 'very_high',
+              cognitiveLoad: 'low',
+            }
+          ]);
+        }
+
+        // Insert a minimal dilemma to get started
+        const [insertedDilemma] = await db.insert(dilemmas).values({
+          title: 'Quick Start Dilemma',
+          scenario: 'You need to make a decision that balances different considerations. This is a simple scenario to get you started with the VALUES.md platform.',
+          choiceA: 'Focus on the most logical, data-driven approach',
+          choiceB: 'Consider the specific people and relationships involved',
+          choiceC: 'Not applicable',
+          choiceD: 'Not applicable'
+        }).returning();
+        
+        console.log('✅ Essential data initialized');
+        
+        // Create HTML response that clears localStorage and redirects
+        const redirectUrl = `/explore/${insertedDilemma.dilemmaId}`;
+        return createStartFreshResponse(redirectUrl);
+        
+      } catch (initError) {
+        console.error('Failed to initialize database:', initError);
+        return NextResponse.json(
+          { error: 'Unable to initialize the database. Please contact support.' },
+          { status: 500 }
+        );
+      }
     }
 
     // Create HTML response that clears localStorage and redirects
-    const baseUrl = getBaseUrl();
     const redirectUrl = `/explore/${randomDilemma[0].dilemmaId}`;
-    
-    const html = `
+    return createStartFreshResponse(redirectUrl);
+  } catch (error) {
+    console.error('Error starting fresh session:', error);
+    return NextResponse.json(
+      { error: 'Failed to start fresh session' },
+      { status: 500 }
+    );
+  }
+}
+
+function createStartFreshResponse(redirectUrl: string) {
+  const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,6 +145,7 @@ export async function GET(request: NextRequest) {
         localStorage.removeItem('session_id');
         localStorage.removeItem('dilemma_responses');
         localStorage.removeItem('user_session');
+        localStorage.removeItem('dilemma-session');
         
         // Clear any other potential keys that might interfere
         const keysToRemove = [];
@@ -93,16 +165,9 @@ export async function GET(request: NextRequest) {
 </body>
 </html>`;
 
-    return new NextResponse(html, {
-      headers: {
-        'Content-Type': 'text/html',
-      },
-    });
-  } catch (error) {
-    console.error('Error starting fresh session:', error);
-    return NextResponse.json(
-      { error: 'Failed to start fresh session' },
-      { status: 500 }
-    );
-  }
+  return new NextResponse(html, {
+    headers: {
+      'Content-Type': 'text/html',
+    },
+  });
 }

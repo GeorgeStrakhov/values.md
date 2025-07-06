@@ -306,3 +306,35 @@ Headers: {
 🎯 COMBINATORIAL: Generating VALUES.md for 1 responses, template=comprehensive
 [2025-07-06T17:59:13.846Z] Response 200 (918ms)
  POST /api/generate-values-combinatorial 200 in 1411ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/app-build-manifest.json'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1687ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.377xrdcepqe'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.377xrdcepqe'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.1v6n14yjxpj'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.1v6n14yjxpj'
+}
+[Error: ENOENT: no such file or directory, open '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.s38lx91h51'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/uprootiny/June2025/DenHaag/values.md/.next/static/development/_buildManifest.js.tmp.s38lx91h51'
+}

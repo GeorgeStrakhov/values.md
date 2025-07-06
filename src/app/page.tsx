@@ -112,7 +112,7 @@ export default function Home() {
           {/* Primary CTA */}
           <div className="space-y-4">
             <Button asChild size="lg" className="h-16 px-8 text-lg font-bold">
-              <Link href="/api/start-fresh">
+              <Link href="/api/dilemmas/random">
                 Generate Your VALUES.md
               </Link>
             </Button>

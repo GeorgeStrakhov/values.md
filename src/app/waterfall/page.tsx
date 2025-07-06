@@ -302,6 +302,41 @@ const ValuesWaterfallPage = () => {
           <p className="text-muted-foreground text-lg">
             Watch how responses flow through ethical framework analysis to create personalized VALUES.md
           </p>
+          
+          {/* Combinatorial Method Explanation */}
+          <Card className="mt-6 bg-blue-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="text-blue-900 flex items-center gap-2">
+                🎯 Combinatorial Analysis Method
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-left">
+              <p className="text-blue-800 mb-4">
+                This waterfall shows the systematic, deterministic process that converts your ethical choices 
+                into a personalized VALUES.md file. Unlike AI generation, this method is:
+              </p>
+              <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-blue-900">🔢 Mathematical</h4>
+                  <p className="text-blue-700">
+                    Uses frequency analysis and statistical patterns to identify your ethical motifs
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-blue-900">🔍 Transparent</h4>
+                  <p className="text-blue-700">
+                    Every step is visible and traceable - no black box AI interpretation
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-blue-900">🎯 Deterministic</h4>
+                  <p className="text-blue-700">
+                    Same responses always produce the same VALUES.md - consistent and reliable
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Response Subsequence Selector */}

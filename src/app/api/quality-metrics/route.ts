@@ -24,10 +24,10 @@ export async function GET(request: NextRequest) {
         fibration: fibrationConsistency
       },
       patterns: {
-        mathematicalAlignment: 'ENFORCED',
-        codeQuality: 'AUTOMATED',
-        layerConsistency: 'VERIFIED',
-        duplicationElimination: 'ACTIVE'
+        middlewareComposition: 'ACTIVE',
+        codeStandardization: 'ENFORCED',
+        layerConsistency: 'VERIFIED', 
+        duplicationElimination: 'IMPLEMENTED'
       }
     });
   } catch (error) {

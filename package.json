@@ -34,6 +34,7 @@
     "db:sync-production": "npm run data:sync",
     "validate": "npm run lint && npm run typecheck && npm run test:unit && npm run build",
     "pre-deploy": "npx tsx scripts/pre-deploy-validation.ts",
+    "pre-deploy-check": "npx tsx scripts/pre-deploy-check.ts",
     "health-check": "npx tsx scripts/health-check.ts",
     "quick-test": "npx tsx scripts/quick-test.ts",
     "test:fast": "vitest run tests/fast-unit.test.ts tests/user-scenarios.test.ts --reporter=basic",

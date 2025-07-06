@@ -1,8 +1,9 @@
 /**
- * API Quality Patterns - Mathematical Enforcement
+ * API Endpoint Standardization
  * 
- * Implements mathematical patterning to ensure all API endpoints follow
- * identical quality standards automatically. No duplication, automatic derivation.
+ * Higher-order function composition for consistent API middleware.
+ * Eliminates duplication by applying validation, rate limiting, error handling,
+ * caching, and security headers through a single configuration interface.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -28,7 +29,7 @@ export interface APIEndpointConfig {
   cacheConfig?: { ttlMs: number; keyGenerator: (req: NextRequest) => string };
 }
 
-// Quality enforcer wrapper - mathematical pattern application
+// Middleware composition wrapper - standardized endpoint creation
 export function createQualityEndpoint<TRequest = any, TParams = any>(
   config: APIEndpointConfig,
   handler: (request: NextRequest, validated: { body?: TRequest; params?: TParams }) => Promise<NextResponse>

@@ -347,12 +347,12 @@ function ResultsPageContent() {
                   <div className="grid md:grid-cols-2 gap-3">
                     <Card className="border-green-200 bg-green-50">
                       <CardContent className="p-4">
-                        <h4 className="font-medium text-green-800 mb-2">🔒 Private LLM</h4>
-                        <p className="text-xs text-green-700 mb-3">AI-enhanced, private</p>
+                        <h4 className="font-medium text-green-800 mb-2">🔒 Private Combinatorial</h4>
+                        <p className="text-xs text-green-700 mb-3">Combinatorial analysis, private</p>
                         <StateAwareButton
                           state="gold"
                           active={!loading}
-                          onClick={generateValuesPrivate}
+                          onClick={generateCombinatorialPrivate}
                           disabled={loading}
                           className="w-full bg-green-600 hover:bg-green-700"
                         >

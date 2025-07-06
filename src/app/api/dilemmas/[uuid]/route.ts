@@ -15,11 +15,11 @@ import {
   addSecurityHeaders
 } from '@/lib/api-error-handler';
 
-// Pagination schema for validation
+// Pagination schema for validation - handle null params gracefully
 const PaginationSchema = z.object({
-  limit: z.coerce.number().int().min(1).max(50).default(25),
-  offset: z.coerce.number().int().min(0).default(0),
-  all: z.enum(['true', 'false']).transform(val => val === 'true').default('false')
+  limit: z.union([z.string(), z.null()]).transform(val => val ? parseInt(val, 10) : 25).pipe(z.number().int().min(1).max(50)),
+  offset: z.union([z.string(), z.null()]).transform(val => val ? parseInt(val, 10) : 0).pipe(z.number().int().min(0)),
+  all: z.union([z.string(), z.null()]).transform(val => val === 'true')
 });
 
 async function handleGET(request: NextRequest, { params }: { params: Promise<{ uuid: string }> }) {

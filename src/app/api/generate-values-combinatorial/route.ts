@@ -6,6 +6,9 @@ import {
   CommonEndpointSchemas
 } from '@/lib/api-quality-patterns';
 import { z } from 'zod';
+import { db } from '@/lib/db';
+import { dilemmas } from '@/lib/schema';
+import { inArray } from 'drizzle-orm';
 
 // Enhanced validation schema for combinatorial generation
 const CombinatorialRequestSchema = CommonEndpointSchemas.valuesGenerationRequest.extend({
@@ -28,22 +31,41 @@ async function generateCombinatorialValues(
 
   console.log(`🎯 COMBINATORIAL: Generating VALUES.md for ${responses.length} responses, template=${template}`);
 
+  // Get dilemma metadata for motif analysis 
+  const dilemmaIds = responses.map(r => r.dilemmaId);
+  const dilemmaData = await db
+    .select({
+      dilemmaId: dilemmas.dilemmaId,
+      domain: dilemmas.domain,
+      choiceAMotif: dilemmas.choiceAMotif,
+      choiceBMotif: dilemmas.choiceBMotif,
+      choiceCMotif: dilemmas.choiceCMotif,
+      choiceDMotif: dilemmas.choiceDMotif,
+    })
+    .from(dilemmas)
+    .where(inArray(dilemmas.dilemmaId, dilemmaIds));
+
+  // Create lookup map for dilemma data
+  const dilemmaMap = new Map(dilemmaData.map(d => [d.dilemmaId, d]));
+
   // Convert responses to the format expected by combinatorial generator
   const responsePatterns: ResponsePattern[] = responses.map((response: any) => {
-    // Map chosen option to motif
+    const dilemma = dilemmaMap.get(response.dilemmaId);
+    
+    // Map chosen option to motif using dilemma data
     let motif = '';
     switch (response.chosenOption?.toLowerCase()) {
       case 'a':
-        motif = response.choiceAMotif || 'UNKNOWN';
+        motif = dilemma?.choiceAMotif || 'UNKNOWN';
         break;
       case 'b':
-        motif = response.choiceBMotif || 'UNKNOWN';
+        motif = dilemma?.choiceBMotif || 'UNKNOWN';
         break;
       case 'c':
-        motif = response.choiceCMotif || 'UNKNOWN';
+        motif = dilemma?.choiceCMotif || 'UNKNOWN';
         break;
       case 'd':
-        motif = response.choiceDMotif || 'UNKNOWN';
+        motif = dilemma?.choiceDMotif || 'UNKNOWN';
         break;
       default:
         motif = 'UNKNOWN';
@@ -52,7 +74,7 @@ async function generateCombinatorialValues(
     return {
       chosenOption: response.chosenOption,
       motif,
-      domain: response.domain || 'general',
+      domain: dilemma?.domain || 'general',
       difficulty: response.perceivedDifficulty || 5,
       reasoning: response.reasoning,
       responseTime: response.responseTime
@@ -83,7 +105,7 @@ async function generateCombinatorialValues(
   return NextResponse.json({
     success: true,
     method: 'combinatorial',
-    values: valuesMarkdown,
+    valuesMarkdown,
     metadata: {
       generationMethod: 'combinatorial',
       template,

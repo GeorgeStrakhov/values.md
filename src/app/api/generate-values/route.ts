@@ -3,10 +3,194 @@ import { db } from '@/lib/db';
 import { userResponses, dilemmas, motifs, frameworks } from '@/lib/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { dilemmaGenerator } from '@/lib/dilemma-generator';
+import { contextAwareGenerator } from '@/lib/context-aware-values-generator';
 
 // Simple in-memory cache for generated values
 const valuesCache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
+/**
+ * Determine whether to use contextual or combinatorial generation
+ * based on response quality and explicit preference
+ */
+function determineGenerationMethod(responses: any[], explicitMethod?: string): boolean {
+  // Honor explicit method preference
+  if (explicitMethod === 'contextual') return true;
+  if (explicitMethod === 'combinatorial') return false;
+  
+  // Intelligent auto-selection based on response quality
+  const reasoningQuality = assessReasoningQuality(responses);
+  const responseCompleteness = assessResponseCompleteness(responses);
+  
+  // Use contextual if we have good quality reasoning data
+  return reasoningQuality.score > 0.6 && responseCompleteness.score > 0.7;
+}
+
+/**
+ * Assess the quality of reasoning provided in responses
+ */
+function assessReasoningQuality(responses: any[]): { score: number; factors: string[] } {
+  if (responses.length === 0) return { score: 0, factors: ['No responses'] };
+  
+  const factors: string[] = [];
+  let totalScore = 0;
+  
+  // Factor 1: Presence of reasoning text
+  const responsesWithReasoning = responses.filter(r => r.reasoning && r.reasoning.length > 10);
+  const reasoningPresenceScore = responsesWithReasoning.length / responses.length;
+  totalScore += reasoningPresenceScore * 0.4;
+  factors.push(`${Math.round(reasoningPresenceScore * 100)}% responses have reasoning`);
+  
+  // Factor 2: Average reasoning length (indicates thoughtfulness)
+  const avgReasoningLength = responsesWithReasoning.reduce((sum, r) => sum + r.reasoning.length, 0) / Math.max(responsesWithReasoning.length, 1);
+  const lengthScore = Math.min(avgReasoningLength / 100, 1); // Normalize to 100 chars
+  totalScore += lengthScore * 0.3;
+  factors.push(`${Math.round(avgReasoningLength)} chars average reasoning`);
+  
+  // Factor 3: Reasoning complexity (mentions of values, conflicts, stakeholders)
+  const complexityIndicators = ['because', 'however', 'consider', 'balance', 'important', 'value', 'people', 'consequence'];
+  let complexityMatches = 0;
+  responsesWithReasoning.forEach(r => {
+    const text = r.reasoning.toLowerCase();
+    complexityIndicators.forEach(indicator => {
+      if (text.includes(indicator)) complexityMatches++;
+    });
+  });
+  const complexityScore = Math.min(complexityMatches / (responsesWithReasoning.length * 3), 1); // Normalize to 3 indicators per response
+  totalScore += complexityScore * 0.3;
+  factors.push(`${Math.round(complexityScore * 100)}% reasoning complexity`);
+  
+  return { score: totalScore, factors };
+}
+
+/**
+ * Assess completeness of response data
+ */
+function assessResponseCompleteness(responses: any[]): { score: number; factors: string[] } {
+  if (responses.length === 0) return { score: 0, factors: ['No responses'] };
+  
+  const factors: string[] = [];
+  let totalScore = 0;
+  
+  // Factor 1: Number of responses (minimum threshold for reliable analysis)
+  const countScore = Math.min(responses.length / 12, 1); // Ideal: 12+ responses
+  totalScore += countScore * 0.4;
+  factors.push(`${responses.length} total responses`);
+  
+  // Factor 2: Domain diversity
+  const domains = new Set(responses.map(r => r.domain || 'general'));
+  const diversityScore = Math.min(domains.size / 4, 1); // Ideal: 4+ domains
+  totalScore += diversityScore * 0.3;
+  factors.push(`${domains.size} different domains`);
+  
+  // Factor 3: Difficulty range
+  const difficulties = responses.map(r => r.perceivedDifficulty || 5);
+  const difficultyRange = Math.max(...difficulties) - Math.min(...difficulties);
+  const rangeScore = Math.min(difficultyRange / 6, 1); // Ideal: range of 6+ points
+  totalScore += rangeScore * 0.3;
+  factors.push(`${difficultyRange} difficulty range`);
+  
+  return { score: totalScore, factors };
+}
+
+/**
+ * Generate contextual values while maintaining legacy API compatibility
+ */
+async function generateContextualValuesForLegacyAPI(responses: any[], sessionId: string) {
+  // Convert legacy response format to contextual format
+  const contextualResponses = responses.map(response => ({
+    chosenOption: response.chosenOption,
+    motif: getMotifFromChoice(response),
+    domain: response.domain || 'general',
+    difficulty: response.perceivedDifficulty || 5,
+    reasoning: response.reasoning || 'No reasoning provided',
+    responseTime: response.responseTime || 30000,
+    dilemmaTitle: response.title || '',
+    dilemmaScenario: '', // Would need to fetch from DB if needed
+    chosenText: '', // Would need to map from choice
+    dilemmaComplexity: response.difficulty || 5
+  }));
+  
+  // Generate contextual profile
+  const contextualProfile = contextAwareGenerator.analyzeContextualResponses(contextualResponses, {
+    useReasoningAnalysis: true,
+    includeValueConflicts: true,
+    generateDomainSpecific: true,
+    preserveAuthenticLanguage: true,
+    includeImplementationGuidance: true,
+    complexityLevel: 'nuanced'
+  });
+  
+  // Generate contextual VALUES.md
+  const valuesMarkdown = contextAwareGenerator.generateContextualValuesMarkdown(contextualProfile, {
+    useReasoningAnalysis: true,
+    includeValueConflicts: true,
+    generateDomainSpecific: true,
+    preserveAuthenticLanguage: true,
+    includeImplementationGuidance: true,
+    complexityLevel: 'nuanced'
+  });
+  
+  // Prepare legacy-compatible response structure
+  const result = {
+    valuesMarkdown,
+    generationMethod: 'contextual',
+    motifAnalysis: contextualProfile.primaryMotifs.reduce((acc: any, motif) => {
+      acc[motif.motifId] = motif.count;
+      return acc;
+    }, {}),
+    topMotifs: contextualProfile.primaryMotifs.slice(0, 5).map(m => m.motifId),
+    frameworkAlignment: contextualProfile.frameworkAlignment,
+    statisticalAnalysis: {
+      decisionPatterns: {
+        consistencyScore: contextualProfile.metaValues.consistencyImportance / 100,
+        averageDifficulty: responses.reduce((sum, r) => sum + (r.perceivedDifficulty || 5), 0) / responses.length,
+        responseTime: responses.reduce((sum, r) => sum + (r.responseTime || 30000), 0) / responses.length,
+        reasoningLength: responses.reduce((sum, r) => sum + (r.reasoning?.length || 0), 0) / responses.length
+      },
+      frameworkAlignment: contextualProfile.frameworkAlignment,
+      culturalContext: contextualProfile.domainContexts.map(d => d.domain),
+      recommendations: [
+        `Contextual analysis reveals ${contextualProfile.reasoningPatterns.length} distinct reasoning patterns`,
+        `Value conflicts identified in ${contextualProfile.valueConflicts.length} decision areas`,
+        `Domain-specific guidance available for ${contextualProfile.domainContexts.length} contexts`,
+        `Authentic language preserved from ${contextualProfile.authenticLanguage.coreValuePhrases.length} value expressions`
+      ]
+    },
+    responsePatterns: responses.slice(0, 5).map(r => ({
+      dilemmaTitle: r.title,
+      chosenOption: r.chosenOption,
+      chosenMotif: getMotifFromChoice(r),
+      reasoning: r.reasoning,
+      difficulty: r.perceivedDifficulty || 5
+    })),
+    contextualData: {
+      reasoningPatterns: contextualProfile.reasoningPatterns.slice(0, 3),
+      domainContexts: contextualProfile.domainContexts.slice(0, 3),
+      valueConflicts: contextualProfile.valueConflicts.slice(0, 2),
+      metaValues: contextualProfile.metaValues
+    }
+  };
+  
+  // Cache the result
+  const cacheKey = `${sessionId}_contextual`;
+  valuesCache.set(cacheKey, { data: result, timestamp: Date.now() });
+  
+  return NextResponse.json(result);
+}
+
+/**
+ * Helper to extract motif from response choice
+ */
+function getMotifFromChoice(response: any): string {
+  switch (response.chosenOption?.toLowerCase()) {
+    case 'a': return response.choiceAMotif || 'UNKNOWN';
+    case 'b': return response.choiceBMotif || 'UNKNOWN';
+    case 'c': return response.choiceCMotif || 'UNKNOWN';
+    case 'd': return response.choiceDMotif || 'UNKNOWN';
+    default: return 'UNKNOWN';
+  }
+}
 
 // Generate real statistical analysis from actual user responses
 function generateRealStatistics(responses: any[]) {
@@ -140,7 +324,7 @@ function generateRealStatistics(responses: any[]) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { sessionId } = await request.json();
+    const { sessionId, generationMethod } = await request.json();
 
     if (!sessionId) {
       return NextResponse.json(
@@ -150,9 +334,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Check cache first (idempotency)
-    const cached = valuesCache.get(sessionId);
+    const cacheKey = `${sessionId}_${generationMethod || 'auto'}`;
+    const cached = valuesCache.get(cacheKey);
     if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
-      console.log(`♻️ Returning cached values for session ${sessionId}`);
+      console.log(`♻️ Returning cached values for session ${sessionId} (${generationMethod || 'auto'})`);
       return NextResponse.json(cached.data);
     }
 
@@ -165,6 +350,7 @@ export async function POST(request: NextRequest) {
         chosenOption: userResponses.chosenOption,
         reasoning: userResponses.reasoning,
         perceivedDifficulty: userResponses.perceivedDifficulty,
+        responseTime: userResponses.responseTime,
         choiceAMotif: dilemmas.choiceAMotif,
         choiceBMotif: dilemmas.choiceBMotif,
         choiceCMotif: dilemmas.choiceCMotif,
@@ -200,6 +386,17 @@ export async function POST(request: NextRequest) {
         },
         { status: 404 }
       );
+    }
+
+    // Determine generation method based on response quality
+    const shouldUseContextual = determineGenerationMethod(responses, generationMethod);
+    
+    if (shouldUseContextual) {
+      console.log('🧠 Using contextual generation method');
+      return await generateContextualValuesForLegacyAPI(responses, sessionId);
+    } else {
+      console.log('🎯 Using combinatorial generation method (legacy behavior)');
+      // Continue with existing combinatorial logic
     }
 
     // Generate real statistical analysis from actual user responses
@@ -279,8 +476,9 @@ export async function POST(request: NextRequest) {
     };
 
     // Cache the result
-    valuesCache.set(sessionId, { data: result, timestamp: Date.now() });
-    console.log(`💾 Cached values for session ${sessionId}`);
+    const finalCacheKey = `${sessionId}_${generationMethod || 'combinatorial'}`;
+    valuesCache.set(finalCacheKey, { data: result, timestamp: Date.now() });
+    console.log(`💾 Cached values for session ${sessionId} (${generationMethod || 'combinatorial'})`);
 
     return NextResponse.json(result);
   } catch (error) {

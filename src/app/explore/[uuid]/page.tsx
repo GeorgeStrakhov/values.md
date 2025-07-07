@@ -239,7 +239,15 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
                   Generate My VALUES.md
                 </Button>
                 <Button 
-                  onClick={() => router.push('/api/start-fresh')}
+                  onClick={() => {
+                    localStorage.removeItem('responses');
+                    localStorage.removeItem('demographics');
+                    localStorage.removeItem('session_id');
+                    localStorage.removeItem('dilemma_responses');
+                    localStorage.removeItem('user_session');
+                    localStorage.removeItem('dilemma-session');
+                    router.push('/start');
+                  }}
                   variant="outline" 
                   className="w-full"
                 >
@@ -267,7 +275,12 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
               <Button 
                 onClick={() => {
                   localStorage.removeItem('responses');
-                  router.push('/api/start-fresh');
+                  localStorage.removeItem('demographics');
+                  localStorage.removeItem('session_id');
+                  localStorage.removeItem('dilemma_responses');
+                  localStorage.removeItem('user_session');
+                  localStorage.removeItem('dilemma-session');
+                  router.push('/start');
                 }} 
                 className="w-full"
               >

@@ -47,7 +47,6 @@ async function testDatabaseFlow() {
     const endpoints = [
       '/api/dilemmas/random',
       '/api/dilemmas/[uuid]',
-      '/api/start-fresh',
       '/api/generate-values-combinatorial',
       '/api/responses'
     ];

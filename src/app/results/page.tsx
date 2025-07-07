@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ValuesGenerationErrorBoundary } from '@/components/error-boundary';
-import { ResultsStateIndicators, StateAwareButton } from '@/components/system-state';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function ResultsPageContent() {
   const [responses, setResponses] = useState([]);
   const [valuesMarkdown, setValuesMarkdown] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPrivacyChoice, setShowPrivacyChoice] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,16 +20,12 @@ function ResultsPageContent() {
     if (stored) {
       setResponses(JSON.parse(stored));
     } else {
-      // No responses found, redirect to start
       router.push('/');
     }
   }, [router]);
 
-  const handleGenerateClick = () => {
-    setShowPrivacyChoice(true);
-  };
-
-  const generateValuesPrivate = async () => {
+  // Simple private generation (default recommended path)
+  const generateSimple = async () => {
     if (responses.length === 0) {
       setError('No responses found. Please complete the dilemmas first.');
       return;
@@ -39,8 +35,7 @@ function ResultsPageContent() {
     setError('');
     
     try {
-      // Generate values using ONLY localStorage data (no database storage)
-      const valuesResponse = await fetch('/api/generate-values-private', {
+      const valuesResponse = await fetch('/api/generate-values-combinatorial', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ responses })
@@ -52,32 +47,38 @@ function ResultsPageContent() {
       
       const data = await valuesResponse.json();
       setValuesMarkdown(data.valuesMarkdown);
+      localStorage.setItem('generated-values', data.valuesMarkdown);
     } catch (err) {
-      console.error('Private values generation error:', err);
+      console.error('Values generation error:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate values');
     } finally {
       setLoading(false);
     }
   };
 
-  const generateCombinatorialPrivate = async () => {
-    if (responses.length === 0) {
-      setError('No responses found. Please complete the dilemmas first.');
-      return;
-    }
-
+  // Generate with research contribution
+  const generateWithResearch = async () => {
     setLoading(true);
     setError('');
     
     try {
-      // Generate values using ONLY localStorage data (combinatorial method)
+      const sessionId = crypto.randomUUID();
+      
+      // Save to database for research
+      const saveResponse = await fetch('/api/responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ responses, sessionId })
+      });
+      
+      if (!saveResponse.ok) {
+        throw new Error(`Failed to save responses: ${saveResponse.status}`);
+      }
+      
       const valuesResponse = await fetch('/api/generate-values-combinatorial', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          responses,
-          config: { templateFormat: 'standard', targetAudience: 'personal' }
-        })
+        body: JSON.stringify({ sessionId })
       });
       
       if (!valuesResponse.ok) {
@@ -86,94 +87,33 @@ function ResultsPageContent() {
       
       const data = await valuesResponse.json();
       setValuesMarkdown(data.valuesMarkdown);
-      
-      // Store generated VALUES.md locally
       localStorage.setItem('generated-values', data.valuesMarkdown);
-      localStorage.setItem('generation-method', 'combinatorial-private');
     } catch (err) {
-      console.error('Combinatorial values generation error:', err);
+      console.error('Values generation error:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate values');
     } finally {
       setLoading(false);
     }
   };
 
-  const generateCombinatorialWithData = async () => {
-    if (responses.length === 0) {
-      setError('No responses found. Please complete the dilemmas first.');
-      return;
-    }
-
+  // Experimental LLM generation
+  const generateExperimental = async () => {
     setLoading(true);
     setError('');
     
     try {
-      const sessionId = `session-${Date.now()}`;
+      const sessionId = crypto.randomUUID();
       
-      // Save responses to database for research
       const saveResponse = await fetch('/api/responses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, responses })
+        body: JSON.stringify({ responses, sessionId })
       });
       
       if (!saveResponse.ok) {
         throw new Error(`Failed to save responses: ${saveResponse.status}`);
       }
       
-      // Generate values using combinatorial method with research contribution
-      const valuesResponse = await fetch('/api/generate-values-combinatorial', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          responses, 
-          sessionId,
-          config: { templateFormat: 'standard', targetAudience: 'personal' }
-        })
-      });
-      
-      if (!valuesResponse.ok) {
-        throw new Error(`Failed to generate values: ${valuesResponse.status}`);
-      }
-      
-      const data = await valuesResponse.json();
-      setValuesMarkdown(data.valuesMarkdown);
-      
-      // Store generated VALUES.md locally
-      localStorage.setItem('generated-values', data.valuesMarkdown);
-      localStorage.setItem('generation-method', 'combinatorial-research');
-    } catch (err) {
-      console.error('Combinatorial values generation error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate values');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generateValuesWithDataSharing = async () => {
-    if (responses.length === 0) {
-      setError('No responses found. Please complete the dilemmas first.');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-    
-    try {
-      const sessionId = `session-${Date.now()}`;
-      
-      // Save responses to database for research
-      const saveResponse = await fetch('/api/responses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, responses })
-      });
-      
-      if (!saveResponse.ok) {
-        throw new Error(`Failed to save responses: ${saveResponse.status}`);
-      }
-      
-      // Generate values using LLM method (experimental)
       const valuesResponse = await fetch('/api/generate-values', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -186,10 +126,7 @@ function ResultsPageContent() {
       
       const data = await valuesResponse.json();
       setValuesMarkdown(data.valuesMarkdown);
-      
-      // Store generated VALUES.md locally
       localStorage.setItem('generated-values', data.valuesMarkdown);
-      localStorage.setItem('generation-method', 'llm-research');
     } catch (err) {
       console.error('LLM values generation error:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate values');
@@ -210,7 +147,12 @@ function ResultsPageContent() {
 
   const startOver = () => {
     localStorage.removeItem('responses');
-    router.push('/api/dilemmas/random');
+    localStorage.removeItem('demographics');
+    localStorage.removeItem('session_id');
+    localStorage.removeItem('dilemma_responses');
+    localStorage.removeItem('user_session');
+    localStorage.removeItem('dilemma-session');
+    router.push('/start');
   };
 
   if (loading) {
@@ -239,11 +181,6 @@ function ResultsPageContent() {
           </p>
         </div>
 
-        {/* System State Indicators */}
-        <div className="mb-6">
-          <ResultsStateIndicators />
-        </div>
-
         {error && (
           <Card className="border-red-200 bg-red-50 mb-6">
             <CardContent className="p-4">
@@ -252,216 +189,180 @@ function ResultsPageContent() {
           </Card>
         )}
 
-        {!valuesMarkdown && !showPrivacyChoice ? (
+        {!valuesMarkdown && !showOptions ? (
+          // PROGRESSIVE DISCLOSURE: Simple start
           <Card className="text-center">
             <CardHeader>
-              <CardTitle>Generate Your Values Profile</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="mb-6 text-muted-foreground">
-                Ready to analyze your responses and create your personalized VALUES.md file?
-              </p>
-              <StateAwareButton
-                state="gold"
-                active={!loading && responses.length > 0}
-                onClick={handleGenerateClick}
-                disabled={loading || responses.length === 0}
-                className="text-lg px-8 py-3"
-              >
-                Generate Your VALUES.md
-              </StateAwareButton>
-            </CardContent>
-          </Card>
-        ) : showPrivacyChoice && !valuesMarkdown ? (
-          <Card className="text-center">
-            <CardHeader>
-              <CardTitle>⚙️ Choose Generation Method & Privacy</CardTitle>
+              <CardTitle>Generate Your VALUES.md</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-muted-foreground">
-                How would you like your VALUES.md file generated?
+                Ready to create your personalized VALUES.md file?
               </p>
               
-              {/* Primary: Combinatorial Generation */}
-              <Card className="border-2 border-blue-300 bg-blue-50">
-                <CardHeader>
-                  <CardTitle className="text-blue-800 flex items-center gap-2">
-                    🎯 Combinatorial Generation (Recommended)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-blue-700">
-                    Uses systematic analysis of your response patterns with our striated ethical ontology. 
-                    Deterministic, transparent, and based on established moral philosophy frameworks.
-                  </p>
-                  
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <Card className="border-green-200 bg-green-50">
-                      <CardContent className="p-4">
-                        <h4 className="font-medium text-green-800 mb-2">🔒 Private</h4>
-                        <p className="text-xs text-green-700 mb-3">Data stays on device</p>
-                        <StateAwareButton
-                          state="cyan"
-                          active={!loading}
-                          onClick={generateCombinatorialPrivate}
-                          disabled={loading}
-                          className="w-full bg-green-600 hover:bg-green-700"
-                        >
-                          Generate (Private)
-                        </StateAwareButton>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="border-blue-200 bg-blue-50">
-                      <CardContent className="p-4">
-                        <h4 className="font-medium text-blue-800 mb-2">📊 Research</h4>
-                        <p className="text-xs text-blue-700 mb-3">Anonymous contribution</p>
-                        <StateAwareButton
-                          state="cyan"
-                          active={!loading}
-                          onClick={generateCombinatorialWithData}
-                          disabled={loading}
-                          className="w-full bg-blue-600 hover:bg-blue-700"
-                        >
-                          Generate (Research)
-                        </StateAwareButton>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Experimental: LLM Generation */}
-              <Card className="border-orange-200 bg-orange-50">
-                <CardHeader>
-                  <CardTitle className="text-orange-800 flex items-center gap-2">
-                    🧪 Experimental: LLM-Enhanced Generation
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-orange-700">
-                    AI-polished VALUES.md for potential alignment optimization. 
-                    This is experimental research - comparing effectiveness vs combinatorial method.
-                  </p>
-                  
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <Card className="border-green-200 bg-green-50">
-                      <CardContent className="p-4">
-                        <h4 className="font-medium text-green-800 mb-2">🔒 Private Combinatorial</h4>
-                        <p className="text-xs text-green-700 mb-3">Combinatorial analysis, private</p>
-                        <StateAwareButton
-                          state="gold"
-                          active={!loading}
-                          onClick={generateCombinatorialPrivate}
-                          disabled={loading}
-                          className="w-full bg-green-600 hover:bg-green-700"
-                        >
-                          Experimental (Private)
-                        </StateAwareButton>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="border-blue-200 bg-blue-50">
-                      <CardContent className="p-4">
-                        <h4 className="font-medium text-blue-800 mb-2">📊 LLM Research</h4>
-                        <p className="text-xs text-blue-700 mb-3">Test alignment effectiveness</p>
-                        <StateAwareButton
-                          state="gold"
-                          active={!loading}
-                          onClick={generateValuesWithDataSharing}
-                          disabled={loading}
-                          className="w-full bg-blue-600 hover:bg-blue-700"
-                        >
-                          Experimental (Research)
-                        </StateAwareButton>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="space-y-4">
+                <Button
+                  onClick={generateSimple}
+                  disabled={loading || responses.length === 0}
+                  size="lg"
+                  className="text-lg px-8 py-4 w-full"
+                >
+                  Generate My VALUES.md
+                </Button>
+                
+                <p className="text-xs text-muted-foreground">
+                  🔒 Your data stays private on your device
+                </p>
+                
+                {/* Progressive disclosure: reveal options */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowOptions(true)}
+                  className="text-muted-foreground"
+                >
+                  More options <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : showOptions && !valuesMarkdown ? (
+          // PROGRESSIVE DISCLOSURE: Options revealed
+          <Card className="text-center">
+            <CardHeader>
+              <CardTitle>Choose Your Privacy Level</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <p className="text-muted-foreground">
+                How would you like to generate your VALUES.md?
+              </p>
               
-              <div className="text-xs text-muted-foreground bg-muted p-3 rounded">
-                <strong>🎯 Combinatorial generation</strong> uses systematic analysis of your response patterns. 
-                <strong>🧪 LLM generation</strong> is experimental research for alignment optimization testing.
+              <div className="grid md:grid-cols-2 gap-4">
+                <Card className="border-green-200 bg-green-50 hover:border-green-300 transition-colors">
+                  <CardContent className="p-6">
+                    <h4 className="font-medium text-green-800 mb-2">🔒 Keep Private</h4>
+                    <p className="text-sm text-green-700 mb-4">Your data stays on your device only</p>
+                    <Button
+                      onClick={generateSimple}
+                      disabled={loading}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      Generate Privately
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-blue-200 bg-blue-50 hover:border-blue-300 transition-colors">
+                  <CardContent className="p-6">
+                    <h4 className="font-medium text-blue-800 mb-2">📊 Help Research</h4>
+                    <p className="text-sm text-blue-700 mb-4">Anonymous contribution to ethics research</p>
+                    <Button
+                      onClick={generateWithResearch}
+                      disabled={loading}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      Generate & Contribute
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
               
-              <Button 
-                onClick={() => setShowPrivacyChoice(false)}
-                variant="outline"
-                size="sm"
-              >
-                ← Back
-              </Button>
+              {/* Progressive disclosure: advanced options */}
+              <div className="pt-4 border-t">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="text-muted-foreground"
+                >
+                  {showAdvanced ? 'Hide' : 'Show'} experimental options 
+                  {showAdvanced ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
+                </Button>
+                
+                {showAdvanced && (
+                  <Card className="mt-4 border-gray-200 bg-gray-50">
+                    <CardHeader>
+                      <CardTitle className="text-sm text-gray-600">🧪 Experimental</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-xs text-gray-500 mb-3">
+                        Advanced AI analysis (experimental, requires research contribution)
+                      </p>
+                      <Button
+                        variant="outline"
+                        onClick={generateExperimental}
+                        disabled={loading}
+                        className="w-full"
+                      >
+                        Generate with AI Analysis
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+                
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowOptions(false)}
+                  className="mt-3"
+                >
+                  ← Back to simple option
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ) : (
-          <>
-            <Card className="mb-6">
+          // Results display - also simplified
+          <div className="space-y-6">
+            <Card className="text-center">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <span>📋</span>
-                  Your Personal VALUES.md File
-                </CardTitle>
+                <CardTitle className="text-2xl text-green-600">🎉 Your VALUES.md is Ready!</CardTitle>
               </CardHeader>
-              <CardContent>
-                <pre className="bg-muted p-4 rounded text-sm overflow-auto max-h-96 whitespace-pre-wrap">
-                  {valuesMarkdown}
-                </pre>
-              </CardContent>
-            </Card>
-
-            {/* Next Steps */}
-            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-900">🎯 What's Next?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-blue-800 mb-6">
-                  Your VALUES.md file is ready! Here's how to put it to work and explore further:
+              <CardContent className="space-y-6">
+                <p className="text-muted-foreground">
+                  Your personalized VALUES.md file has been generated based on your {responses.length} responses.
                 </p>
                 
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <h4 className="font-semibold text-blue-900 mb-2">🔬 Test Your Values</h4>
-                    <ul className="space-y-2 text-sm text-blue-700">
-                      <li>• <a href="/integration" className="underline hover:text-blue-900">Try the browser bookmarklet</a> with ChatGPT, Claude, or Gemini</li>
-                      <li>• <a href="/proof-of-concept" className="underline hover:text-blue-900">See side-by-side AI comparisons</a> with/without your values</li>
-                      <li>• <a href="/feedback" className="underline hover:text-blue-900">Share your results</a> - did VALUES.md actually change AI behavior?</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-blue-900 mb-2">📊 Explore Further</h4>
-                    <ul className="space-y-2 text-sm text-blue-700">
-                      <li>• Answer more dilemmas to <a href="/api/dilemmas/random" className="underline hover:text-blue-900">refine your profile</a></li>
-                      <li>• <a href="/waterfall" className="underline hover:text-blue-900">Analyze your response patterns</a> (admin)</li>
-                      <li>• Learn <a href="/about" className="underline hover:text-blue-900">how the ethical framework works</a></li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 justify-center">
-                  <StateAwareButton
-                    state="navy"
-                    active={!!valuesMarkdown}
+                <div className="space-y-3">
+                  <Button 
                     onClick={downloadValues}
-                    className="text-lg px-6 py-3 bg-blue-600 hover:bg-blue-700"
+                    size="lg"
+                    className="w-full text-lg"
                   >
                     📥 Download VALUES.md
-                  </StateAwareButton>
-                  <Button asChild variant="outline" size="lg">
-                    <a href="/integration">🔧 Test with AI</a>
                   </Button>
-                  <Button asChild variant="outline" size="lg">
-                    <a href="/proof-of-concept">🔬 See Examples</a>
-                  </Button>
-                  <Button onClick={startOver} variant="ghost">
-                    🔄 Start Over
-                  </Button>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={startOver}
+                    >
+                      Start Over
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push('/')}
+                    >
+                      Learn More
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          </>
+
+            {/* VALUES.md preview - collapsed by default */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Your VALUES.md File</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-muted/50 p-4 rounded-lg border overflow-hidden max-h-96 overflow-y-auto">
+                  <pre className="text-sm font-mono leading-relaxed whitespace-pre-wrap">
+                    {valuesMarkdown}
+                  </pre>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
       </div>
     </div>
@@ -469,9 +370,5 @@ function ResultsPageContent() {
 }
 
 export default function ResultsPage() {
-  return (
-    <ValuesGenerationErrorBoundary>
-      <ResultsPageContent />
-    </ValuesGenerationErrorBoundary>
-  );
+  return <ResultsPageContent />;
 }

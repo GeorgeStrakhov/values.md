@@ -22,8 +22,21 @@ export default function StartPage() {
     localStorage.removeItem('user_session');
     localStorage.removeItem('dilemma-session');
     
-    // Navigate to start-fresh endpoint which will handle the redirect
-    window.location.href = '/api/start-fresh';
+    try {
+      // Get a random dilemma directly
+      const response = await fetch('/api/dilemmas/random');
+      const data = await response.json();
+      
+      if (data.dilemmaId) {
+        router.push(`/explore/${data.dilemmaId}`);
+      } else {
+        console.error('No dilemma available:', data);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Failed to start journey:', error);
+      setLoading(false);
+    }
   };
 
   return (

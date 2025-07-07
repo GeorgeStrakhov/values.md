@@ -108,11 +108,11 @@ class DeploymentTester {
         redirect: 'manual' // Don't follow redirects so we can check them
       });
       
-      // This endpoint should redirect (302) to /explore/[uuid]
-      if (response.status === 302) {
+      // This endpoint should redirect (302 or 307) to /explore/[uuid]
+      if (response.status === 302 || response.status === 307) {
         const location = response.headers.get('location');
         if (location && location.includes('/explore/')) {
-          return { redirected: true, location, status: 302 };
+          return { redirected: true, location, status: response.status };
         } else {
           throw new Error(`Redirect location invalid: ${location}`);
         }
@@ -137,7 +137,7 @@ class DeploymentTester {
       });
       
       let dilemmaUuid;
-      if (randomResponse.status === 302) {
+      if (randomResponse.status === 302 || randomResponse.status === 307) {
         const location = randomResponse.headers.get('location');
         const match = location?.match(/\/explore\/([^\/]+)/);
         dilemmaUuid = match?.[1];
@@ -170,10 +170,10 @@ class DeploymentTester {
 
   private async testValuesGeneration() {
     await this.runTest('values-generation', async () => {
-      // Test combinatorial generation with minimal data
+      // Test combinatorial generation with minimal data (valid UUID format)
       const testResponses = [
         {
-          dilemmaId: 'test-001',
+          dilemmaId: '12345678-1234-1234-1234-123456789012',
           chosenOption: 'a',
           reasoning: 'Test reasoning',
           perceivedDifficulty: 5
@@ -238,7 +238,7 @@ class DeploymentTester {
       const randomResponse = await fetch(`${this.baseUrl}/api/dilemmas/random`, {
         redirect: 'manual'
       });
-      steps.push({ step: 'random-dilemma', success: randomResponse.status === 302 });
+      steps.push({ step: 'random-dilemma', success: randomResponse.status === 302 || randomResponse.status === 307 });
       
       // 3. Extract UUID and test explore page API
       const location = randomResponse.headers.get('location');
@@ -254,7 +254,7 @@ class DeploymentTester {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          responses: [{ dilemmaId: 'test', chosenOption: 'a', perceivedDifficulty: 5 }] 
+          responses: [{ dilemmaId: '12345678-1234-1234-1234-123456789012', chosenOption: 'a', perceivedDifficulty: 5 }] 
         })
       });
       steps.push({ step: 'values-generation', success: valuesResponse.ok });

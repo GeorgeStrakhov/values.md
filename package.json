@@ -37,7 +37,7 @@
     "health-check:production": "npx tsx scripts/health-check.ts --production",
     "db:migrate:production": "drizzle-kit migrate --config=drizzle.config.production.ts",
     "db:sync-production": "npm run data:sync",
-    "validate": "npm run lint && npm run typecheck && npm run test:unit && npm run build",
+    "validate": "npm run test:fast && npm run build",
     "pre-deploy": "npx tsx scripts/pre-deploy-validation.ts",
     "pre-deploy-check": "npx tsx scripts/pre-deploy-check.ts",
     "health-check": "npx tsx scripts/health-check.ts",

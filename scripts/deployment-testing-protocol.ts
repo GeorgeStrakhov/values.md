@@ -6,7 +6,7 @@
  * Must pass before deployment is approved
  */
 
-import fetch from 'node-fetch';
+// Using built-in fetch (Node.js 18+)
 
 interface TestResult {
   test: string;

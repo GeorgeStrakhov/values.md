@@ -12,11 +12,13 @@ export const isVercelProduction = process.env.VERCEL_ENV === 'production';
 export const getBaseUrl = (): string => {
   // Server-side: use environment variables
   if (typeof window === 'undefined') {
-    if (isVercelProduction) {
-      return 'https://values.md';
-    }
+    // Use VERCEL_URL for deployments (includes branch deployments)
     if (process.env.VERCEL_URL) {
       return `https://${process.env.VERCEL_URL}`;
+    }
+    // Fallback to custom domain if set
+    if (isVercelProduction && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+      return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
     }
     return process.env.SITE_URL || 'http://localhost:3000';
   }
@@ -24,23 +26,6 @@ export const getBaseUrl = (): string => {
   // Client-side: detect from browser
   if (typeof window !== 'undefined') {
     const { protocol, host } = window.location;
-    
-    // Production domain
-    if (host === 'values.md') {
-      return 'https://values.md';
-    }
-    
-    // Vercel preview deployments
-    if (host.includes('vercel.app')) {
-      return `${protocol}//${host}`;
-    }
-    
-    // Local development
-    if (host.includes('localhost')) {
-      return `${protocol}//${host}`;
-    }
-    
-    // Fallback
     return `${protocol}//${host}`;
   }
   

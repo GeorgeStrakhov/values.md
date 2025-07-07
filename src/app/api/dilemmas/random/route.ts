@@ -78,11 +78,12 @@ export async function GET(request: NextRequest) {
         
         console.log('✅ Essential data initialized');
         
-        // Redirect to the starter dilemma
-        const baseUrl = getBaseUrl();
-        return NextResponse.redirect(
-          new URL(`/explore/${insertedDilemma.dilemmaId}`, baseUrl)
-        );
+        // Return the starter dilemma
+        return NextResponse.json({
+          dilemmaId: insertedDilemma.dilemmaId,
+          success: true,
+          initialized: true
+        });
         
       } catch (initError) {
         console.error('Failed to initialize database:', initError);
@@ -93,12 +94,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Redirect to the explore page with this dilemma's UUID
-    // Use environment-aware base URL
-    const baseUrl = getBaseUrl();
-    return NextResponse.redirect(
-      new URL(`/explore/${randomDilemma[0].dilemmaId}`, baseUrl)
-    );
+    // Return JSON instead of redirect to fix the API contract
+    return NextResponse.json({
+      dilemmaId: randomDilemma[0].dilemmaId,
+      success: true
+    });
   } catch (error) {
     console.error('Error fetching random dilemma:', error);
     return NextResponse.json(

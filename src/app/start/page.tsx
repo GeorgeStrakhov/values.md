@@ -31,10 +31,14 @@ export default function StartPage() {
         router.push(`/explore/${data.dilemmaId}`);
       } else {
         console.error('No dilemma available:', data);
+        // Better error handling: show user-friendly message with retry option
+        alert('Unable to load dilemmas. This may be a temporary issue. Please try again in a moment.');
         setLoading(false);
       }
     } catch (error) {
       console.error('Failed to start journey:', error);
+      // Better error handling for network issues
+      alert('Network error occurred. Please check your connection and try again.');
       setLoading(false);
     }
   };

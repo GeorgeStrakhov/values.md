@@ -4,6 +4,11 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
+// Simple cache to prevent multiple API calls
+let systemStateCache: any = null
+let cacheTimestamp = 0
+const CACHE_DURATION = 30000 // 30 seconds
+
 // System state detection hook
 export const useSystemState = () => {
   const [hasOpenRouterKey, setHasOpenRouterKey] = useState(false)
@@ -15,31 +20,56 @@ export const useSystemState = () => {
   useEffect(() => {
     const checkSystemState = async () => {
       try {
-        // Check OpenRouter API key
-        const envResponse = await fetch('/api/admin/check-env')
-        if (envResponse.ok) {
-          const envData = await envResponse.json()
-          setHasOpenRouterKey(!!envData.OPENROUTER_API_KEY)
-        }
-
-        // Check localStorage for responses
+        // Check localStorage for responses (fast, synchronous)
         const responses = localStorage.getItem('responses')
         const parsedResponses = responses ? JSON.parse(responses) : []
-        setHasUserResponses(Array.isArray(parsedResponses) && parsedResponses.length > 0)
+        const hasResponses = Array.isArray(parsedResponses) && parsedResponses.length > 0
+        setHasUserResponses(hasResponses)
 
-        // Check for generated VALUES.md
+        // Check for generated VALUES.md (fast, synchronous)
         const values = localStorage.getItem('generated-values')
-        setHasGeneratedValues(!!values)
+        const hasValues = !!values
+        setHasGeneratedValues(hasValues)
 
-        // Check database status
-        const healthResponse = await fetch('/api/health')
-        if (healthResponse.ok) {
-          const healthData = await healthResponse.json()
-          setDatabaseHasData(healthData.database?.dilemmas > 0)
+        // Use cache if available and fresh
+        const now = Date.now()
+        if (systemStateCache && (now - cacheTimestamp) < CACHE_DURATION) {
+          setHasOpenRouterKey(systemStateCache.hasOpenRouterKey)
+          setDatabaseHasData(systemStateCache.databaseHasData)
+          setLoading(false)
+          return
         }
+
+        // Set optimistic defaults while checking APIs
+        setHasOpenRouterKey(true)
+        setDatabaseHasData(true)
+        setLoading(false)
+
+        // Check APIs and update cache (non-blocking)
+        Promise.all([
+          fetch('/api/admin/check-env').then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch('/api/health').then(r => r.ok ? r.json() : null).catch(() => null)
+        ]).then(([envData, healthData]) => {
+          const apiKeyAvailable = envData ? !!envData.OPENROUTER_API_KEY : true
+          const dbHasData = healthData ? (healthData.database?.dilemmas > 0) : true
+
+          // Update cache
+          systemStateCache = {
+            hasOpenRouterKey: apiKeyAvailable,
+            databaseHasData: dbHasData
+          }
+          cacheTimestamp = now
+
+          // Update state
+          setHasOpenRouterKey(apiKeyAvailable)
+          setDatabaseHasData(dbHasData)
+        }).catch(() => {
+          // Keep optimistic defaults on error
+        })
       } catch (error) {
         console.error('Error checking system state:', error)
-      } finally {
+        setHasOpenRouterKey(true)
+        setDatabaseHasData(true)
         setLoading(false)
       }
     }

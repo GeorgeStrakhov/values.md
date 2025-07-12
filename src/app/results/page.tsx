@@ -328,7 +328,7 @@ function ResultsPageContent() {
                   Your personalized VALUES.md file has been generated based on your {responses.length} responses.
                 </p>
                 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <Button 
                     onClick={downloadValues}
                     size="lg"
@@ -337,18 +337,25 @@ function ResultsPageContent() {
                     📥 Download VALUES.md
                   </Button>
                   
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-sm text-blue-800 mb-3">
+                      🔬 <strong>Help improve ethical AI research</strong><br/>
+                      Share your anonymous responses to help researchers understand how people reason about ethical dilemmas.
+                    </p>
+                    <Button
+                      onClick={shareWithResearch}
+                      className="w-full bg-blue-600 hover:bg-blue-700"
+                    >
+                      Share Anonymous Data for Research
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
                     <Button
                       variant="outline"
                       onClick={startOver}
                     >
                       Start Over
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={shareWithResearch}
-                    >
-                      Share for Research
                     </Button>
                     <Button
                       variant="outline"

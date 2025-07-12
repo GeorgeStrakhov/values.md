@@ -46,7 +46,7 @@ export default function Home() {
       <div className="max-w-7xl mx-auto space-y-16 py-12">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-6xl text-foreground font-bold tracking-tight mb-4">VALUES.md</h1>
+          <h1 className="text-6xl text-foreground font-bold tracking-tight mb-4">VALUES.md!</h1>
         </div>
 
         {/* Main Content - Two Column Layout */}

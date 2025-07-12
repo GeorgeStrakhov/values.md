@@ -35,6 +35,13 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
         if (!res.ok) throw new Error('Failed to load dilemmas');
         
         const data = await res.json();
+        
+        // Handle validation errors or empty response
+        if (!data.dilemmas || !Array.isArray(data.dilemmas) || data.dilemmas.length === 0) {
+          console.error('No dilemmas in response:', data);
+          throw new Error('No dilemmas available');
+        }
+        
         setDilemmas(data.dilemmas);
         
         // Set pagination info
@@ -269,8 +276,8 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
       <div className="min-h-screen flex items-center justify-center">
         <Card className="p-6">
           <CardContent>
-            <h2 className="text-xl font-bold mb-4">No Dilemmas Available</h2>
-            <p className="mb-4">Unable to load dilemmas. Please try again.</p>
+            <h2 className="text-xl font-bold mb-4">Session Not Found</h2>
+            <p className="mb-4">This dilemma session is invalid or has expired. Start a new session to continue.</p>
             <div className="space-y-3">
               <Button 
                 onClick={() => {
@@ -301,21 +308,16 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
           <div className="flex justify-between items-center mb-3">
             <div>
               <span className="text-sm text-muted-foreground">
-                Question {currentIndex + 1} of {pagination.total || dilemmas.length}
+                Question {currentIndex + 1}
               </span>
               <span className="text-xs text-muted-foreground ml-4">
                 Answered: {responses.length}
               </span>
-              {pagination.hasMore && (
-                <span className="text-xs text-blue-500 ml-2">
-                  ({pagination.loaded} loaded)
-                </span>
-              )}
             </div>
             <div className="w-72 bg-gray-200 rounded-full h-2.5 shadow-inner">
               <div 
                 className="bg-primary h-2.5 rounded-full transition-all duration-300 shadow-sm"
-                style={{ width: `${((currentIndex + 1) / (pagination.total || dilemmas.length)) * 100}%` }}
+                style={{ width: `${Math.min(100, (responses.length / 12) * 100)}%` }}
               />
             </div>
           </div>
@@ -332,28 +334,6 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
             </div>
           )}
           
-          {responses.length >= 12 && (
-            <div className="text-center bg-muted/50 border rounded-lg p-6 my-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <p className="text-sm font-medium">
-                    You have enough responses for a comprehensive values.md
-                  </p>
-                </div>
-                <Button 
-                  onClick={() => router.push('/results')}
-                  size="lg"
-                  className="h-12 px-8 text-base font-semibold"
-                >
-                  Generate Values Now
-                </Button>
-                <p className="text-xs text-muted-foreground">
-                  Continue answering or generate your personalized VALUES.md file
-                </p>
-              </div>
-            </div>
-          )}
         </div>
         
         <Card className="border-0 shadow-lg">
@@ -421,15 +401,13 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
             
             {/* Next button */}
             <div className="flex justify-end pt-4">
-              <StateAwareButton
-                state="cyan"
-                active={!!choice}
+              <Button
                 onClick={handleNext}
                 disabled={!choice}
                 className="h-12 px-8 text-base font-semibold"
               >
                 {currentIndex + 1 >= dilemmas.length ? 'Finish & See Results' : 'Next Question'}
-              </StateAwareButton>
+              </Button>
             </div>
           </CardContent>
         </Card>

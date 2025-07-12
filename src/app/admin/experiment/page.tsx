@@ -1,506 +1,590 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
 import { 
+  Brain, 
+  Zap, 
   Play, 
   Pause, 
-  RotateCcw, 
-  Eye, 
-  Settings, 
-  Zap,
-  Clock,
+  RefreshCw, 
+  Download, 
+  Settings,
   CheckCircle,
   XCircle,
-  AlertCircle
+  Clock,
+  DollarSign,
+  TrendingUp,
+  BarChart3,
+  AlertTriangle
 } from 'lucide-react';
+import { AdminProtection } from '@/components/admin-protection';
+import { AdminErrorBoundary } from '@/components/error-boundary';
 
-interface ExperimentState {
-  experimentId: string;
-  status: 'running' | 'completed' | 'error';
-  progress: number;
-  totalTasks: number;
-  currentTask: string;
-  results: any[];
-  errors: string[];
-  startTime: string;
-  duration: number;
+interface LLMResponse {
+  provider: string;
+  modelName: string;
+  choice: string;
+  reasoning: string;
+  confidence: number;
+  valuesApplied?: string[];
+  responseTime: number;
+  cost: number;
+  tokenCount: number;
+  rawResponse: string;
+  timestamp: string;
+}
+
+interface ExperimentResult {
+  dilemmaId: string;
+  dilemmaTitle: string;
+  dilemmaScenario: string;
+  responses: LLMResponse[];
+  analysis: {
+    consensusChoice?: string;
+    reasoningPatterns: string[];
+    ethicalFrameworks: Record<string, number>;
+    confidenceStats: {
+      mean: number;
+      std: number;
+      min: number;
+      max: number;
+    };
+    costAnalysis: {
+      total: number;
+      perProvider: Record<string, number>;
+    };
+    responseTimeStats: {
+      mean: number;
+      fastest: string;
+      slowest: string;
+    };
+  };
 }
 
 interface ExperimentConfig {
-  sessionId: string;
-  openrouterKey?: string;
-  models: string[];
-  scenarioTypes: string[];
-  participantLimit?: number;
+  providers: string[];
+  dilemmaCount: number;
+  temperature: number;
+  maxTokens: number;
+  includeValuesContext: boolean;
+  customInstructions: string;
 }
 
-const AVAILABLE_MODELS = [
-  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', provider: 'Anthropic' },
-  { id: 'openai/gpt-4-turbo', name: 'GPT-4 Turbo', provider: 'OpenAI' },
-  { id: 'google/gemini-pro', name: 'Gemini Pro', provider: 'Google' },
-  { id: 'meta-llama/llama-3-70b-instruct', name: 'Llama 3 70B', provider: 'Meta' }
-];
+const DEFAULT_CONFIG: ExperimentConfig = {
+  providers: ['openai-gpt4', 'anthropic-claude', 'google-gemini'],
+  dilemmaCount: 3,
+  temperature: 0.7,
+  maxTokens: 500,
+  includeValuesContext: false,
+  customInstructions: ''
+};
 
-const SCENARIO_TYPES = [
-  { id: 'direct', name: 'Direct Replication', description: 'Same scenarios participant completed' },
-  { id: 'domain_transfer', name: 'Domain Transfer', description: 'New scenarios in same domains' },
-  { id: 'cross_domain', name: 'Cross Domain', description: 'Scenarios from different domains' },
-  { id: 'edge_case', name: 'Edge Cases', description: 'Value conflict scenarios' }
-];
+const PROVIDER_STATUS = {
+  'openai-gpt4': { name: 'OpenAI GPT-4', color: 'bg-green-500', status: 'active' },
+  'openai-gpt35': { name: 'OpenAI GPT-3.5', color: 'bg-blue-500', status: 'active' },
+  'anthropic-claude': { name: 'Anthropic Claude', color: 'bg-purple-500', status: 'active' },
+  'google-gemini': { name: 'Google Gemini', color: 'bg-yellow-500', status: 'active' }
+};
 
-export default function ExperimentPage() {
-  const { data: session } = useSession();
-  const [config, setConfig] = useState<ExperimentConfig>({
-    sessionId: '',
-    openrouterKey: '',
-    models: ['anthropic/claude-3.5-sonnet'],
-    scenarioTypes: ['direct', 'domain_transfer']
-  });
-  
-  const [currentExperiment, setCurrentExperiment] = useState<ExperimentState | null>(null);
-  const [availableSessions, setAvailableSessions] = useState<string[]>([]);
-  const [isStarting, setIsStarting] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  
-  // Check for environment API key
-  const [hasEnvKey, setHasEnvKey] = useState<boolean | null>(null);
-  
-  useEffect(() => {
-    checkEnvironmentKey();
-    loadAvailableSessions();
-  }, []);
-  
-  // Poll experiment status when running
-  useEffect(() => {
-    if (currentExperiment?.status === 'running') {
-      const interval = setInterval(pollExperimentStatus, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [currentExperiment?.experimentId, currentExperiment?.status]);
-  
-  const checkEnvironmentKey = async () => {
+function ExperimentPageContent() {
+  const [config, setConfig] = useState<ExperimentConfig>(DEFAULT_CONFIG);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<ExperimentResult[]>([]);
+  const [currentDilemma, setCurrentDilemma] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [apiKeyStatus, setApiKeyStatus] = useState<Record<string, boolean>>({});
+  const [totalCost, setTotalCost] = useState(0);
+  const [totalTime, setTotalTime] = useState(0);
+
+  const validateApiKeys = async () => {
     try {
-      const response = await fetch('/api/admin/check-env');
-      const data = await response.json();
-      setHasEnvKey(data.hasOpenRouterKey);
-    } catch (error) {
-      setHasEnvKey(false);
-    }
-  };
-  
-  const loadAvailableSessions = async () => {
-    try {
-      const response = await fetch('/api/admin/sessions');
-      if (response.ok) {
-        const data = await response.json();
-        setAvailableSessions(data.sessions || []);
-      }
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
-    }
-  };
-  
-  const startExperiment = async () => {
-    if (!config.sessionId) {
-      alert('Please select a participant session');
-      return;
-    }
-    
-    if (!hasEnvKey && !config.openrouterKey) {
-      alert('Please provide an OpenRouter API key');
-      return;
-    }
-    
-    setIsStarting(true);
-    
-    try {
-      const response = await fetch('/api/admin/run-experiment', {
+      const response = await fetch('/api/admin/experiment/validate-keys', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(config)
+        headers: { 'Content-Type': 'application/json' }
       });
       
-      const data = await response.json();
-      
       if (response.ok) {
-        setCurrentExperiment({
-          experimentId: data.experimentId,
-          status: 'running',
-          progress: 0,
-          totalTasks: 0,
-          currentTask: 'Starting...',
-          results: [],
-          errors: [],
-          startTime: new Date().toISOString(),
-          duration: 0
-        });
-      } else {
-        alert(`Failed to start experiment: ${data.error}`);
+        const status = await response.json();
+        setApiKeyStatus(status);
       }
     } catch (error) {
-      alert('Failed to start experiment');
-      console.error(error);
-    } finally {
-      setIsStarting(false);
-    }
-  };
-  
-  const pollExperimentStatus = async () => {
-    if (!currentExperiment?.experimentId) return;
-    
-    try {
-      const response = await fetch(`/api/admin/run-experiment?experimentId=${currentExperiment.experimentId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setCurrentExperiment(prev => prev ? { ...prev, ...data } : null);
-      }
-    } catch (error) {
-      console.error('Failed to poll experiment status:', error);
-    }
-  };
-  
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'running': return <Clock className="h-4 w-4 text-blue-500" />;
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'error': return <XCircle className="h-4 w-4 text-red-500" />;
-      default: return <AlertCircle className="h-4 w-4 text-gray-500" />;
-    }
-  };
-  
-  const formatDuration = (ms: number) => {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes % 60}m`;
-    } else if (minutes > 0) {
-      return `${minutes}m ${seconds % 60}s`;
-    } else {
-      return `${seconds}s`;
+      console.error('Failed to validate API keys:', error);
     }
   };
 
-  if (!session?.user || session.user.role !== 'admin') {
+  const runExperiment = async () => {
+    if (isRunning) return;
+    
+    setIsRunning(true);
+    setIsPaused(false);
+    setError('');
+    setResults([]);
+    setProgress(0);
+    setTotalCost(0);
+    setTotalTime(0);
+
+    try {
+      const response = await fetch('/api/admin/experiment/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Experiment failed: ${response.statusText}`);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error('No response stream available');
+      }
+
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (line.trim().startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'progress') {
+                setProgress(data.progress);
+                setCurrentDilemma(data.currentDilemma);
+              } else if (data.type === 'result') {
+                setResults(prev => [...prev, data.result]);
+                setTotalCost(prev => prev + data.result.analysis.costAnalysis.total);
+                setTotalTime(prev => prev + data.result.analysis.responseTimeStats.mean);
+              } else if (data.type === 'error') {
+                setError(data.error);
+                setIsRunning(false);
+                return;
+              } else if (data.type === 'complete') {
+                setIsRunning(false);
+                setProgress(100);
+                setCurrentDilemma('');
+              }
+            } catch (e) {
+              console.error('Error parsing SSE data:', e);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Unknown error');
+      setIsRunning(false);
+    }
+  };
+
+  const pauseExperiment = () => {
+    setIsPaused(!isPaused);
+  };
+
+  const resetExperiment = () => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setProgress(0);
+    setResults([]);
+    setCurrentDilemma('');
+    setError('');
+    setTotalCost(0);
+    setTotalTime(0);
+  };
+
+  const exportResults = () => {
+    const dataStr = JSON.stringify(results, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `llm_experiment_results_${new Date().toISOString().slice(0, 10)}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  const getProviderStatus = (provider: string) => {
+    const isValid = apiKeyStatus[provider];
+    const providerInfo = PROVIDER_STATUS[provider];
+    
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-6">
-            <p className="text-center">Admin access required</p>
-          </CardContent>
-        </Card>
+      <div className="flex items-center gap-2">
+        <div className={`w-3 h-3 rounded-full ${isValid ? 'bg-green-500' : 'bg-red-500'}`} />
+        <span className="text-sm">{providerInfo?.name || provider}</span>
+        {isValid ? (
+          <CheckCircle className="w-4 h-4 text-green-500" />
+        ) : (
+          <XCircle className="w-4 h-4 text-red-500" />
+        )}
       </div>
     );
-  }
+  };
+
+  const getChoiceDistribution = () => {
+    if (results.length === 0) return {};
+    
+    const distribution: Record<string, number> = {};
+    
+    results.forEach(result => {
+      result.responses.forEach(response => {
+        distribution[response.choice] = (distribution[response.choice] || 0) + 1;
+      });
+    });
+    
+    return distribution;
+  };
+
+  const getFrameworkAnalysis = () => {
+    if (results.length === 0) return {};
+    
+    const frameworks: Record<string, number> = {};
+    
+    results.forEach(result => {
+      Object.entries(result.analysis.ethicalFrameworks).forEach(([framework, score]) => {
+        frameworks[framework] = (frameworks[framework] || 0) + score;
+      });
+    });
+    
+    return frameworks;
+  };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">LLM Experiment Runner</h1>
-          <p className="text-muted-foreground">
-            Run controlled experiments testing AI alignment with and without values.md profiles
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Configuration Panel */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Experiment Configuration
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* API Key Status */}
-              <div className="space-y-2">
-                <Label>OpenRouter API Key Status</Label>
-                <div className="flex items-center gap-2">
-                  {hasEnvKey === null ? (
-                    <Badge variant="secondary">Checking...</Badge>
-                  ) : hasEnvKey ? (
-                    <Badge className="bg-green-100 text-green-800">✅ Available in Environment</Badge>
-                  ) : (
-                    <Badge variant="destructive">❌ Not Found in Environment</Badge>
-                  )}
-                </div>
-                
-                {!hasEnvKey && (
-                  <div className="space-y-2">
-                    <Label htmlFor="apiKey">Enter OpenRouter API Key</Label>
-                    <Input
-                      id="apiKey"
-                      type="password"
-                      placeholder="sk-or-v1-..."
-                      value={config.openrouterKey || ''}
-                      onChange={(e) => setConfig(prev => ({ ...prev, openrouterKey: e.target.value }))}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Your key will not be stored and is only used for this experiment session
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Session Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="sessionId">Participant Session</Label>
-                <select
-                  id="sessionId"
-                  className="w-full p-2 border rounded-md"
-                  value={config.sessionId}
-                  onChange={(e) => setConfig(prev => ({ ...prev, sessionId: e.target.value }))}
-                >
-                  <option value="">Select a session...</option>
-                  {availableSessions.map(session => (
-                    <option key={session} value={session}>
-                      {session}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-muted-foreground">
-                  Sessions with completed dilemma responses
-                </p>
-              </div>
-
-              {/* Model Selection */}
-              <div className="space-y-2">
-                <Label>AI Models to Test</Label>
-                <div className="space-y-2">
-                  {AVAILABLE_MODELS.map(model => (
-                    <label key={model.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={config.models.includes(model.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setConfig(prev => ({ 
-                              ...prev, 
-                              models: [...prev.models, model.id] 
-                            }));
-                          } else {
-                            setConfig(prev => ({ 
-                              ...prev, 
-                              models: prev.models.filter(m => m !== model.id) 
-                            }));
-                          }
-                        }}
-                      />
-                      <span className="text-sm">{model.name}</span>
-                      <Badge variant="outline" className="text-xs">{model.provider}</Badge>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Scenario Types */}
-              <div className="space-y-2">
-                <Label>Scenario Types</Label>
-                <div className="space-y-2">
-                  {SCENARIO_TYPES.map(type => (
-                    <label key={type.id} className="flex items-start space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={config.scenarioTypes.includes(type.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setConfig(prev => ({ 
-                              ...prev, 
-                              scenarioTypes: [...prev.scenarioTypes, type.id] 
-                            }));
-                          } else {
-                            setConfig(prev => ({ 
-                              ...prev, 
-                              scenarioTypes: prev.scenarioTypes.filter(s => s !== type.id) 
-                            }));
-                          }
-                        }}
-                      />
-                      <div>
-                        <span className="text-sm font-medium">{type.name}</span>
-                        <p className="text-xs text-muted-foreground">{type.description}</p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Start Button */}
-              <Button
-                onClick={startExperiment}
-                disabled={isStarting || currentExperiment?.status === 'running'}
-                className="w-full"
+    <div className="min-h-screen bg-background py-8 px-4">
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* Header */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-6 h-6" />
+              LLM Ethical Reasoning Experiments
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4 mb-4">
+              <Button 
+                onClick={validateApiKeys}
+                variant="outline"
+                size="sm"
               >
-                {isStarting ? (
-                  <>
-                    <RotateCcw className="h-4 w-4 mr-2 animate-spin" />
-                    Starting Experiment...
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4 mr-2" />
-                    Start LLM Gauntlet Experiment
-                  </>
-                )}
+                <Settings className="w-4 h-4 mr-2" />
+                Check API Keys
               </Button>
-            </CardContent>
-          </Card>
+              
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                <span className="text-sm">Total Cost: ${totalCost.toFixed(4)}</span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm">Total Time: {(totalTime / 1000).toFixed(1)}s</span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Object.keys(PROVIDER_STATUS).map(provider => (
+                <div key={provider} className="p-3 border rounded-lg">
+                  {getProviderStatus(provider)}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Experiment Status Panel */}
+        {/* Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Experiment Configuration</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="dilemmaCount">Number of Dilemmas</Label>
+                <Input
+                  id="dilemmaCount"
+                  type="number"
+                  value={config.dilemmaCount}
+                  onChange={(e) => setConfig(prev => ({ ...prev, dilemmaCount: parseInt(e.target.value) }))}
+                  min="1"
+                  max="10"
+                  disabled={isRunning}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="temperature">Temperature</Label>
+                <Input
+                  id="temperature"
+                  type="number"
+                  value={config.temperature}
+                  onChange={(e) => setConfig(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  disabled={isRunning}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="maxTokens">Max Tokens</Label>
+                <Input
+                  id="maxTokens"
+                  type="number"
+                  value={config.maxTokens}
+                  onChange={(e) => setConfig(prev => ({ ...prev, maxTokens: parseInt(e.target.value) }))}
+                  min="100"
+                  max="2000"
+                  disabled={isRunning}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="customInstructions">Custom Instructions</Label>
+              <Textarea
+                id="customInstructions"
+                value={config.customInstructions}
+                onChange={(e) => setConfig(prev => ({ ...prev, customInstructions: e.target.value }))}
+                placeholder="Additional instructions for the LLMs..."
+                disabled={isRunning}
+              />
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="includeValuesContext"
+                checked={config.includeValuesContext}
+                onChange={(e) => setConfig(prev => ({ ...prev, includeValuesContext: e.target.checked }))}
+                disabled={isRunning}
+              />
+              <Label htmlFor="includeValuesContext">Include VALUES.md context in prompts</Label>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Controls */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <Button 
+                onClick={runExperiment}
+                disabled={isRunning || config.providers.length === 0}
+                className="flex items-center gap-2"
+              >
+                <Play className="w-4 h-4" />
+                Run Experiment
+              </Button>
+              
+              <Button 
+                onClick={pauseExperiment}
+                disabled={!isRunning}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Pause className="w-4 h-4" />
+                {isPaused ? 'Resume' : 'Pause'}
+              </Button>
+              
+              <Button 
+                onClick={resetExperiment}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Reset
+              </Button>
+              
+              <Button 
+                onClick={exportResults}
+                disabled={results.length === 0}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Export Results
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Progress */}
+        {isRunning && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                Experiment Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {currentExperiment ? (
-                <>
-                  {/* Status Overview */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(currentExperiment.status)}
-                      <span className="font-medium capitalize">{currentExperiment.status}</span>
-                    </div>
-                    <Badge variant="outline">
-                      {currentExperiment.experimentId}
-                    </Badge>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Progress</span>
-                      <span>{currentExperiment.progress}/{currentExperiment.totalTasks}</span>
-                    </div>
-                    <Progress 
-                      value={currentExperiment.totalTasks > 0 ? (currentExperiment.progress / currentExperiment.totalTasks) * 100 : 0} 
-                      className="w-full" 
-                    />
-                  </div>
-
-                  {/* Current Task */}
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium">Current Task</Label>
-                    <p className="text-sm text-muted-foreground">{currentExperiment.currentTask}</p>
-                  </div>
-
-                  {/* Duration */}
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium">Duration</Label>
-                    <p className="text-sm">{formatDuration(currentExperiment.duration)}</p>
-                  </div>
-
-                  {/* Results Summary */}
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium">Results</Label>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>Tests Completed: {currentExperiment.results.length}</div>
-                      <div>Errors: {currentExperiment.errors.length}</div>
-                    </div>
-                  </div>
-
-                  {/* View Results Button */}
-                  {currentExperiment.results.length > 0 && (
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowResults(!showResults)}
-                      className="w-full"
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      {showResults ? 'Hide' : 'View'} Live Results
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <Zap className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">
-                    Configure and start an experiment to see real-time progress
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Live Results Panel */}
-        {showResults && currentExperiment && (
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Live Experiment Results</CardTitle>
+              <CardTitle>Experiment Progress</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {currentExperiment.results.map((result, index) => (
+                <Progress value={progress} className="w-full" />
+                <div className="text-sm text-muted-foreground">
+                  {currentDilemma && (
+                    <p>Current dilemma: {currentDilemma}</p>
+                  )}
+                  <p>{Math.round(progress)}% complete</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Error Display */}
+        {error && (
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 text-red-700">
+                <AlertTriangle className="w-4 h-4" />
+                <span className="font-medium">Error:</span>
+                <span>{error}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Results Overview */}
+        {results.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5" />
+                  Choice Distribution
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {Object.entries(getChoiceDistribution()).map(([choice, count]) => (
+                    <div key={choice} className="flex items-center justify-between">
+                      <span className="font-medium">Choice {choice}</span>
+                      <Badge variant="secondary">{count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Framework Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {Object.entries(getFrameworkAnalysis()).map(([framework, score]) => (
+                    <div key={framework} className="flex items-center justify-between">
+                      <span className="text-sm">{framework}</span>
+                      <Badge variant="outline">{score.toFixed(1)}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Summary Stats</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Dilemmas Processed:</span>
+                    <span className="font-medium">{results.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Total Responses:</span>
+                    <span className="font-medium">{results.reduce((sum, r) => sum + r.responses.length, 0)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Avg Response Time:</span>
+                    <span className="font-medium">{(totalTime / results.length / 1000).toFixed(1)}s</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Detailed Results */}
+        {results.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Detailed Results</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {results.map((result, index) => (
                   <div key={index} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{result.model}</Badge>
-                        <Badge variant="secondary">{result.scenarioType}</Badge>
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(result.timestamp).toLocaleTimeString()}
-                      </span>
+                    <div className="mb-4">
+                      <h3 className="font-medium mb-2">{result.dilemmaTitle}</h3>
+                      <p className="text-sm text-muted-foreground">{result.dilemmaScenario}</p>
                     </div>
                     
-                    <h4 className="font-medium mb-3">{result.scenario}</h4>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Control Result */}
-                      <div className="border rounded p-3">
-                        <div className="font-medium text-sm mb-2 flex items-center gap-2">
-                          Control (No Values.md)
-                          <Badge variant="outline" className="text-xs">
-                            Choice: {result.control.choice}
-                          </Badge>
+                    <div className="space-y-4">
+                      {result.responses.map((response, responseIndex) => (
+                        <div key={responseIndex} className="border-l-4 border-blue-500 pl-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline">{response.provider}</Badge>
+                            <Badge variant="secondary">Choice {response.choice}</Badge>
+                            <span className="text-sm text-muted-foreground">
+                              {response.responseTime}ms | ${response.cost.toFixed(4)}
+                            </span>
+                          </div>
+                          <p className="text-sm mb-2">{response.reasoning}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              Confidence: {response.confidence}/10
+                            </span>
+                            {response.valuesApplied && response.valuesApplied.length > 0 && (
+                              <div className="flex gap-1">
+                                {response.valuesApplied.map((value, i) => (
+                                  <Badge key={i} variant="outline" className="text-xs">
+                                    {value}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {result.control.reasoning.substring(0, 150)}...
-                        </p>
-                      </div>
-                      
-                      {/* Treatment Result */}
-                      <div className="border rounded p-3">
-                        <div className="font-medium text-sm mb-2 flex items-center gap-2">
-                          Treatment (With Values.md)
-                          <Badge variant="outline" className="text-xs">
-                            Choice: {result.treatment.choice}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {result.treatment.reasoning.substring(0, 150)}...
-                        </p>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 ))}
-                
-                {currentExperiment.errors.length > 0 && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 className="font-medium text-red-800 mb-2">Errors</h4>
-                    {currentExperiment.errors.map((error, index) => (
-                      <p key={index} className="text-sm text-red-600">{error}</p>
-                    ))}
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
         )}
       </div>
     </div>
+  );
+}
+
+export default function ExperimentPage() {
+  return (
+    <AdminProtection>
+      <AdminErrorBoundary>
+        <ExperimentPageContent />
+      </AdminErrorBoundary>
+    </AdminProtection>
   );
 }

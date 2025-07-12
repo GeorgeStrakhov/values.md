@@ -120,7 +120,7 @@ export const GlowLight = ({ active, color, size = 'md', tooltip, onClick }: Glow
       case 'gold':
         return hasOpenRouterKey ? undefined : () => window.location.href = '/admin'
       case 'cyan':
-        return (hasUserResponses || databaseHasData) ? undefined : () => window.location.href = '/api/dilemmas/random'
+        return (hasUserResponses || databaseHasData) ? undefined : () => window.location.href = '/start'
       case 'navy':
         return hasGeneratedValues ? undefined : () => window.location.href = '/results'
       default:
@@ -315,7 +315,7 @@ export const StateAwareButton = ({
       case 'cyan':
         return hasUserResponses || databaseHasData ? undefined : {
           label: 'Start Dilemmas',
-          href: '/api/dilemmas/random'
+          href: '/start'
         }
       case 'navy':
         return hasGeneratedValues ? undefined : {

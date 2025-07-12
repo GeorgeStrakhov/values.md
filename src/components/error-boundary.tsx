@@ -133,11 +133,11 @@ export const DilemmaErrorBoundary = ({ children }: { children: React.ReactNode }
               🔄 Retry
             </Button>
             <Button 
-              onClick={() => window.location.href = '/api/dilemmas/random'} 
+              onClick={() => window.location.href = '/start'} 
               variant="outline" 
               size="sm"
             >
-              🎲 Get Different Dilemma
+              🎲 Start New Session
             </Button>
           </div>
         </div>

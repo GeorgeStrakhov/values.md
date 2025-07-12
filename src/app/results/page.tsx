@@ -4,15 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function ResultsPageContent() {
   const [responses, setResponses] = useState([]);
   const [valuesMarkdown, setValuesMarkdown] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showOptions, setShowOptions] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -145,6 +142,25 @@ function ResultsPageContent() {
     URL.revokeObjectURL(url);
   };
 
+  const shareWithResearch = async () => {
+    try {
+      const sessionId = crypto.randomUUID();
+      const response = await fetch('/api/responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ responses, sessionId })
+      });
+      
+      if (response.ok) {
+        alert('Thank you! Your anonymous data has been shared with researchers to improve ethical AI systems.');
+      } else {
+        alert('Failed to share data. Please try again later.');
+      }
+    } catch (error) {
+      alert('Failed to share data. Please try again later.');
+    }
+  };
+
   const startOver = () => {
     localStorage.removeItem('responses');
     localStorage.removeItem('demographics');
@@ -189,7 +205,7 @@ function ResultsPageContent() {
           </Card>
         )}
 
-        {!valuesMarkdown && !showOptions ? (
+        {!valuesMarkdown ? (
           // PROGRESSIVE DISCLOSURE: Simple start
           <Card className="text-center">
             <CardHeader>
@@ -213,16 +229,6 @@ function ResultsPageContent() {
                 <p className="text-xs text-muted-foreground">
                   🔒 Your data stays private on your device
                 </p>
-                
-                {/* Progressive disclosure: reveal options */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowOptions(true)}
-                  className="text-muted-foreground"
-                >
-                  More options <ChevronDown className="ml-1 h-4 w-4" />
-                </Button>
               </div>
             </CardContent>
           </Card>
@@ -331,12 +337,18 @@ function ResultsPageContent() {
                     📥 Download VALUES.md
                   </Button>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <Button
                       variant="outline"
                       onClick={startOver}
                     >
                       Start Over
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={shareWithResearch}
+                    >
+                      Share for Research
                     </Button>
                     <Button
                       variant="outline"

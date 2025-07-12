@@ -1,5 +1,13 @@
 # Claude Technical Architecture - Values.md
 
+<master-instruction>
+## VERY IMPORTANT!!!!
+I tend to have too many ideas and my head spins a bit. Keep me honest to the PLAN.md file. Look at it first.
+If I'm proposing a feature that is not there - tell me to reconsider.
+We need to stick to the plan so that we actually ship this before making it too complicated.
+If you or I have extra ideas that are interesting but don't fit to the MVP plan as per PLAN.md - simply capture them in EXTRA_IDEAS.md and move on.
+</master-instruction>
+
 ## Project Overview
 Research platform for exploring personal values through ethical dilemmas to generate personalized "values.md" files for LLM alignment.
 

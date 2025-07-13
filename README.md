@@ -2,6 +2,7 @@
 
 We are building a research project website where users can explore their own values and generate their "values.md" markdown file - the is intended to later instruct LLMs to make choices aligned with the user's values.
 
+
 The user journey is as follows:
 
 1. landing: understand what's going on. 

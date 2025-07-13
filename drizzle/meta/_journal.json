@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1749577000191,
-      "tag": "0000_bent_microbe",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1749579527364,
-      "tag": "0001_minor_iron_monger",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1749582329578,
-      "tag": "0002_complete_major_mapleleaf",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1749584853159,
-      "tag": "0003_bright_moira_mactaggert",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1749585413155,
-      "tag": "0004_public_magik",
+      "when": 1752432277397,
+      "tag": "0000_mushy_ricochet",
       "breakpoints": true
     }
   ]

@@ -1,10 +1,8 @@
+import 'dotenv/config';
 import { db } from '../src/lib/db';
 import { users } from '../src/lib/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
-
-import dotenv from 'dotenv';
-dotenv.config();
 
 async function seedAdmin() {
   try {

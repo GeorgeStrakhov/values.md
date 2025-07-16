@@ -227,10 +227,12 @@ export const useDilemmaStore = create<DilemmaState>()(
     }),
     {
       name: 'dilemma-session',
-      // Only persist responses and session data
+      // Persist responses, session data, and dilemmas for results page
       partialize: (state) => ({
         responses: state.responses,
-        sessionId: state.sessionId
+        sessionId: state.sessionId,
+        dilemmas: state.dilemmas,
+        currentIndex: state.currentIndex
       })
     }
   )

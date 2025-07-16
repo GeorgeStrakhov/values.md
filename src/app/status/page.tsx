@@ -184,6 +184,79 @@ export default function StatusPage() {
         </CardContent>
       </Card>
 
+      {/* Issue Scoreboard */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Issue Scoreboard</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>Database Connection:</span>
+              <Badge className="bg-green-500">FIXED ✅</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span>Local Proxy (nginx):</span>
+              <Badge className="bg-green-500">WORKING ✅</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span>Staging Deployments:</span>
+              <Badge variant="destructive">FAILING ❌</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span>"No responses found" Issue:</span>
+              <Badge variant="destructive">RECURRING ❌</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span>Domain Redirects:</span>
+              <Badge variant="secondary">MIXED ⚠️</Badge>
+            </div>
+            <div className="flex justify-between">
+              <span>Core Flow (Landing→Dilemmas→Values):</span>
+              <Badge variant="destructive">BROKEN ❌</Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Deployment Health */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Deployment Health</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="p-3 border rounded">
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-medium">Local (values.uprootiny.dev)</div>
+                  <div className="text-sm text-muted-foreground">Commit: {typeof window !== 'undefined' ? 'dev-local' : 'dev'}</div>
+                </div>
+                <Badge className="bg-green-500">DEPLOYED ✅</Badge>
+              </div>
+            </div>
+            <div className="p-3 border rounded">
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-medium">Staging (stage.values.md)</div>
+                  <div className="text-sm text-muted-foreground">Commit: Unknown (deploy failed)</div>
+                </div>
+                <Badge variant="destructive">FAILED ❌</Badge>
+              </div>
+            </div>
+            <div className="p-3 border rounded">
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-medium">Production (values.md)</div>
+                  <div className="text-sm text-muted-foreground">Commit: Unknown</div>
+                </div>
+                <Badge variant="secondary">UNKNOWN ⚠️</Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* System Info */}
       <Card>
         <CardHeader>
@@ -196,6 +269,12 @@ export default function StatusPage() {
             </div>
             <div>
               <span className="font-medium">Timestamp:</span> {new Date().toISOString()}
+            </div>
+            <div>
+              <span className="font-medium">Local Commit:</span> dev-build
+            </div>
+            <div>
+              <span className="font-medium">Issues Fixed:</span> 2/6
             </div>
           </div>
         </CardContent>

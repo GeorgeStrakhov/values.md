@@ -87,13 +87,26 @@ export const useDilemmaStore = create<DilemmaState>()(
           }
         }
         
+        // Preserve existing responses when setting new dilemmas
+        const currentState = get();
+        
+        console.log('setDilemmas called:', {
+          newDilemmaCount: dilemmas.length,
+          startingDilemmaId,
+          existingResponseCount: currentState.responses.length,
+          preservingResponses: true,
+          existingResponses: currentState.responses.map(r => ({ dilemmaId: r.dilemmaId, option: r.chosenOption }))
+        });
+        
         set({ 
           dilemmas, 
           currentIndex: startIndex,
           startTime: Date.now(),
           selectedOption: '',
           reasoning: '',
-          perceivedDifficulty: 5
+          perceivedDifficulty: 5,
+          // CRITICAL: Preserve existing responses
+          responses: currentState.responses
         });
       },
       
@@ -168,7 +181,14 @@ export const useDilemmaStore = create<DilemmaState>()(
             responses.push(newResponse);
           }
           
+          // Update state (Zustand persistence will handle localStorage automatically)
           set({ responses });
+          
+          console.log('Response saved:', {
+            dilemmaId: currentDilemma.dilemmaId,
+            chosenOption: state.selectedOption,
+            totalResponses: responses.length
+          });
         }
       },
       

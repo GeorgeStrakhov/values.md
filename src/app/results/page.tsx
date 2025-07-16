@@ -23,14 +23,56 @@ export default function ResultsPage() {
 
   const generateValues = async () => {
     try {
-      const stored = localStorage.getItem('valuesResponses');
+      // Debug all localStorage keys first
+      console.log('All localStorage keys:', Object.keys(localStorage));
+      
+      // Get data from Zustand store persistence
+      const stored = localStorage.getItem('dilemma-session');
+      console.log('Raw localStorage dilemma-session:', stored);
+      
       if (!stored) {
-        setError('No responses found. Please complete the dilemmas first.');
+        setError('No localStorage data found. Keys: ' + Object.keys(localStorage).join(', '));
         setLoading(false);
         return;
       }
 
-      const { sessionId } = JSON.parse(stored);
+      const localData = JSON.parse(stored);
+      console.log('Parsed data structure:', localData);
+      
+      // Zustand v5 persistence format can be different
+      // Try multiple format possibilities
+      let stateData, sessionId, responses;
+      
+      if (localData.state) {
+        // Format: {state: {...}, version: 0}
+        stateData = localData.state;
+      } else if (localData.responses && localData.sessionId) {
+        // Direct format: {responses: [...], sessionId: "...", ...}
+        stateData = localData;
+      } else {
+        console.error('Unknown data format:', localData);
+        setError(`Unknown data format. Keys: ${Object.keys(localData).join(',')}`);
+        setLoading(false);
+        return;
+      }
+      
+      sessionId = stateData.sessionId;
+      responses = stateData.responses;
+      
+      console.log('Extracted data:', { 
+        hasState: !!localData.state, 
+        sessionId, 
+        responseCount: responses?.length || 0,
+        allKeys: Object.keys(stateData || {}),
+        firstResponse: responses?.[0]
+      });
+      
+      // Validate we have responses
+      if (!responses || responses.length === 0) {
+        setError(`No responses found. SessionId: ${sessionId}, Keys: ${Object.keys(stateData || {}).join(',')}, ResponseCount: ${responses?.length || 0}`);
+        setLoading(false);
+        return;
+      }
       
       const response = await fetch('/api/generate-values', {
         method: 'POST',
@@ -84,8 +126,21 @@ export default function ResultsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <p className="text-destructive">{error}</p>
+          <Button 
+            onClick={() => {
+              console.log('=== FULL DEBUG ===');
+              console.log('All localStorage:', localStorage);
+              Object.keys(localStorage).forEach(key => {
+                console.log(`${key}:`, localStorage.getItem(key));
+              });
+              console.log('=== END DEBUG ===');
+            }}
+            variant="secondary"
+          >
+            Debug localStorage
+          </Button>
           <Button asChild variant="outline">
-            <Link href="/explore">Start Over</Link>
+            <Link href="/api/dilemmas/random">Start Over</Link>
           </Button>
         </div>
       </div>

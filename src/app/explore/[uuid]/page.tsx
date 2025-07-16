@@ -92,8 +92,10 @@ export default function ExplorePage({ params }: { params: Promise<{ uuid: string
         router.push(`/explore/${newDilemmaId}`, { scroll: false });
       }
     } else {
-      // All dilemmas completed, go to results
-      router.push('/results');
+      // All dilemmas completed - add small delay to ensure Zustand persistence completes
+      setTimeout(() => {
+        router.push('/results');
+      }, 50);
     }
   };
 

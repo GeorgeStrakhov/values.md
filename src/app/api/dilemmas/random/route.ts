@@ -4,7 +4,7 @@ import { dilemmas } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Get a random dilemma to start with
     const randomDilemma = await db
@@ -20,9 +20,12 @@ export async function GET() {
       );
     }
 
+    // Use the request URL origin for redirect instead of env var
+    const { origin } = new URL(request.url);
+    
     // Redirect to the explore page with this dilemma's UUID
     return NextResponse.redirect(
-      new URL(`/explore/${randomDilemma[0].dilemmaId}`, process.env.NEXTAUTH_URL || 'http://localhost:3000')
+      new URL(`/explore/${randomDilemma[0].dilemmaId}`, origin)
     );
   } catch (error) {
     console.error('Error fetching random dilemma:', error);

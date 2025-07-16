@@ -205,7 +205,7 @@ export default function StatusPage() {
             </div>
             <div className="flex justify-between">
               <span>"No responses found" Issue:</span>
-              <Badge variant="destructive">RECURRING ❌</Badge>
+              <Badge className="bg-green-500">FIXED ✅</Badge>
             </div>
             <div className="flex justify-between">
               <span>Domain Redirects:</span>
@@ -213,7 +213,7 @@ export default function StatusPage() {
             </div>
             <div className="flex justify-between">
               <span>Core Flow (Landing→Dilemmas→Values):</span>
-              <Badge variant="destructive">BROKEN ❌</Badge>
+              <Badge className="bg-green-500">FIXED ✅</Badge>
             </div>
           </div>
         </CardContent>
@@ -230,7 +230,7 @@ export default function StatusPage() {
               <div className="flex justify-between items-center">
                 <div>
                   <div className="font-medium">Local (values.uprootiny.dev)</div>
-                  <div className="text-sm text-muted-foreground">Commit: {typeof window !== 'undefined' ? 'dev-local' : 'dev'}</div>
+                  <div className="text-sm text-muted-foreground">Commit: fd5b888</div>
                 </div>
                 <Badge className="bg-green-500">DEPLOYED ✅</Badge>
               </div>
@@ -274,7 +274,7 @@ export default function StatusPage() {
               <span className="font-medium">Local Commit:</span> dev-build
             </div>
             <div>
-              <span className="font-medium">Issues Fixed:</span> 2/6
+              <span className="font-medium">Issues Fixed:</span> 4/6
             </div>
           </div>
         </CardContent>

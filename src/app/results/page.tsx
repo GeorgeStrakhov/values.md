@@ -1,10 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+
+interface Response {
+  dilemmaId: string;
+  chosenOption: string;
+  reasoning: string;
+  responseTime: number;
+  perceivedDifficulty: number;
+}
 
 interface ValuesResult {
   valuesMarkdown: string;
@@ -12,89 +21,65 @@ interface ValuesResult {
   topMotifs: string[];
 }
 
-export default function ResultsPage() {
+function ResultsPageContent() {
+  const searchParams = useSearchParams();
   const [results, setResults] = useState<ValuesResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const [responses, setResponses] = useState<Response[]>([]);
 
   useEffect(() => {
+    const generateValues = async () => {
+      try {
+        // Get responses from URL parameters
+        const encodedData = searchParams.get('data');
+        if (!encodedData) {
+          setError('No response data found. Please complete the dilemmas first.');
+          setLoading(false);
+          return;
+        }
+
+        // Decode responses
+        const decodedResponses = JSON.parse(atob(encodedData)) as Response[];
+        setResponses(decodedResponses);
+
+        if (decodedResponses.length === 0) {
+          setError('No responses found. Please complete the dilemmas first.');
+          setLoading(false);
+          return;
+        }
+
+        // Generate temporary session ID for API call
+        const sessionId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Call API to generate values
+        const response = await fetch('/api/generate-values', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            sessionId,
+            responses: decodedResponses 
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate values');
+        }
+
+        const data = await response.json();
+        setResults(data);
+      } catch (error) {
+        console.error('Error generating values:', error);
+        setError('Failed to generate your values. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     generateValues();
-  }, []);
-
-  const generateValues = async () => {
-    try {
-      // Debug all localStorage keys first
-      console.log('All localStorage keys:', Object.keys(localStorage));
-      
-      // Get data from Zustand store persistence
-      const stored = localStorage.getItem('dilemma-session');
-      console.log('Raw localStorage dilemma-session:', stored);
-      
-      if (!stored) {
-        setError('No localStorage data found. Keys: ' + Object.keys(localStorage).join(', '));
-        setLoading(false);
-        return;
-      }
-
-      const localData = JSON.parse(stored);
-      console.log('Parsed data structure:', localData);
-      
-      // Zustand v5 persistence format can be different
-      // Try multiple format possibilities
-      let stateData, sessionId, responses;
-      
-      if (localData.state) {
-        // Format: {state: {...}, version: 0}
-        stateData = localData.state;
-      } else if (localData.responses && localData.sessionId) {
-        // Direct format: {responses: [...], sessionId: "...", ...}
-        stateData = localData;
-      } else {
-        console.error('Unknown data format:', localData);
-        setError(`Unknown data format. Keys: ${Object.keys(localData).join(',')}`);
-        setLoading(false);
-        return;
-      }
-      
-      sessionId = stateData.sessionId;
-      responses = stateData.responses;
-      
-      console.log('Extracted data:', { 
-        hasState: !!localData.state, 
-        sessionId, 
-        responseCount: responses?.length || 0,
-        allKeys: Object.keys(stateData || {}),
-        firstResponse: responses?.[0]
-      });
-      
-      // Validate we have responses
-      if (!responses || responses.length === 0) {
-        setError(`No responses found. SessionId: ${sessionId}, Keys: ${Object.keys(stateData || {}).join(',')}, ResponseCount: ${responses?.length || 0}`);
-        setLoading(false);
-        return;
-      }
-      
-      const response = await fetch('/api/generate-values', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ sessionId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate values');
-      }
-
-      const data = await response.json();
-      setResults(data);
-    } catch (error) {
-      console.error('Error generating values:', error);
-      setError('Failed to generate your values. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [searchParams]);
 
   const downloadValuesFile = () => {
     if (!results) return;
@@ -108,6 +93,20 @@ export default function ResultsPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const contributeToResearch = () => {
+    // Save responses to localStorage for research contribution
+    const contributionData = {
+      responses,
+      timestamp: new Date().toISOString(),
+      sessionId: `research_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+    
+    localStorage.setItem('research-contribution', JSON.stringify(contributionData));
+    
+    // Navigate to research contribution page
+    window.location.href = '/research/contribute';
   };
 
   if (loading) {
@@ -126,21 +125,8 @@ export default function ResultsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <p className="text-destructive">{error}</p>
-          <Button 
-            onClick={() => {
-              console.log('=== FULL DEBUG ===');
-              console.log('All localStorage:', localStorage);
-              Object.keys(localStorage).forEach(key => {
-                console.log(`${key}:`, localStorage.getItem(key));
-              });
-              console.log('=== END DEBUG ===');
-            }}
-            variant="secondary"
-          >
-            Debug localStorage
-          </Button>
           <Button asChild variant="outline">
-            <Link href="/api/dilemmas/random">Start Over</Link>
+            <Link href="/explore">Start Over</Link>
           </Button>
         </div>
       </div>
@@ -153,6 +139,9 @@ export default function ResultsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-3xl">Your Values Profile</CardTitle>
+            <p className="text-muted-foreground">
+              Based on your responses to {responses.length} ethical dilemmas
+            </p>
           </CardHeader>
           
           <CardContent className="space-y-8">
@@ -187,8 +176,8 @@ export default function ResultsPage() {
               <Button onClick={downloadValuesFile}>
                 Download values.md
               </Button>
-              <Button asChild variant="secondary">
-                <Link href="/contribute">Contribute to Research</Link>
+              <Button onClick={contributeToResearch} variant="secondary">
+                Contribute to Research
               </Button>
               <Button asChild variant="outline">
                 <Link href="/explore">Take Another Round</Link>
@@ -213,5 +202,20 @@ export default function ResultsPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading results...</p>
+        </div>
+      </div>
+    }>
+      <ResultsPageContent />
+    </Suspense>
   );
 }

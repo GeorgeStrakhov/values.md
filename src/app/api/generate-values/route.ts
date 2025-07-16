@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
-    const { sessionId } = await request.json();
+    const { sessionId, responses: userResponses } = await request.json();
 
     if (!sessionId) {
       return NextResponse.json(
@@ -14,28 +14,60 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user responses with dilemma data
-    const responses = await db
+    if (!userResponses || userResponses.length === 0) {
+      return NextResponse.json(
+        { error: 'No responses provided' },
+        { status: 400 }
+      );
+    }
+
+    // Get dilemma data for the responses
+    const dilemmaIds = userResponses.map((r: any) => r.dilemmaId);
+    const dilemmaData = await db
       .select({
-        dilemmaId: userResponses.dilemmaId,
-        chosenOption: userResponses.chosenOption,
-        reasoning: userResponses.reasoning,
+        dilemmaId: dilemmas.dilemmaId,
+        title: dilemmas.title,
         choiceAMotif: dilemmas.choiceAMotif,
         choiceBMotif: dilemmas.choiceBMotif,
         choiceCMotif: dilemmas.choiceCMotif,
         choiceDMotif: dilemmas.choiceDMotif,
-        title: dilemmas.title,
       })
-      .from(userResponses)
-      .innerJoin(dilemmas, eq(userResponses.dilemmaId, dilemmas.dilemmaId))
-      .where(eq(userResponses.sessionId, sessionId));
+      .from(dilemmas)
+      .where(eq(dilemmas.dilemmaId, dilemmaIds[0])); // Get all dilemmas (this is simplified)
 
-    if (responses.length === 0) {
-      return NextResponse.json(
-        { error: 'No responses found for session' },
-        { status: 404 }
-      );
+    // Get all dilemma data in parallel
+    const dilemmaDataMap = new Map();
+    for (const id of dilemmaIds) {
+      const dilemmaInfo = await db
+        .select({
+          dilemmaId: dilemmas.dilemmaId,
+          title: dilemmas.title,
+          choiceAMotif: dilemmas.choiceAMotif,
+          choiceBMotif: dilemmas.choiceBMotif,
+          choiceCMotif: dilemmas.choiceCMotif,
+          choiceDMotif: dilemmas.choiceDMotif,
+        })
+        .from(dilemmas)
+        .where(eq(dilemmas.dilemmaId, id))
+        .limit(1);
+      
+      if (dilemmaInfo.length > 0) {
+        dilemmaDataMap.set(id, dilemmaInfo[0]);
+      }
     }
+
+    // Combine user responses with dilemma data
+    const responses = userResponses.map((response: any) => {
+      const dilemmaInfo = dilemmaDataMap.get(response.dilemmaId);
+      return {
+        ...response,
+        title: dilemmaInfo?.title || 'Unknown Dilemma',
+        choiceAMotif: dilemmaInfo?.choiceAMotif,
+        choiceBMotif: dilemmaInfo?.choiceBMotif,
+        choiceCMotif: dilemmaInfo?.choiceCMotif,
+        choiceDMotif: dilemmaInfo?.choiceDMotif,
+      };
+    });
 
     // Analyze motif patterns
     const motifCounts: Record<string, number> = {};

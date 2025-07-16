@@ -16,7 +16,7 @@ Research platform for exploring personal values through ethical dilemmas to gene
 - **Database**: PostgreSQL (Neon Cloud) with Drizzle ORM
 - **LLM Services**: OpenRouter API
 - **Authentication**: NextAuth.js with JWT sessions for admin
-- **State Management**: Zustand with localStorage persistence
+- **State Management**: Simple React state (no persistence needed during dilemma flow)
 - **UI Components**: shadcn/ui with Tailwind CSS v4
 - **Storage**: Local storage for privacy (user responses)
 - **Deployment**: TBD

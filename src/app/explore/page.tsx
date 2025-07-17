@@ -40,6 +40,7 @@ export default function ExplorePage() {
   const [startTime, setStartTime] = useState(Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   // Load dilemmas once
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function ExplorePage() {
       });
   }, []);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!choice) return;
     
     const responseTime = Date.now() - startTime;
@@ -70,10 +71,36 @@ export default function ExplorePage() {
     
     const updatedResponses = [...responses, newResponse];
     
+    // Store response in database
+    try {
+      await fetch('/api/responses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId,
+          dilemmaId: newResponse.dilemmaId,
+          chosenOption: newResponse.chosenOption,
+          reasoning: newResponse.reasoning,
+          responseTime: newResponse.responseTime,
+          perceivedDifficulty: newResponse.perceivedDifficulty
+        })
+      });
+    } catch (error) {
+      console.error('Error storing response:', error);
+      // Continue anyway - we'll store in localStorage as backup
+    }
+    
     if (currentIndex === dilemmas.length - 1) {
-      // Flow complete - redirect to results
-      const data = btoa(JSON.stringify(updatedResponses));
-      router.push(`/results?data=${data}`);
+      // Flow complete - store in localStorage and redirect to results
+      localStorage.setItem('valuesResponses', JSON.stringify({
+        sessionId,
+        responses: updatedResponses,
+        completedAt: new Date().toISOString()
+      }));
+      
+      router.push('/results');
     } else {
       // Next dilemma
       setResponses(updatedResponses);

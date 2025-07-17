@@ -31,36 +31,31 @@ function ResultsPageContent() {
   useEffect(() => {
     const generateValues = async () => {
       try {
-        // Get responses from URL parameters
-        const encodedData = searchParams.get('data');
-        if (!encodedData) {
-          setError('No response data found. Please complete the dilemmas first.');
-          setLoading(false);
-          return;
-        }
-
-        // Decode responses
-        const decodedResponses = JSON.parse(atob(encodedData)) as Response[];
-        setResponses(decodedResponses);
-
-        if (decodedResponses.length === 0) {
+        // Get responses from localStorage
+        const stored = localStorage.getItem('valuesResponses');
+        if (!stored) {
           setError('No responses found. Please complete the dilemmas first.');
           setLoading(false);
           return;
         }
 
-        // Generate temporary session ID for API call
-        const sessionId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
-        // Call API to generate values
+        const { sessionId, responses: storedResponses } = JSON.parse(stored);
+        setResponses(storedResponses);
+
+        if (!storedResponses || storedResponses.length === 0) {
+          setError('No responses found. Please complete the dilemmas first.');
+          setLoading(false);
+          return;
+        }
+
+        // Call API to generate values using sessionId
         const response = await fetch('/api/generate-values', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ 
-            sessionId,
-            responses: decodedResponses 
+            sessionId
           }),
         });
 
@@ -79,7 +74,7 @@ function ResultsPageContent() {
     };
 
     generateValues();
-  }, [searchParams]);
+  }, []);
 
   const downloadValuesFile = () => {
     if (!results) return;
@@ -96,11 +91,21 @@ function ResultsPageContent() {
   };
 
   const contributeToResearch = () => {
+    // Get the current session data
+    const stored = localStorage.getItem('valuesResponses');
+    if (!stored) {
+      console.error('No session data found for research contribution');
+      return;
+    }
+    
+    const { sessionId, responses: storedResponses } = JSON.parse(stored);
+    
     // Save responses to localStorage for research contribution
     const contributionData = {
-      responses,
+      sessionId,
+      responses: storedResponses,
       timestamp: new Date().toISOString(),
-      sessionId: `research_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      contributedAt: new Date().toISOString()
     };
     
     localStorage.setItem('research-contribution', JSON.stringify(contributionData));

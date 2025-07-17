@@ -213,7 +213,7 @@ export default function StatusPage() {
             </div>
             <div className="flex justify-between">
               <span>Core Flow (Landing→Dilemmas→Values):</span>
-              <Badge className="bg-green-500">FIXED ✅</Badge>
+              <Badge className="bg-green-500">SIMPLIFIED ✅</Badge>
             </div>
           </div>
         </CardContent>
@@ -274,7 +274,7 @@ export default function StatusPage() {
               <span className="font-medium">Local Commit:</span> dev-build
             </div>
             <div>
-              <span className="font-medium">Issues Fixed:</span> 4/6
+              <span className="font-medium">Issues Fixed:</span> 5/6
             </div>
           </div>
         </CardContent>

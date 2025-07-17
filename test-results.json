@@ -1,0 +1,1292 @@
+[
+  {
+    "test": "Database Connection",
+    "passed": true,
+    "message": "Connected successfully",
+    "timestamp": "2025-07-17T12:35:59.627Z"
+  },
+  {
+    "test": "Database Query",
+    "passed": true,
+    "message": "Database is accessible",
+    "timestamp": "2025-07-17T12:36:00.564Z"
+  },
+  {
+    "test": "Build Process",
+    "passed": true,
+    "message": "Build completed successfully",
+    "timestamp": "2025-07-17T12:36:39.878Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:52.018Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:52.031Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:53.511Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.144Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.236Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.418Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.492Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.585Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.598Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.605Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.742Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:54.906Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:55.693Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:55.837Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:56.281Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:56.559Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:56.738Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:56.749Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:56.991Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.077Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.158Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.279Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.339Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.414Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.567Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.574Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.784Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.837Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.917Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:57.986Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.314Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.323Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.327Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.331Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.341Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.349Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.549Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.564Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.574Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.579Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.671Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.790Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:58.996Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:59.004Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:59.403Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:59.513Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:59.686Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:59.696Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:59.819Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:36:59.836Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:00.106Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:00.322Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:00.348Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:00.455Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:00.740Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:00.780Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:00.849Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:01.183Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:01.190Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:01.450Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:01.626Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:01.899Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.103Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.127Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.161Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.164Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.350Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.355Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.368Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.476Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.656Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.768Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:02.798Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.172Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.189Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.199Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.438Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.447Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.450Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.910Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.915Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.957Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:03.960Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.225Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.269Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.281Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.285Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.288Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.291Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.554Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.558Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.725Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.747Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.757Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.760Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.927Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.986Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.990Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:04.992Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.002Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.004Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.008Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.113Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.221Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.284Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.361Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.366Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.367Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.369Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.371Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.373Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.506Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.509Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.515Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.520Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.521Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.531Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.598Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:05.842Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.019Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.051Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.055Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.181Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.377Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.382Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.386Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.651Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.654Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.712Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.715Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.717Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.784Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.829Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:06.974Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.085Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.088Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.156Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.269Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.558Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.668Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.710Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.714Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:07.716Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.025Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.096Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.120Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.181Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.185Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.546Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.553Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.554Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.633Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.795Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.797Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.951Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.970Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.992Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:08.996Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.039Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.042Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.045Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.049Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.053Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.261Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.406Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.411Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.482Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.484Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.609Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.746Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.750Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.754Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.822Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.833Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.955Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:09.976Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.071Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.240Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.452Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.512Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.786Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.789Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.791Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.977Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.984Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.985Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.991Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.992Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.994Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.997Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:10.999Z"
+  },
+  {
+    "test": "DEV /results",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.010Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.140Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.142Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.144Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.145Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.147Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.149Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.150Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.152Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.154Z"
+  },
+  {
+    "test": "DEV /api/status/database",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.156Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.257Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.261Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.267Z"
+  },
+  {
+    "test": "DEV /",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.283Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.287Z"
+  },
+  {
+    "test": "DEV /api/dilemmas",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.333Z"
+  },
+  {
+    "test": "DEV /explore",
+    "passed": true,
+    "message": "HTTP 200",
+    "timestamp": "2025-07-17T12:37:11.336Z"
+  },
+  {
+    "test": "Production Server",
+    "passed": false,
+    "message": "Port already in use",
+    "timestamp": "2025-07-17T12:37:11.619Z"
+  },
+  {
+    "test": "Static Generation",
+    "passed": true,
+    "message": "Page is server-compatible",
+    "timestamp": "2025-07-17T12:37:11.620Z"
+  },
+  {
+    "test": "Dynamic Export",
+    "passed": false,
+    "message": "Missing dynamic export",
+    "timestamp": "2025-07-17T12:37:11.620Z"
+  }
+]

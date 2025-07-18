@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +21,6 @@ interface ValuesResult {
 }
 
 function ResultsPageContent() {
-  const searchParams = useSearchParams();
   const [results, setResults] = useState<ValuesResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -32,30 +30,32 @@ function ResultsPageContent() {
     const generateValues = async () => {
       try {
         // Get responses from localStorage
-        const stored = localStorage.getItem('valuesResponses');
-        if (!stored) {
+        const storedData = localStorage.getItem('valuesResponses');
+        if (!storedData) {
           setError('No responses found. Please complete the dilemmas first.');
           setLoading(false);
           return;
         }
 
-        const { sessionId, responses: storedResponses } = JSON.parse(stored);
-        setResponses(storedResponses);
+        // Parse the stored response data
+        const parsedData = JSON.parse(storedData);
+        const decodedResponses = parsedData.responses;
+        setResponses(decodedResponses);
 
-        if (!storedResponses || storedResponses.length === 0) {
+        if (!decodedResponses || decodedResponses.length === 0) {
           setError('No responses found. Please complete the dilemmas first.');
           setLoading(false);
           return;
         }
 
-        // Call API to generate values using sessionId
+        // Call API to generate values using the responses directly
         const response = await fetch('/api/generate-values', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ 
-            sessionId
+            responses: decodedResponses
           }),
         });
 
@@ -91,19 +91,9 @@ function ResultsPageContent() {
   };
 
   const contributeToResearch = () => {
-    // Get the current session data
-    const stored = localStorage.getItem('valuesResponses');
-    if (!stored) {
-      console.error('No session data found for research contribution');
-      return;
-    }
-    
-    const { sessionId, responses: storedResponses } = JSON.parse(stored);
-    
     // Save responses to localStorage for research contribution
     const contributionData = {
-      sessionId,
-      responses: storedResponses,
+      responses: responses,
       timestamp: new Date().toISOString(),
       contributedAt: new Date().toISOString()
     };

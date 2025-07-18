@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test localStorage Flow</title>
+</head>
+<body>
+    <h1>Test localStorage Flow</h1>
+    <div id="results"></div>
+    
+    <script>
+        // Test the exact localStorage flow we implemented
+        console.log('Testing localStorage flow...');
+        
+        // 1. Simulate what explore page does - store data
+        const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const mockResponses = [
+            {
+                dilemmaId: 'test-1',
+                chosenOption: 'A',
+                reasoning: 'Test reasoning',
+                responseTime: 5000,
+                perceivedDifficulty: 7
+            },
+            {
+                dilemmaId: 'test-2',
+                chosenOption: 'B', 
+                reasoning: 'Another test',
+                responseTime: 3000,
+                perceivedDifficulty: 5
+            }
+        ];
+        
+        const storageData = {
+            sessionId,
+            responses: mockResponses,
+            completedAt: new Date().toISOString()
+        };
+        
+        localStorage.setItem('valuesResponses', JSON.stringify(storageData));
+        console.log('✅ Stored data:', storageData);
+        
+        // 2. Simulate what results page does - read data
+        const stored = localStorage.getItem('valuesResponses');
+        if (!stored) {
+            console.error('❌ No stored data found!');
+            document.getElementById('results').innerHTML = '<p style="color: red;">FAILED: No stored data found</p>';
+        } else {
+            const { sessionId: retrievedSessionId, responses: storedResponses } = JSON.parse(stored);
+            console.log('✅ Retrieved sessionId:', retrievedSessionId);
+            console.log('✅ Retrieved responses:', storedResponses);
+            
+            if (!storedResponses || storedResponses.length === 0) {
+                console.error('❌ No responses in stored data!');
+                document.getElementById('results').innerHTML = '<p style="color: red;">FAILED: No responses found</p>';
+            } else {
+                console.log('✅ SUCCESS: Found', storedResponses.length, 'responses');
+                document.getElementById('results').innerHTML = `
+                    <p style="color: green;">✅ SUCCESS!</p>
+                    <p>SessionId: ${retrievedSessionId}</p>
+                    <p>Responses: ${storedResponses.length}</p>
+                    <pre>${JSON.stringify(storedResponses, null, 2)}</pre>
+                `;
+            }
+        }
+        
+        // 3. Clean up
+        setTimeout(() => {
+            localStorage.removeItem('valuesResponses');
+            console.log('🧹 Cleaned up test data');
+        }, 5000);
+    </script>
+</body>
+</html>

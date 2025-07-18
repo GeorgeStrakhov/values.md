@@ -40,7 +40,20 @@ export default function ExplorePage() {
   const [startTime, setStartTime] = useState(Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const [sessionId] = useState(() => {
+    // Check if there's already a session in localStorage
+    const existingSession = localStorage.getItem('valuesResponses');
+    if (existingSession) {
+      try {
+        const parsed = JSON.parse(existingSession);
+        return parsed.sessionId;
+      } catch (e) {
+        // If parsing fails, create new session
+      }
+    }
+    // Generate new session ID
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  });
 
   // Load dilemmas once
   useEffect(() => {

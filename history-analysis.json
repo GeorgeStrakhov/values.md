@@ -1,0 +1,29 @@
+{
+  "commits": [
+    {
+      "hash": "2998488",
+      "message": "MAJOR ARCHITECTURE IMPROVEMENTS: Complete localStorage flow, modular values generator, and research export"
+    },
+    {
+      "hash": "69ca565",
+      "message": "CRITICAL FIX: Repair data flow between explore and results pages"
+    },
+    {
+      "hash": "485e6b2",
+      "message": "MAJOR REFACTOR: Remove Zustand, implement proper MVP architecture"
+    },
+    {
+      "hash": "b393f1d",
+      "message": "MAJOR FIX: Systematically resolve all \"No responses found\" causes"
+    }
+  ],
+  "errorPatterns": {
+    "data_flow_issues": 1,
+    "localStorage_mismatch": 1
+  },
+  "regressionTrends": {},
+  "frequentIssues": {
+    "Values Generation": 1,
+    "E2E Tests": 1
+  }
+}

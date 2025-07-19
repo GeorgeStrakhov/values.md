@@ -1,0 +1,32 @@
+[
+  {
+    "test": "API Health",
+    "status": "PASS",
+    "details": "Server responding",
+    "timestamp": "2025-07-18T13:21:09.334Z"
+  },
+  {
+    "test": "Database Connection",
+    "status": "PASS",
+    "details": "12 dilemmas found",
+    "timestamp": "2025-07-18T13:21:09.487Z"
+  },
+  {
+    "test": "Values Generation",
+    "status": "FAIL",
+    "details": "Invalid values output",
+    "timestamp": "2025-07-18T13:21:10.077Z"
+  },
+  {
+    "test": "Research Export",
+    "status": "PASS",
+    "details": "CSV export works",
+    "timestamp": "2025-07-18T13:21:10.239Z"
+  },
+  {
+    "test": "E2E Tests",
+    "status": "FAIL",
+    "details": "Some tests failed",
+    "timestamp": "2025-07-18T13:21:14.532Z"
+  }
+]

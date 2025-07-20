@@ -27,7 +27,7 @@ export type AppPhase = 'landing' | 'exploring' | 'completed';
 
 export interface UserResponse {
   dilemmaId: string;
-  chosenOption: 'A' | 'B' | 'C' | 'D';
+  chosenOption: string;
   reasoning: string;
   responseTime: number;
   perceivedDifficulty: number;

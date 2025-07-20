@@ -1,109 +1,99 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { useClientOnly } from '@/hooks/use-client-only';
+import { storage } from '@/lib/storage';
+import { apiClient, type ValuesResponse } from '@/lib/api-client';
+import { ROUTES, type UserResponse } from '@/lib/constants';
 
-interface Response {
-  dilemmaId: string;
-  chosenOption: string;
-  reasoning: string;
-  responseTime: number;
-  perceivedDifficulty: number;
-}
-
-interface ValuesResult {
-  valuesMarkdown: string;
-  motifAnalysis: Record<string, number>;
-  topMotifs: string[];
-}
-
-function ResultsPageContent() {
-  const [results, setResults] = useState<ValuesResult | null>(null);
+export default function ResultsPage() {
+  const [results, setResults] = useState<ValuesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
-  const [responses, setResponses] = useState<Response[]>([]);
+  const [responses, setResponses] = useState<UserResponse[]>([]);
+  
+  // SSR-safe client-only hook
+  const isClient = useClientOnly(true, false);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     const generateValues = async () => {
       try {
-        // Get responses from localStorage
-        const storedData = localStorage.getItem('valuesResponses');
-        if (!storedData) {
-          setError('No responses found. Please complete the dilemmas first.');
+        // BULLETPROOF storage access - single source of truth
+        const session = storage.getSession();
+        
+        if (!session || !storage.isComplete()) {
+          setError('No completed responses found. Please complete the dilemmas first.');
           setLoading(false);
           return;
         }
-
-        // Parse the stored response data
-        const parsedData = JSON.parse(storedData);
-        const decodedResponses = parsedData.responses;
-        setResponses(decodedResponses);
-
-        if (!decodedResponses || decodedResponses.length === 0) {
-          setError('No responses found. Please complete the dilemmas first.');
+        
+        const userResponses = session.responses;
+        setResponses(userResponses);
+        
+        if (userResponses.length < 12) {
+          setError(`Only ${userResponses.length}/12 responses completed. Please finish the dilemmas first.`);
           setLoading(false);
           return;
         }
-
-        // Call API to generate values using the responses directly
-        const response = await fetch('/api/generate-values', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            responses: decodedResponses
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to generate values');
+        
+        // BULLETPROOF API call with proper error handling
+        const valuesResult = await apiClient.generateValues(userResponses);
+        
+        if (!valuesResult) {
+          setError('Failed to generate your values. Please try again.');
+          setLoading(false);
+          return;
         }
-
-        const data = await response.json();
-        setResults(data);
+        
+        setResults(valuesResult);
+        
       } catch (error) {
-        console.error('Error generating values:', error);
-        setError('Failed to generate your values. Please try again.');
+        console.error('Error in results page:', error);
+        setError('An unexpected error occurred. Please try again.');
       } finally {
         setLoading(false);
       }
     };
 
     generateValues();
-  }, []);
+  }, [isClient]);
 
   const downloadValuesFile = () => {
-    if (!results) return;
+    if (!results || !isClient) return;
     
-    const blob = new Blob([results.valuesMarkdown], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'values.md';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      const blob = new Blob([results.valuesMarkdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'values.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Fallback: copy to clipboard
+      navigator.clipboard?.writeText(results.valuesMarkdown);
+    }
+  };
+  
+  const startOver = () => {
+    if (!isClient) return;
+    storage.clear();
+    window.location.href = ROUTES.EXPLORE;
   };
 
-  const contributeToResearch = () => {
-    // Save responses to localStorage for research contribution
-    const contributionData = {
-      responses: responses,
-      timestamp: new Date().toISOString(),
-      contributedAt: new Date().toISOString()
-    };
-    
-    localStorage.setItem('research-contribution', JSON.stringify(contributionData));
-    
-    // Navigate to research contribution page
-    window.location.href = '/research/contribute';
-  };
-
+  // BULLETPROOF LOADING AND ERROR STATES
+  if (!isClient) {
+    return <div className="p-8 text-center">Loading...</div>;
+  }
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -120,14 +110,20 @@ function ResultsPageContent() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <p className="text-destructive">{error}</p>
-          <Button asChild variant="outline">
-            <Link href="/explore">Start Over</Link>
-          </Button>
+          <div className="flex gap-4 justify-center">
+            <Button onClick={startOver} variant="outline">
+              Start Over
+            </Button>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Try Again
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Results
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -140,23 +136,7 @@ function ResultsPageContent() {
           </CardHeader>
           
           <CardContent className="space-y-8">
-            {/* Motif Analysis */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Your Moral Framework</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {results && Object.entries(results.motifAnalysis)
-                  .sort(([,a], [,b]) => b - a)
-                  .slice(0, 6)
-                  .map(([motif, count]) => (
-                    <div key={motif} className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                      <span className="font-medium">{motif}</span>
-                      <Badge variant="default">{count}</Badge>
-                    </div>
-                  ))}
-              </div>
-            </div>
-
-            {/* Values Markdown Preview */}
+            {/* Values Markdown */}
             <div>
               <h2 className="text-xl font-semibold mb-4">Your Values.md File</h2>
               <div className="bg-muted p-6 rounded-lg border">
@@ -171,11 +151,11 @@ function ResultsPageContent() {
               <Button onClick={downloadValuesFile}>
                 Download values.md
               </Button>
-              <Button onClick={contributeToResearch} variant="secondary">
-                Contribute to Research
-              </Button>
               <Button asChild variant="outline">
-                <Link href="/explore">Take Another Round</Link>
+                <Link href={ROUTES.RESEARCH}>Contribute to Research</Link>
+              </Button>
+              <Button onClick={startOver} variant="outline">
+                Take Another Round
               </Button>
             </div>
           </CardContent>
@@ -197,20 +177,5 @@ function ResultsPageContent() {
         </Card>
       </div>
     </div>
-  );
-}
-
-export default function ResultsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading results...</p>
-        </div>
-      </div>
-    }>
-      <ResultsPageContent />
-    </Suspense>
   );
 }

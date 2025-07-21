@@ -65,3 +65,68 @@
  POST /api/responses 400 in 98ms
  GET /results 200 in 130ms
  POST /api/generate-values 200 in 412ms
+ POST /api/responses 400 in 116ms
+Error storing responses: Error: Failed query: insert into "user_responses" ("response_id", "session_id", "dilemma_id", "chosen_option", "reasoning", "response_time", "perceived_difficulty", "created_at") values (default, $1, $2, $3, $4, $5, default, default)
+params: test123,test,A,test,1000
+    at async POST (src/app/api/responses/route.ts:19:6)
+  17 |     // Insert all responses
+  18 |     for (const response of responses) {
+> 19 |       await db.insert(userResponses).values({
+     |      ^
+  20 |         sessionId,
+  21 |         dilemmaId: response.dilemmaId,
+  22 |         chosenOption: response.chosenOption, {
+  query: 'insert into "user_responses" ("response_id", "session_id", "dilemma_id", "chosen_option", "reasoning", "response_time", "perceived_difficulty", "created_at") values (default, $1, $2, $3, $4, $5, default, default)',
+  params: [Array],
+  [cause]: Error [NeonDbError]: invalid input syntax for type uuid: "test"
+      at async POST (src/app/api/responses/route.ts:19:6)
+    17 |     // Insert all responses
+    18 |     for (const response of responses) {
+  > 19 |       await db.insert(userResponses).values({
+       |      ^
+    20 |         sessionId,
+    21 |         dilemmaId: response.dilemmaId,
+    22 |         chosenOption: response.chosenOption, {
+    severity: 'ERROR',
+    code: '22P02',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: "unnamed portal parameter $2 = '...'",
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'uuid.c',
+    line: '138',
+    routine: 'string_to_uuid',
+    sourceError: undefined
+  }
+}
+ POST /api/responses 500 in 872ms
+ GET /api/dilemmas 200 in 382ms
+ POST /api/responses 200 in 380ms
+ GET / 200 in 111ms
+ GET /api/examples 200 in 129ms
+ GET /api/auth/session 200 in 180ms
+ GET /api/examples 200 in 841ms
+ GET /explore 200 in 950ms
+ GET /api/auth/session 200 in 180ms
+ GET /api/dilemmas 200 in 493ms
+ POST /api/responses 200 in 142ms
+ POST /api/responses 200 in 167ms
+ POST /api/responses 200 in 161ms
+ POST /api/responses 200 in 170ms
+ POST /api/responses 200 in 155ms
+ POST /api/responses 200 in 239ms
+ POST /api/responses 200 in 313ms
+ POST /api/responses 200 in 156ms
+ POST /api/responses 200 in 167ms
+ POST /api/responses 200 in 146ms
+ POST /api/responses 200 in 167ms
+ POST /api/responses 200 in 375ms
+ GET /results 200 in 366ms
+ POST /api/generate-values 200 in 378ms

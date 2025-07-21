@@ -79,15 +79,14 @@ class ApiClient {
 
   async saveResponses(sessionId: string, responses: UserResponse[]): Promise<boolean> {
     try {
-      for (const response of responses) {
-        await this.safeFetch(API_ENDPOINTS.RESPONSES, {
-          method: 'POST',
-          body: JSON.stringify({
-            sessionId,
-            ...response
-          })
-        });
-      }
+      // Send all responses in a single request as expected by API
+      await this.safeFetch(API_ENDPOINTS.RESPONSES, {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId,
+          responses
+        })
+      });
       return true;
     } catch {
       // Non-critical failure - don't block user flow

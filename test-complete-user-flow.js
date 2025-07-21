@@ -5,7 +5,7 @@
 const { chromium } = require('playwright');
 
 // Use high arbitrary port and 0.0.0.0
-const TEST_PORT = process.env.TEST_PORT || '9876';
+const TEST_PORT = process.env.TEST_PORT || '13871';
 const TEST_HOST = process.env.TEST_HOST || '0.0.0.0';
 const BASE_URL = `http://${TEST_HOST}:${TEST_PORT}`;
 

@@ -1,0 +1,64 @@
+name: BULLETPROOF DEPLOY
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      # GATE 1: Dependencies must install cleanly
+      - name: Install dependencies
+        run: npm ci
+      
+      # GATE 2: TypeScript must be perfect
+      - name: TypeScript check
+        run: npx tsc --noEmit
+      
+      # GATE 3: Build must succeed
+      - name: Build application
+        run: npm run build
+      
+      # GATE 4: Install browser for testing
+      - name: Install Playwright
+        run: npx playwright install chromium
+      
+      # GATE 5: Start server for testing
+      - name: Start test server
+        run: npm run dev &
+      
+      # GATE 6: Wait for server
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000 --timeout 60000
+      
+      # GATE 7: Complete user flow must work
+      - name: Run E2E test
+        run: |
+          # Update port in test file for CI
+          sed -i 's/localhost:3004/localhost:3000/g' test-complete-user-flow.js
+          node test-complete-user-flow.js
+      
+      # ONLY DEPLOY IF ALL GATES PASS
+      - name: Deploy to Vercel
+        if: success()
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+      
+      # GATE 8: Verify production deployment
+      - name: Verify production
+        if: success()
+        run: |
+          sleep 60  # Wait for deployment
+          curl -f https://values-md.vercel.app/api/dilemmas || exit 1
+          echo "✅ Production deployment verified"

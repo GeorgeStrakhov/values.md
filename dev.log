@@ -1,0 +1,13 @@
+
+> values.md@0.1.0 dev
+> next dev --turbopack
+
+ ⚠ Port 3000 is in use, using available port 3003 instead.
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3003
+   - Network:      http://45.90.121.59:3003
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+[?25h

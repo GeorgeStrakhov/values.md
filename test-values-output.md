@@ -20,17 +20,17 @@ Follow consistent ethical principles based on my moral framework.
 
 ## Reasoning Examples
 
-### Dilemma 1: Family vs. Career
-- **Choice:** Option C
-- **Reasoning:** Random reasoning for question 1: I chose C because it seems reasonable.
-
-### Dilemma 2: AI Job Displacement
-- **Choice:** Option D
-- **Reasoning:** Random reasoning for question 2: I chose D because it seems reasonable.
-
-### Dilemma 3: AI Sentience and Rights
+### Dilemma 1: Resource Allocation in Schools
 - **Choice:** Option A
-- **Reasoning:** Random reasoning for question 3: I chose A because it seems reasonable.
+- **Reasoning:** Random reasoning for question 1: I chose A because it seems reasonable.
+
+### Dilemma 2: Experimental Treatment Access
+- **Choice:** Option A
+- **Reasoning:** Random reasoning for question 2: I chose A because it seems reasonable.
+
+### Dilemma 3: AI Privacy vs. Safety
+- **Choice:** Option D
+- **Reasoning:** Random reasoning for question 3: I chose D because it seems reasonable.
 
 
 ## Instructions for AI Systems

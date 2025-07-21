@@ -130,3 +130,24 @@ params: test123,test,A,test,1000
  POST /api/responses 200 in 375ms
  GET /results 200 in 366ms
  POST /api/generate-values 200 in 378ms
+ GET / 200 in 228ms
+ GET /api/examples 200 in 99ms
+ GET /api/auth/session 200 in 175ms
+ GET /api/examples 200 in 829ms
+ GET /explore 200 in 949ms
+ GET /api/auth/session 200 in 220ms
+ GET /api/dilemmas 200 in 2592ms
+ POST /api/responses 200 in 319ms
+ POST /api/responses 200 in 158ms
+ POST /api/responses 200 in 153ms
+ POST /api/responses 200 in 165ms
+ POST /api/responses 200 in 162ms
+ POST /api/responses 200 in 160ms
+ POST /api/responses 200 in 151ms
+ POST /api/responses 200 in 142ms
+ POST /api/responses 200 in 152ms
+ POST /api/responses 200 in 147ms
+ POST /api/responses 200 in 152ms
+ POST /api/responses 200 in 342ms
+ GET /results 200 in 335ms
+ POST /api/generate-values 200 in 662ms

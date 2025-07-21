@@ -62,11 +62,15 @@ class ApiClient {
     }
 
     try {
+      // Send in format expected by production (backward compatible)
       const response = await this.safeFetch<ValuesResponse>(
         API_ENDPOINTS.GENERATE_VALUES,
         {
           method: 'POST',
-          body: JSON.stringify({ responses })
+          body: JSON.stringify({ 
+            sessionId: `session_${Date.now()}`, // Generate session ID for production
+            responses 
+          })
         }
       );
       

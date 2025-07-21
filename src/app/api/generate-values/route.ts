@@ -3,7 +3,11 @@ import { valuesGenerator } from '@/lib/values-generator';
 
 export async function POST(request: NextRequest) {
   try {
-    const { responses } = await request.json();
+    const body = await request.json();
+    
+    // Support both old format {sessionId, responses} and new format {responses}
+    const responses = body.responses || body.userResponses;
+    const sessionId = body.sessionId; // Optional for compatibility
 
     if (!responses || responses.length === 0) {
       return NextResponse.json(

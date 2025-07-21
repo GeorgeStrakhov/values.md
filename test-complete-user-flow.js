@@ -4,6 +4,11 @@
 
 const { chromium } = require('playwright');
 
+// Use high arbitrary port and 0.0.0.0
+const TEST_PORT = process.env.TEST_PORT || '9876';
+const TEST_HOST = process.env.TEST_HOST || '0.0.0.0';
+const BASE_URL = `http://${TEST_HOST}:${TEST_PORT}`;
+
 async function testCompleteFlow() {
   console.log('🧪 TESTING COMPLETE USER FLOW');
   
@@ -24,11 +29,11 @@ async function testCompleteFlow() {
       }
     });
     
-    console.log('1️⃣ Going to landing page...');
-    await page.goto('http://localhost:3004');
+    console.log(`1️⃣ Going to landing page at ${BASE_URL}...`);
+    await page.goto(`${BASE_URL}`);
     
     console.log('2️⃣ Navigating to explore page...');
-    await page.goto('http://localhost:3004/explore');
+    await page.goto(`${BASE_URL}/explore`);
     
     // Wait for page to load
     await page.waitForTimeout(3000);

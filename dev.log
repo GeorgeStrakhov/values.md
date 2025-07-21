@@ -2,12 +2,66 @@
 > values.md@0.1.0 dev
 > next dev --turbopack
 
- ⚠ Port 3000 is in use, using available port 3003 instead.
+ ⚠ Port 3000 is in use, using available port 3001 instead.
    ▲ Next.js 15.3.3 (Turbopack)
-   - Local:        http://localhost:3003
-   - Network:      http://45.90.121.59:3003
+   - Local:        http://localhost:3001
+   - Network:      http://45.90.121.59:3001
    - Environments: .env.local, .env
 
  ✓ Starting...
- ✓ Ready in 2.1s
-[?25h
+ ✓ Ready in 1593ms
+ ○ Compiling / ...
+ ✓ Compiled / in 7.9s
+ GET / 200 in 8689ms
+ ○ Compiling /explore ...
+ GET /api/examples 200 in 7509ms
+ GET /api/examples 200 in 227ms
+ GET /api/examples 200 in 219ms
+ ✓ Compiled /explore in 9.6s
+ GET /explore 200 in 9888ms
+ GET /api/auth/session 200 in 9807ms
+ POST /api/auth/_log 200 in 935ms
+ GET /api/auth/session 200 in 587ms
+ ○ Compiling /api/dilemmas ...
+ ✓ Compiled /api/dilemmas in 1885ms
+ GET /api/dilemmas 200 in 2820ms
+ ○ Compiling /api/responses ...
+ ✓ Compiled /api/responses in 1686ms
+ POST /api/responses 400 in 1778ms
+ POST /api/responses 400 in 55ms
+ POST /api/responses 400 in 76ms
+ POST /api/responses 400 in 48ms
+ POST /api/responses 400 in 61ms
+ POST /api/responses 400 in 50ms
+ POST /api/responses 400 in 88ms
+ POST /api/responses 400 in 58ms
+ POST /api/responses 400 in 60ms
+ POST /api/responses 400 in 58ms
+ POST /api/responses 400 in 75ms
+ POST /api/responses 400 in 110ms
+ ○ Compiling /results ...
+ ✓ Compiled /results in 3.5s
+ GET /results 200 in 3549ms
+ ○ Compiling /api/generate-values ...
+ ✓ Compiled /api/generate-values in 1557ms
+ POST /api/generate-values 200 in 2044ms
+ GET / 200 in 255ms
+ GET /api/examples 200 in 243ms
+ GET /api/auth/session 200 in 375ms
+ GET /explore 200 in 416ms
+ GET /api/auth/session 200 in 117ms
+ GET /api/dilemmas 200 in 448ms
+ POST /api/responses 400 in 68ms
+ POST /api/responses 400 in 53ms
+ POST /api/responses 400 in 64ms
+ POST /api/responses 400 in 56ms
+ POST /api/responses 400 in 67ms
+ POST /api/responses 400 in 80ms
+ POST /api/responses 400 in 38ms
+ POST /api/responses 400 in 43ms
+ POST /api/responses 400 in 46ms
+ POST /api/responses 400 in 53ms
+ POST /api/responses 400 in 52ms
+ POST /api/responses 400 in 98ms
+ GET /results 200 in 130ms
+ POST /api/generate-values 200 in 412ms

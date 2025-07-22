@@ -20,17 +20,17 @@ Follow consistent ethical principles based on my moral framework.
 
 ## Reasoning Examples
 
-### Dilemma 1: Resource Allocation in Schools
+### Dilemma 1: Climate Refugee Crisis
 - **Choice:** Option A
 - **Reasoning:** Random reasoning for question 1: I chose A because it seems reasonable.
 
-### Dilemma 2: Experimental Treatment Access
+### Dilemma 2: AI-Assisted Learning Inequality
 - **Choice:** Option A
 - **Reasoning:** Random reasoning for question 2: I chose A because it seems reasonable.
 
-### Dilemma 3: AI Privacy vs. Safety
-- **Choice:** Option D
-- **Reasoning:** Random reasoning for question 3: I chose D because it seems reasonable.
+### Dilemma 3: Life Extension Inequality
+- **Choice:** Option B
+- **Reasoning:** Random reasoning for question 3: I chose B because it seems reasonable.
 
 
 ## Instructions for AI Systems
@@ -48,4 +48,4 @@ When making decisions on my behalf, please:
 ---
 
 *Generated from responses to 12 ethical dilemmas*
-*Last updated: 2025-07-21*
+*Last updated: 2025-07-22*

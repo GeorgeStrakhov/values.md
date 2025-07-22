@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Debug endpoint error:', error);
     return NextResponse.json(
-      { error: 'Debug endpoint error', details: error.message },
+      { error: 'Debug endpoint error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

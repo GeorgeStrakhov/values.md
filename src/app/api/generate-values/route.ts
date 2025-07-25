@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         valuesMarkdown,
-        responseCount: dbResponses.length,
+        responseCount: responses.length,
         generationMethod: 'local-private',
         timestamp: new Date().toISOString()
       });
@@ -294,7 +294,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error generating values:', error);
     return NextResponse.json(
-      { error: 'Failed to generate values' },
+      { 
+        error: 'Failed to generate values',
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }

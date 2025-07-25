@@ -32,10 +32,10 @@ function ResultsPageContent() {
     setError('');
     
     try {
-      const valuesResponse = await fetch('/api/generate-values-combinatorial', {
+      const valuesResponse = await fetch('/api/generate-values', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ responses })
+        body: JSON.stringify({ sessionId: crypto.randomUUID(), responses })
       });
       
       if (!valuesResponse.ok) {
@@ -72,7 +72,7 @@ function ResultsPageContent() {
         throw new Error(`Failed to save responses: ${saveResponse.status}`);
       }
       
-      const valuesResponse = await fetch('/api/generate-values-combinatorial', {
+      const valuesResponse = await fetch('/api/generate-values', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId })

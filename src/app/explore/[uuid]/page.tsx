@@ -139,14 +139,20 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
     
     // Navigate to next dilemma
     const nextIndex = currentIndex + 1;
-    if (nextIndex < dilemmas.length) {
+    
+    // Complete after 12 responses (standard VALUES.md flow)
+    if (updatedResponses.length >= 12) {
+      // User has completed the minimum required dilemmas
+      // Show completion UI
+      setCurrentIndex(-1); // Special state to show completion options
+    } else if (nextIndex < dilemmas.length) {
       setCurrentIndex(nextIndex);
       setChoice('');
       setReasoning('');
       setDifficulty(5); // Reset to default
       setStartTime(Date.now()); // Reset timer for next dilemma
     } else {
-      // User has answered all available dilemmas
+      // User has answered all available dilemmas (fallback)
       // Show completion UI instead of auto-redirecting
       setCurrentIndex(-1); // Special state to show completion options
     }
@@ -406,7 +412,7 @@ function ExplorePageContent({ params }: { params: Promise<{ uuid: string }> }) {
                 disabled={!choice}
                 className="h-12 px-8 text-base font-semibold"
               >
-                {currentIndex + 1 >= dilemmas.length ? 'Finish & See Results' : 'Next Question'}
+                {responses.length >= 11 ? 'Finish & See Results' : 'Next Question'}
               </Button>
             </div>
           </CardContent>

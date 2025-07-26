@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { userResponses, dilemmas } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import { tacticBasedValuesGenerator } from '@/lib/tactic-based-values-generator';
-import { enhancedValuesGenerator } from '@/lib/enhanced-values-generator';
-import { streamlinedValuesGenerator } from '@/lib/streamlined-values-generator';
-import { statisticalFoundation } from '@/lib/statistical-foundation';
-import { validationProtocols } from '@/lib/validation-protocols';
+// Simplified generation - removed unused complex libraries
 
 // Simple in-memory cache for generated values
 const valuesCache = new Map<string, { data: any; timestamp: number }>();
@@ -191,105 +187,25 @@ export async function POST(request: NextRequest) {
       difficulty: response.difficulty || 5
     }));
 
-    // Determine generation method based on data quality and quantity
-    const useStreamlined = true; // Default to streamlined for reliability
-    const useEnhanced = dbResponses.length >= 5 && process.env.ENABLE_ENHANCED === 'true';
+    // Use simple database-driven generation (cleaned up - removed complex unused paths)
+    const simpleMarkdown = generateSimpleValuesFromDB(tacticResponses);
     
-    if (useStreamlined && !useEnhanced) {
-      // Use simple database-driven generation
-      const simpleMarkdown = generateSimpleValuesFromDB(tacticResponses);
-      
-      const result = {
-        success: true,
-        valuesMarkdown: simpleMarkdown,
-        responseCount: dbResponses.length,
-        generationMethod: 'database-simple',
-        timestamp: new Date().toISOString(),
-        summary: {
-          primaryApproach: 'Database-driven analysis',
-          keyInsights: ['Analyzed from stored responses', 'Reliable pattern detection'],
-          aiGuidance: ['Based on your response patterns']
-        }
-      };
+    const result = {
+      success: true,
+      valuesMarkdown: simpleMarkdown,
+      responseCount: dbResponses.length,
+      generationMethod: 'database-simple',
+      timestamp: new Date().toISOString(),
+      summary: {
+        primaryApproach: 'Database-driven analysis',
+        keyInsights: ['Analyzed from stored responses', 'Reliable pattern detection'],
+        aiGuidance: ['Based on your response patterns']
+      }
+    };
 
-      // Cache the result
-      valuesCache.set(cacheKey, { data: result, timestamp: Date.now() });
-      return NextResponse.json(result);
-
-    } else if (useEnhanced) {
-      // Generate VALUES.md using enhanced mathematical approach
-      const enhancedProfile = await enhancedValuesGenerator.generateEnhancedProfile(
-        tacticResponses.map(r => ({
-          ...r,
-          userId: sessionId,
-          culturalBackground: 'universal' // Could be detected from responses
-        })),
-        {
-          enableBayesianModeling: dbResponses.length >= 5,
-          includePersonalExamples: true,
-          confidenceThreshold: 0.6
-        }
-      );
-
-      const result = {
-        success: true,
-        valuesMarkdown: enhancedProfile.valuesMarkdown,
-        responseCount: dbResponses.length,
-        generationMethod: 'enhanced-mathematical',
-        timestamp: new Date().toISOString(),
-        summary: enhancedProfile.summary,
-        discoveredTactics: enhancedProfile.tacticsSet.primary.length + enhancedProfile.tacticsSet.secondary.length,
-        integrationStyle: enhancedProfile.tacticsSet.metaTactics.length > 0 ? 'complex' : 'simple',
-        validationMetrics: {
-          reliability: enhancedProfile.validationMetrics.overallReliability,
-          confidence: Math.round(enhancedProfile.confidenceProfile.overallConfidence * 100),
-          semanticCoherence: Math.round(enhancedProfile.validationMetrics.semanticCoherence * 100),
-          bayesianConvergence: enhancedProfile.validationMetrics.bayesianConvergence,
-          uncertaintyBreakdown: enhancedProfile.validationMetrics.uncertaintyDecomposition,
-          recommendations: enhancedProfile.validationMetrics.recommendedActions
-        },
-        enhancedFeatures: {
-          semanticAnalysis: true,
-          bayesianModeling: dbResponses.length >= 5,
-          uncertaintyQuantification: true,
-          mathematicalValidation: true
-        }
-      };
-
-      // Cache the enhanced result
-      valuesCache.set(cacheKey, { data: result, timestamp: Date.now() });
-      return NextResponse.json(result);
-
-    } else {
-      // Fallback to standard tactic-based method for small datasets
-      const tacticProfile = tacticBasedValuesGenerator.generateFromResponses(tacticResponses);
-
-      // Calculate validation metrics for quality assurance
-      const validationMetrics = await calculateValidationMetrics(tacticResponses, tacticProfile);
-
-      const result = {
-        success: true,
-        valuesMarkdown: tacticProfile.valuesMarkdown,
-        responseCount: dbResponses.length,
-        generationMethod: 'tactic-based-standard',
-        timestamp: new Date().toISOString(),
-        summary: tacticProfile.summary,
-        discoveredTactics: tacticProfile.discoveredTactics.primary.length + tacticProfile.discoveredTactics.secondary.length,
-        integrationStyle: tacticProfile.integration.integrationStyle,
-        validationMetrics,
-        enhancedFeatures: {
-          semanticAnalysis: false,
-          bayesianModeling: false,
-          uncertaintyQuantification: false,
-          mathematicalValidation: false,
-          upgradeMessage: 'Complete more dilemmas for enhanced mathematical analysis'
-        }
-      };
-
-      // Cache the standard result
-      valuesCache.set(cacheKey, { data: result, timestamp: Date.now() });
-      return NextResponse.json(result);
-    }
+    // Cache the result
+    valuesCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return NextResponse.json(result);
 
   } catch (error) {
     console.error('Error generating values:', error);
@@ -303,74 +219,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * Calculate validation metrics for quality assurance
- */
-async function calculateValidationMetrics(responses: any[], tacticProfile: any) {
-  try {
-    // Basic statistical validation
-    const tacticStrengths = [
-      ...tacticProfile.discoveredTactics.primary.map(t => t.strength),
-      ...tacticProfile.discoveredTactics.secondary.map(t => t.strength)
-    ];
-
-    if (tacticStrengths.length === 0) {
-      return {
-        reliability: 'insufficient_data',
-        confidence: 0,
-        sampleAdequacy: 'low',
-        warnings: ['No tactics discovered - may indicate insufficient response data']
-      };
-    }
-
-    const reliabilityEvidence = statisticalFoundation.calculateConfidenceInterval(tacticStrengths);
-    
-    // Sample adequacy assessment
-    const sampleAdequacy = responses.length >= 12 ? 'high' : 
-                          responses.length >= 8 ? 'medium' : 'low';
-    
-    // Confidence assessment
-    const avgConfidence = reliabilityEvidence.mean;
-    const confidenceLevel = avgConfidence >= 0.7 ? 'high' :
-                           avgConfidence >= 0.5 ? 'medium' : 'low';
-    
-    // Generate warnings based on validation criteria
-    const warnings = [];
-    if (responses.length < 8) {
-      warnings.push('Small sample size may reduce reliability of tactic discovery');
-    }
-    if (reliabilityEvidence.standardError > 0.2) {
-      warnings.push('High variability in tactic strengths may indicate inconsistent reasoning patterns');
-    }
-    if (avgConfidence < 0.5) {
-      warnings.push('Low confidence in discovered tactics - consider collecting more responses');
-    }
-    if (tacticProfile.discoveredTactics.primary.length === 0) {
-      warnings.push('No primary tactics discovered - ethical reasoning patterns may be unclear');
-    }
-
-    return {
-      reliability: confidenceLevel,
-      confidence: avgConfidence,
-      sampleAdequacy,
-      statisticalEvidence: {
-        mean: reliabilityEvidence.mean,
-        confidenceInterval: reliabilityEvidence.confidenceInterval,
-        effectSize: reliabilityEvidence.effectSize
-      },
-      warnings: warnings.length > 0 ? warnings : ['No validation issues detected']
-    };
-
-  } catch (error) {
-    console.error('Validation metrics calculation failed:', error);
-    return {
-      reliability: 'error',
-      confidence: 0,
-      sampleAdequacy: 'unknown',
-      warnings: ['Validation metrics could not be calculated']
-    };
-  }
-}
+// Removed unused validation function - using simple generation only
 
 /**
  * Helper to extract motif from response choice

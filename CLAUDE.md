@@ -3,6 +3,13 @@
 ## Project Overview
 Research platform for exploring personal values through ethical dilemmas to generate personalized "values.md" files for LLM alignment.
 
+## ✅ STABLE RELEASE STATUS (v1.1.0-stable)
+- **Core User Flow**: Landing → 12 dilemmas → VALUES.md generation → Download
+- **Mobile Responsive**: Optimized for iPhone and desktop
+- **Privacy-First**: Default private generation, optional research contribution
+- **E2E Tested**: Complete user journey verified and working
+- **Deployment**: Auto-deploys via Vercel on push to `stage` branch
+
 ## Technical Stack
 - **Frontend**: Next.js 15+ with TypeScript
 - **Database**: PostgreSQL (Neon Cloud) with Drizzle ORM
@@ -165,3 +172,29 @@ Research platform for exploring personal values through ethical dilemmas to gene
 - `/scripts/` - Database management (seed, cleanup, admin password updates)
 - `/drizzle/` - Database migrations and schema snapshots
 - Content management via MDX for blog/docs
+
+## ✅ PROVEN ARCHITECTURE PATTERNS
+
+### Completion Logic (FIXED)
+- **Trigger**: After 12 responses (not all 25 dilemmas available)
+- **State**: `currentIndex === -1` shows completion screen
+- **Button**: "Finish & See Results" appears after 11th response
+- **Flow**: `submitResponse()` → check `responses.length >= 12` → `setCurrentIndex(-1)`
+
+### VALUES.md Generation (WORKING)
+- **Private Path**: Direct from localStorage responses (default)
+- **Research Path**: Store to DB first, then generate from DB
+- **API Contract**: `/api/generate-values` handles both paths
+- **Output**: Structured markdown with personal values analysis
+
+### Mobile Responsiveness (FIXED)
+- **Padding**: `p-3 sm:p-6` for proper mobile spacing
+- **Typography**: `text-2xl sm:text-3xl` responsive text sizes
+- **Layout**: `grid-cols-1 sm:grid-cols-2` stacked on mobile
+- **Buttons**: Appropriate sizing for touch interfaces
+
+### State Management (STABLE)
+- **Zustand**: Client-side dilemma progress and responses
+- **localStorage**: Privacy-first data persistence
+- **Database**: Optional research data storage only
+- **useState**: All UI state properly declared (showOptions, showAdvanced)

@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 function ResultsPageContent() {
   const [responses, setResponses] = useState([]);
   const [valuesMarkdown, setValuesMarkdown] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showOptions, setShowOptions] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -188,11 +191,11 @@ function ResultsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-3 sm:p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">Your Results</h1>
-          <p className="text-lg text-muted-foreground">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">Your Results</h1>
+          <p className="text-base sm:text-lg text-muted-foreground">
             You answered {responses.length} ethical dilemmas
           </p>
         </div>
@@ -221,7 +224,7 @@ function ResultsPageContent() {
                   onClick={generateSimple}
                   disabled={loading || responses.length === 0}
                   size="lg"
-                  className="text-lg px-8 py-4 w-full"
+                  className="text-base sm:text-lg px-4 sm:px-8 py-3 sm:py-4 w-full"
                 >
                   Generate My VALUES.md
                 </Button>
@@ -243,9 +246,9 @@ function ResultsPageContent() {
                 How would you like to generate your VALUES.md?
               </p>
               
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Card className="border-green-200 bg-green-50 hover:border-green-300 transition-colors">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <h4 className="font-medium text-green-800 mb-2">🔒 Keep Private</h4>
                     <p className="text-sm text-green-700 mb-4">Your data stays on your device only</p>
                     <Button
@@ -259,7 +262,7 @@ function ResultsPageContent() {
                 </Card>
                 
                 <Card className="border-blue-200 bg-blue-50 hover:border-blue-300 transition-colors">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 sm:p-6">
                     <h4 className="font-medium text-blue-800 mb-2">📊 Help Research</h4>
                     <p className="text-sm text-blue-700 mb-4">Anonymous contribution to ethics research</p>
                     <Button
@@ -332,7 +335,7 @@ function ResultsPageContent() {
                   <Button 
                     onClick={downloadValues}
                     size="lg"
-                    className="w-full text-lg"
+                    className="w-full text-base sm:text-lg"
                   >
                     📥 Download VALUES.md
                   </Button>
@@ -350,16 +353,18 @@ function ResultsPageContent() {
                     </Button>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
                       variant="outline"
                       onClick={startOver}
+                      className="text-sm sm:text-base"
                     >
                       Start Over
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => router.push('/')}
+                      className="text-sm sm:text-base"
                     >
                       Learn More
                     </Button>
@@ -374,8 +379,8 @@ function ResultsPageContent() {
                 <CardTitle className="text-lg">Your VALUES.md File</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-muted/50 p-4 rounded-lg border overflow-hidden max-h-96 overflow-y-auto">
-                  <pre className="text-sm font-mono leading-relaxed whitespace-pre-wrap">
+                <div className="bg-muted/50 p-3 sm:p-4 rounded-lg border overflow-hidden max-h-64 sm:max-h-96 overflow-y-auto">
+                  <pre className="text-xs sm:text-sm font-mono leading-relaxed whitespace-pre-wrap">
                     {valuesMarkdown}
                   </pre>
                 </div>

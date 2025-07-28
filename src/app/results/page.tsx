@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { loadResponses } from '@/lib/storage';
 
 function ResultsPageContent() {
   const [responses, setResponses] = useState([]);
@@ -16,9 +17,9 @@ function ResultsPageContent() {
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem('responses');
-    if (stored) {
-      setResponses(JSON.parse(stored));
+    const storedResponses = loadResponses();
+    if (storedResponses && storedResponses.length > 0) {
+      setResponses(storedResponses);
     } else {
       router.push('/');
     }

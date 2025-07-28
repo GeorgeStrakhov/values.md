@@ -61,17 +61,19 @@ export async function GET() {
         redirect: 'manual' // Don't follow redirects
       });
       
+      // Updated to match new JSON API contract (not redirect)
+      const isSuccess = response.status === 200;
       results.checks.randomDilemmaAPI = {
-        status: [302, 307].includes(response.status) ? 'pass' : 'fail',
+        status: isSuccess ? 'pass' : 'fail',
         message: `API response: ${response.status}`,
         details: { 
           status: response.status,
-          redirected: [302, 307].includes(response.status),
-          location: response.headers.get('location')
+          expectsJSON: true,
+          apiContract: 'JSON response with dilemmaId'
         }
       };
       
-      if (![302, 307].includes(response.status)) {
+      if (!isSuccess) {
         results.status = 'fail';
       }
     } catch (error) {
@@ -86,17 +88,20 @@ export async function GET() {
     // 4. Responses API test (critical for our bug)
     console.log('🔍 Health check: Testing responses API...');
     try {
-      // Get a real dilemma UUID first
+      // Get a real dilemma UUID from JSON response
       const randomDilemmaResponse = await fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/dilemmas/random`, {
-        method: 'GET',
-        redirect: 'manual'
+        method: 'GET'
       });
       
-      const location = randomDilemmaResponse.headers.get('location');
-      const dilemmaId = location?.split('/').pop();
+      if (!randomDilemmaResponse.ok) {
+        throw new Error(`Random API failed: ${randomDilemmaResponse.status}`);
+      }
+      
+      const randomData = await randomDilemmaResponse.json();
+      const dilemmaId = randomData.dilemmaId;
       
       if (!dilemmaId) {
-        throw new Error('Could not get dilemma ID from random API');
+        throw new Error('Could not get dilemma ID from random API JSON response');
       }
 
       const testPayload = {

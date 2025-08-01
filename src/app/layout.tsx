@@ -42,6 +42,9 @@ export default function RootLayout({
             <ErrorBoundary>
               <Header />
               {children}
+              <footer className="mt-auto py-4 px-6 text-center text-sm text-muted-foreground border-t">
+                <p>values.md • Discover Your Personal Values 🌸</p>
+              </footer>
             </ErrorBoundary>
           </ThemeProvider>
         </AuthProvider>

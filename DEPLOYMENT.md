@@ -59,10 +59,19 @@
 - 🗑️ Simplified complex unused libraries
 - 🗑️ Streamlined to working functionality only
 
-**Deployment Targets:**
-- **Stage**: https://stage.values.md (testing)
-- **Production**: https://values.md (public)
-- **Preview**: Auto-generated Vercel URLs
+**Deployment Targets (STAGE FIRST):**
+- **🎯 Stage**: https://stage.values.md (ALWAYS TEST HERE FIRST)
+- **🚀 Production**: https://values.md (public - only after stage verification)
+- **🔧 Preview**: Auto-generated Vercel URLs (development)
+
+## 🎯 STAGE-FIRST WORKFLOW
+
+**ALWAYS use stage.values.md before values.md:**
+
+1. **Deploy to Stage**: Push to `stage` branch → https://stage.values.md
+2. **Test on Stage**: Complete user journey verification
+3. **Verify Health**: Check https://stage.values.md/api/health
+4. **Only then Production**: Deploy to `main` branch → https://values.md
 
 ## 📋 Pre-Deployment Checklist
 
